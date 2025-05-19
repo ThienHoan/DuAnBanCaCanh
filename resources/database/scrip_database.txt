@@ -1,0 +1,549 @@
+
+-- Users (Người dùng)
+CREATE TABLE Users (
+    user_id INT PRIMARY KEY IDENTITY(1,1),
+    username NVARCHAR(50) UNIQUE,
+    password NVARCHAR(255), -- Đã mã hóa
+    email NVARCHAR(100) UNIQUE,
+    phone NVARCHAR(20),
+    full_name NVARCHAR(100),
+    role NVARCHAR(20) CHECK (role IN ('admin', 'customer')) DEFAULT 'customer',
+    status NVARCHAR(20) CHECK (status IN ('active', 'inactive', 'banned')) DEFAULT 'active',
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    last_login DATETIME2(0),
+    avatar NVARCHAR(255),
+    is_deleted BIT DEFAULT 0
+);
+
+-- Addresses (Địa chỉ)
+CREATE TABLE Addresses (
+    address_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT,
+    recipient_name NVARCHAR(100),
+    phone NVARCHAR(20),
+    province NVARCHAR(50),
+    district NVARCHAR(50),
+    ward NVARCHAR(50),
+    address_detail NVARCHAR(255),
+    is_default BIT DEFAULT 0,
+    address_type NVARCHAR(20) CHECK (address_type IN ('shipping', 'billing')) DEFAULT 'shipping',
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
+-- Categories (Danh mục)
+CREATE TABLE Categories (
+    category_id INT PRIMARY KEY IDENTITY(1,1),
+    parent_id INT,
+    name NVARCHAR(100),
+    description NVARCHAR(MAX),
+    image NVARCHAR(255),
+    status NVARCHAR(20) CHECK (status IN ('active', 'inactive')) DEFAULT 'active',
+    display_order INT,
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (parent_id) REFERENCES Categories(category_id)
+);
+
+-- Products (Sản phẩm)
+CREATE TABLE Products (
+    product_id INT PRIMARY KEY IDENTITY(1,1),
+    category_id INT,
+    name NVARCHAR(255),
+    description NVARCHAR(MAX),
+    short_description NVARCHAR(255),
+    price DECIMAL(12,2),
+    sale_price DECIMAL(12,2),
+    quantity INT,
+    sku NVARCHAR(50) UNIQUE,
+    status NVARCHAR(20) CHECK (status IN ('active', 'inactive', 'out_of_stock')) DEFAULT 'active',
+    featured BIT DEFAULT 0,
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE SET NULL
+);
+
+-- Product_details (Chi tiết sản phẩm cá cảnh)
+CREATE TABLE Product_details (
+    product_detail_id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT,
+    scientific_name NVARCHAR(100),
+    common_name NVARCHAR(100),
+    origin NVARCHAR(100),
+    size NVARCHAR(50),
+    lifespan NVARCHAR(50),
+    water_type NVARCHAR(20) CHECK (water_type IN ('freshwater', 'saltwater', 'brackish')),
+    water_temperature NVARCHAR(50),
+    water_ph NVARCHAR(50),
+    diet NVARCHAR(MAX),
+    breeding_difficulty NVARCHAR(20) CHECK (breeding_difficulty IN ('easy', 'moderate', 'difficult')),
+    care_level NVARCHAR(20) CHECK (care_level IN ('easy', 'moderate', 'difficult')),
+    compatibility NVARCHAR(MAX),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Product_images (Hình ảnh sản phẩm)
+CREATE TABLE Product_images (
+    image_id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT,
+    image_url NVARCHAR(255),
+    is_main BIT DEFAULT 0,
+    display_order INT,
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Product_attributes (Thuộc tính sản phẩm)
+CREATE TABLE Product_attributes (
+    attribute_id INT PRIMARY KEY IDENTITY(1,1),
+    name NVARCHAR(100)
+);
+
+-- Product_attribute_values (Giá trị thuộc tính sản phẩm)
+CREATE TABLE Product_attribute_values (
+    value_id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT,
+    attribute_id INT,
+    value NVARCHAR(255),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id),
+    FOREIGN KEY (attribute_id) REFERENCES Product_attributes(attribute_id) ON DELETE CASCADE
+);
+
+-- Carts (Giỏ hàng)
+CREATE TABLE Carts (
+    cart_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT,
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
+-- Cart_items (Các mục trong giỏ hàng)
+CREATE TABLE Cart_items (
+    cart_item_id INT PRIMARY KEY IDENTITY(1,1),
+    cart_id INT,
+    product_id INT,
+    quantity INT,
+    added_at DATETIME2(0) DEFAULT GETDATE(),
+    FOREIGN KEY (cart_id) REFERENCES Carts(cart_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
+);
+
+-- Orders (Đơn hàng)
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT,
+    order_number NVARCHAR(50) UNIQUE,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'confirmed', 'processing', 'shipping', 'delivered', 'cancelled', 'refunded')) DEFAULT 'pending',
+    total_amount DECIMAL(12,2),
+    discount_amount DECIMAL(12,2),
+    shipping_fee DECIMAL(12,2),
+    tax DECIMAL(12,2),
+    final_amount DECIMAL(12,2),
+    payment_method NVARCHAR(20) CHECK (payment_method IN ('cod', 'bank_transfer', 'credit_card', 'e-wallet')),
+    payment_status NVARCHAR(20) CHECK (payment_status IN ('pending', 'paid', 'failed')) DEFAULT 'pending',
+    shipping_address_id INT,
+    billing_address_id INT,
+    notes NVARCHAR(MAX),
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (shipping_address_id) REFERENCES Addresses(address_id),
+    FOREIGN KEY (billing_address_id) REFERENCES Addresses(address_id)
+);
+
+-- Order_items (Các mục trong đơn hàng)
+CREATE TABLE Order_items (
+    order_item_id INT PRIMARY KEY IDENTITY(1,1),
+    order_id INT,
+    product_id INT,
+    product_name NVARCHAR(255),
+    quantity INT,
+    unit_price DECIMAL(12,2),
+    subtotal DECIMAL(12,2),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Payments (Thanh toán)
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY IDENTITY(1,1),
+    order_id INT,
+    payment_method NVARCHAR(20) CHECK (payment_method IN ('cod', 'bank_transfer', 'credit_card', 'e-wallet')),
+    transaction_id NVARCHAR(100),
+    amount DECIMAL(12,2),
+    status NVARCHAR(20) CHECK (status IN ('pending', 'completed', 'failed', 'refunded')) DEFAULT 'pending',
+    payment_date DATETIME2(0),
+    payment_details NVARCHAR(MAX),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
+);
+
+-- Shipping (Vận chuyển)
+CREATE TABLE Shipping (
+    shipping_id INT PRIMARY KEY IDENTITY(1,1),
+    order_id INT,
+    shipping_method NVARCHAR(100),
+    shipping_carrier NVARCHAR(100),
+    tracking_number NVARCHAR(100),
+    shipping_cost DECIMAL(12,2),
+    estimated_delivery DATE,
+    actual_delivery DATE,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'failed')) DEFAULT 'pending',
+    notes NVARCHAR(MAX),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
+);
+
+-- Reviews (Đánh giá)
+CREATE TABLE Reviews (
+    review_id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT,
+    user_id INT,
+    order_id INT,
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    comment NVARCHAR(MAX),
+    review_date DATETIME2(0) DEFAULT GETDATE(),
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    is_verified_purchase BIT DEFAULT 0,
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+-- Review_images (Hình ảnh đánh giá)
+CREATE TABLE Review_images (
+    image_id INT PRIMARY KEY IDENTITY(1,1),
+    review_id INT,
+    image_url NVARCHAR(255),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (review_id) REFERENCES Reviews(review_id)
+);
+
+-- Promotions (Khuyến mãi)
+CREATE TABLE Promotions (
+    promotion_id INT PRIMARY KEY IDENTITY(1,1),
+    name NVARCHAR(255),
+    description NVARCHAR(MAX),
+    discount_type NVARCHAR(20) CHECK (discount_type IN ('percentage', 'fixed_amount')),
+    discount_value DECIMAL(12,2),
+    minimum_order DECIMAL(12,2),
+    start_date DATETIME2(0),
+    end_date DATETIME2(0),
+    status NVARCHAR(20) CHECK (status IN ('active', 'inactive', 'expired')) DEFAULT 'active',
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0
+);
+
+-- Promotion_products (Sản phẩm áp dụng khuyến mãi)
+CREATE TABLE Promotion_products (
+    promotion_product_id INT PRIMARY KEY IDENTITY(1,1),
+    promotion_id INT,
+    product_id INT,
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (promotion_id) REFERENCES Promotions(promotion_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Coupons (Mã giảm giá)
+CREATE TABLE Coupons (
+    coupon_id INT PRIMARY KEY IDENTITY(1,1),
+    code NVARCHAR(50) UNIQUE,
+    description NVARCHAR(MAX),
+    discount_type NVARCHAR(20) CHECK (discount_type IN ('percentage', 'fixed_amount')),
+    discount_value DECIMAL(12,2),
+    minimum_order DECIMAL(12,2),
+    maximum_discount DECIMAL(12,2),
+    usage_limit INT,
+    usage_count INT DEFAULT 0,
+    start_date DATETIME2(0),
+    end_date DATETIME2(0),
+    status NVARCHAR(20) CHECK (status IN ('active', 'inactive', 'expired')) DEFAULT 'active',
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    updated_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0
+);
+
+-- Coupon_products (Sản phẩm áp dụng mã giảm giá)
+CREATE TABLE Coupon_products (
+    coupon_product_id INT PRIMARY KEY IDENTITY(1,1),
+    coupon_id INT,
+    product_id INT,
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (coupon_id) REFERENCES Coupons(coupon_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+
+-- Coupon_usage (Lịch sử sử dụng mã giảm giá)
+CREATE TABLE Coupon_usage (
+    usage_id INT PRIMARY KEY IDENTITY(1,1),
+    coupon_id INT,
+    user_id INT,
+    order_id INT,
+    discount_amount DECIMAL(12,2),
+    used_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (coupon_id) REFERENCES Coupons(coupon_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
+
+-- Inventory_logs (Nhật ký kho hàng)
+CREATE TABLE Inventory_logs (
+    log_id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT,
+    quantity_before INT,
+    quantity_after INT,
+    change_type NVARCHAR(20) CHECK (change_type IN ('increase', 'decrease')),
+    reason NVARCHAR(255),
+    reference_id INT,
+    reference_type NVARCHAR(50),
+    created_at DATETIME2(0) DEFAULT GETDATE(),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
+);
+
+-- Wishlist (Danh sách yêu thích)
+CREATE TABLE Wishlist (
+    wishlist_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT,
+    product_id INT,
+    added_at DATETIME2(0) DEFAULT GETDATE(),
+    is_deleted BIT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+);
+go
+-- Trigger for Categories soft delete
+CREATE TRIGGER trg_categories_soft_delete
+ON Categories
+INSTEAD OF UPDATE
+AS
+BEGIN
+    IF UPDATE(is_deleted)
+    BEGIN
+        DECLARE @category_id INT, @is_deleted BIT;
+        SELECT @category_id = category_id, @is_deleted = is_deleted
+        FROM inserted;
+
+        IF @is_deleted = 1
+        BEGIN
+            UPDATE Categories SET parent_id = NULL WHERE parent_id = @category_id;
+            UPDATE Categories SET is_deleted = 1 WHERE category_id = @category_id;
+        END
+    END
+END;
+go
+-- Trigger for Addresses soft delete
+CREATE TRIGGER trg_addresses_soft_delete
+ON Addresses
+INSTEAD OF UPDATE
+AS
+BEGIN
+    IF UPDATE(is_deleted)
+    BEGIN
+        DECLARE @address_id INT, @is_deleted BIT;
+        SELECT @address_id = address_id, @is_deleted = is_deleted
+        FROM inserted;
+
+        IF @is_deleted = 1
+        BEGIN
+            UPDATE Orders 
+            SET shipping_address_id = NULL 
+            WHERE shipping_address_id = @address_id AND is_deleted = 0;
+            
+            UPDATE Orders 
+            SET billing_address_id = NULL 
+            WHERE billing_address_id = @address_id AND is_deleted = 0;
+            
+            UPDATE Addresses 
+            SET is_deleted = 1 
+            WHERE address_id = @address_id;
+        END
+    END
+END;
+
+-- Optional: Coupon_categories (Mã giảm giá theo danh mục)
+-- Uncomment if needed:
+-- CREATE TABLE Coupon_categories (
+--     coupon_category_id INT PRIMARY KEY IDENTITY(1,1),
+--     coupon_id INT,
+--     category_id INT,
+--     is_deleted BIT DEFAULT 0,
+--     FOREIGN KEY (coupon_id) REFERENCES Coupons(coupon_id),
+--     FOREIGN KEY (category_id) REFERENCES Categories(category_id)
+-- );
+
+-- -----------------------------------
+-- 2. Insert Sample Data
+-- -----------------------------------
+
+-- Users
+INSERT INTO Users (username, password, email, phone, full_name, role, status, created_at, last_login, avatar, is_deleted)
+VALUES 
+    (N'admin', N'hashed_password_1', N'admin@fishshop.com', N'0901234567', N'Quản Trị Viên', N'admin', N'active', '2025-05-01 10:00:00', '2025-05-17 18:00:00', N'/avatars/admin.jpg', 0),
+    (N'customer1', N'hashed_password_2', N'customer1@fishshop.com', N'0908765432', N'Nguyễn Văn A', N'customer', N'active', '2025-05-02 12:00:00', '2025-05-16 14:00:00', N'/avatars/customer1.jpg', 0),
+    (N'customer2', N'hashed_password_3', N'customer2@fishshop.com', N'0912345678', N'Trần Thị B', N'customer', N'inactive', '2025-05-03 15:00:00', NULL, NULL, 1);
+
+-- Addresses
+INSERT INTO Addresses (user_id, recipient_name, phone, province, district, ward, address_detail, is_default, address_type, is_deleted)
+VALUES 
+    (2, N'Nguyễn Văn A', N'0908765432', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé', N'123 Đường Lê Lợi', 1, N'shipping', 0),
+    (2, N'Nguyễn Văn A', N'0908765432', N'TP Hồ Chí Minh', N'Quận 1', N'Phường Bến Nghé', N'123 Đường Lê Lợi', 0, N'billing', 0);
+
+-- Categories
+INSERT INTO Categories (parent_id, name, description, image, status, display_order, created_at, is_deleted)
+VALUES 
+    (NULL, N'Cá nước ngọt', N'Các loài cá sống ở môi trường nước ngọt', N'/images/cat_freshwater.jpg', N'active', 1, '2025-05-01 08:00:00', 0),
+    (1, N'Cá Betta', N'Cá Betta đẹp, dễ nuôi', N'/images/cat_betta.jpg', N'active', 2, '2025-05-01 08:10:00', 0),
+    (NULL, N'Cá nước mặn', N'Các loài cá sống ở môi trường nước mặn', N'/images/cat_saltwater.jpg', N'active', 3, '2025-05-01 08:20:00', 1);
+
+-- Products
+INSERT INTO Products (category_id, name, description, short_description, price, sale_price, quantity, sku, status, featured, created_at, is_deleted)
+VALUES 
+    (2, N'Cá Betta Halfmoon', N'Cá Betta đuôi Halfmoon màu xanh tuyệt đẹp', N'Cá Betta Halfmoon xanh', 150000.00, 120000.00, 50, N'BETTA_HM_001', N'active', 1, '2025-05-02 09:00:00', 0),
+    (2, N'Cá Betta Crowntail', N'Cá Betta đuôi Crowntail màu đỏ rực rỡ', N'Cá Betta Crowntail đỏ', 100000.00, NULL, 30, N'BETTA_CT_002', N'active', 0, '2025-05-02 09:30:00', 0),
+    (1, N'Cá Koi', N'Cá Koi Nhật Bản, kích thước lớn', N'Cá Koi Nhật Bản', 500000.00, NULL, 10, N'KOI_003', N'out_of_stock', 0, '2025-05-02 10:00:00', 0);
+
+-- Product_details
+INSERT INTO Product_details (product_id, scientific_name, common_name, origin, size, lifespan, water_type, water_temperature, water_ph, diet, breeding_difficulty, care_level, compatibility, is_deleted)
+VALUES 
+    (1, N'Betta splendens', N'Cá Betta Halfmoon', N'Thái Lan', N'5-7 cm', N'2-4 năm', N'freshwater', N'24-28°C', N'6.5-7.5', N'Thức ăn viên, giun, artemia', N'moderate', N'easy', N'Không nuôi chung với cá khác', 0),
+    (2, N'Betta splendens', N'Cá Betta Crowntail', N'Thái Lan', N'5-7 cm', N'2-4 năm', N'freshwater', N'24-28°C', N'6.5-7.5', N'Thức ăn viên, giun', N'moderate', N'easy', N'Không nuôi chung với cá khác', 0),
+    (3, N'Cyprinus carpio', N'Cá Koi', N'Nhật Bản', N'30-50 cm', N'25-35 năm', N'freshwater', N'20-24°C', N'7.0-7.5', N'Thức ăn viên, thực vật', N'difficult', N'moderate', N'Hòa thuận với cá lớn', 0);
+
+-- Product_images
+INSERT INTO Product_images (product_id, image_url, is_main, display_order, is_deleted)
+VALUES 
+    (1, N'/images/betta_halfmoon_1.jpg', 1, 1, 0),
+    (1, N'/images/betta_halfmoon_2.jpg', 0, 2, 0),
+    (2, N'/images/betta_crowntail_1.jpg', 1, 1, 0),
+    (3, N'/images/koi_1.jpg', 1, 1, 0);
+
+-- Product_attributes
+INSERT INTO Product_attributes (name)
+VALUES 
+    (N'Màu sắc'),
+    (N'Kích thước');
+
+-- Product_attribute_values
+INSERT INTO Product_attribute_values (product_id, attribute_id, value, is_deleted)
+VALUES 
+    (1, 1, N'Xanh dương', 0),
+    (1, 2, N'6 cm', 0),
+    (2, 1, N'Đỏ', 0),
+    (3, 1, N'Trắng-Đỏ', 0);
+
+-- Carts
+INSERT INTO Carts (user_id, created_at)
+VALUES 
+    (2, '2025-05-15 10:00:00');
+
+-- Cart_items
+INSERT INTO Cart_items (cart_id, product_id, quantity, added_at)
+VALUES 
+    (1, 1, 2, '2025-05-15 10:05:00'),
+    (1, 2, 1, '2025-05-15 10:10:00');
+
+-- Orders
+INSERT INTO Orders (user_id, order_number, status, total_amount, discount_amount, shipping_fee, tax, final_amount, payment_method, payment_status, shipping_address_id, billing_address_id, notes, created_at, is_deleted)
+VALUES 
+    (2, N'ORD001', N'delivered', 340000.00, 24000.00, 30000.00, 0.00, 346000.00, N'cod', N'paid', 1, 2, N'Giao trong ngày', '2025-05-10 14:00:00', 0),
+    (2, N'ORD002', N'cancelled', 100000.00, 0.00, 30000.00, 0.00, 130000.00, N'bank_transfer', N'failed', 1, 2, NULL, '2025-05-12 16:00:00', 1);
+
+-- Order_items
+INSERT INTO Order_items (order_id, product_id, product_name, quantity, unit_price, subtotal, is_deleted)
+VALUES 
+    (1, 1, N'Cá Betta Halfmoon', 2, 120000.00, 240000.00, 0),
+    (1, 2, N'Cá Betta Crowntail', 1, 100000.00, 100000.00, 0),
+    (2, 2, N'Cá Betta Crowntail', 1, 100000.00, 100000.00, 1);
+
+-- Payments
+INSERT INTO Payments (order_id, payment_method, transaction_id, amount, status, payment_date, payment_details)
+VALUES 
+    (1, N'cod', N'TXN001', 346000.00, N'completed', '2025-05-11 09:00:00', N'{"method": "cash"}'),
+    (2, N'bank_transfer', N'TXN002', 130000.00, N'failed', '2025-05-12 16:30:00', N'{"bank": "Vietcombank"}');
+
+-- Shipping
+INSERT INTO Shipping (order_id, shipping_method, shipping_carrier, tracking_number, shipping_cost, estimated_delivery, actual_delivery, status, notes)
+VALUES 
+    (1, N'Express', N'Giao Hàng Nhanh', N'GHN001', 30000.00, '2025-05-12', '2025-05-11', N'delivered', N'Giao đúng giờ'),
+    (2, N'Standard', N'Giao Hàng Tiết Kiệm', N'GHTK001', 30000.00, '2025-05-15', NULL, N'failed', N'Hủy đơn');
+
+-- Reviews
+INSERT INTO Reviews (product_id, user_id, order_id, rating, comment, review_date, status, is_verified_purchase, is_deleted)
+VALUES 
+    (1, 2, 1, 5, N'Cá Betta rất đẹp, giao hàng nhanh!', '2025-05-12 10:00:00', N'approved', 1, 0),
+    (2, 2, 1, 4, N'Cá khỏe, nhưng màu không rực như hình', '2025-05-12 10:05:00', N'pending', 1, 0);
+
+-- Review_images
+INSERT INTO Review_images (review_id, image_url, is_deleted)
+VALUES 
+    (1, N'/images/review_betta_1.jpg', 0);
+
+-- Promotions
+INSERT INTO Promotions (name, description, discount_type, discount_value, minimum_order, start_date, end_date, status, created_at, is_deleted)
+VALUES 
+    (N'Giảm giá Cá Betta', N'Giảm 10% cho tất cả Cá Betta', N'percentage', 10.00, 100000.00, '2025-05-01 00:00:00', '2025-05-31 23:59:59', N'active', '2025-04-30 09:00:00', 0),
+    (N'Khuyến mãi Tết', N'Giảm 50K cho đơn trên 500K', N'fixed_amount', 50000.00, 500000.00, '2025-01-01 00:00:00', '2025-02-28 23:59:59', N'expired', '2024-12-25 09:00:00', 1);
+
+-- Promotion_products
+INSERT INTO Promotion_products (promotion_id, product_id, is_deleted)
+VALUES 
+    (1, 1, 0),
+    (1, 2, 0);
+
+-- Coupons
+INSERT INTO Coupons (code, description, discount_type, discount_value, minimum_order, maximum_discount, usage_limit, usage_count, start_date, end_date, status, created_at, is_deleted)
+VALUES 
+    (N'BETTA20', N'Giảm 20% cho Cá Betta', N'percentage', 20.00, 100000.00, 50000.00, 100, 10, '2025-05-01 00:00:00', '2025-05-31 23:59:59', N'active', '2025-04-30 10:00:00', 0),
+    (N'FIRST50', N'Giảm 50K cho đơn đầu tiên', N'fixed_amount', 50000.00, 200000.00, 50000.00, 50, 0, '2025-05-01 00:00:00', '2025-06-30 23:59:59', N'active', '2025-04-30 10:30:00', 0);
+
+-- Coupon_products
+INSERT INTO Coupon_products (coupon_id, product_id, is_deleted)
+VALUES 
+    (1, 1, 0),
+    (1, 2, 0);
+
+-- Coupon_usage
+INSERT INTO Coupon_usage (coupon_id, user_id, order_id, discount_amount, used_at, is_deleted)
+VALUES 
+    (1, 2, 1, 24000.00, '2025-05-10 14:05:00', 0);
+
+-- Inventory_logs
+INSERT INTO Inventory_logs (product_id, quantity_before, quantity_after, change_type, reason, reference_id, reference_type, created_at)
+VALUES 
+    (1, 50, 48, N'decrease', N'Bán hàng (đơn ORD001)', 1, N'order', '2025-05-10 14:10:00'),
+    (2, 30, 29, N'decrease', N'Bán hàng (đơn ORD001)', 1, N'order', '2025-05-10 14:15:00'),
+    (1, 48, 60, N'increase', N'Nhập kho mới', NULL, N'import', '2025-05-15 09:00:00');
+
+-- Wishlist
+INSERT INTO Wishlist (user_id, product_id, added_at, is_deleted)
+VALUES 
+    (2, 1, '2025-05-14 11:00:00', 0),
+    (2, 3, '2025-05-14 11:05:00', 0);Mối quan hệ giữa các bảng:
+•	User - Address: Một người dùng có thể có nhiều địa chỉ (1:n)
+•	Category - Product: Một danh mục có thể chứa nhiều sản phẩm, một sản phẩm thuộc một danh mục (1:n)
+•	Product - Product_details: Một sản phẩm có một chi tiết sản phẩm (1:1)
+•	Product - Product_images: Một sản phẩm có thể có nhiều hình ảnh (1:n)
+•	Product - Product_attribute_values: Một sản phẩm có thể có nhiều giá trị thuộc tính (1:n)
+•	User - Cart: Một người dùng có một giỏ hàng (1:1)
+•	Cart - Cart_items: Một giỏ hàng có thể chứa nhiều mục (1:n)
+•	User - Order: Một người dùng có thể có nhiều đơn hàng (1:n)
+•	Order - Order_items: Một đơn hàng có thể chứa nhiều mục (1:n)
+•	Order - Payment: Một đơn hàng có một hoặc nhiều thanh toán (1:n)
+•	Order - Shipping: Một đơn hàng có một thông tin vận chuyển (1:1)
+•	User - Review: Một người dùng có thể viết nhiều đánh giá (1:n)
+•	Product - Review: Một sản phẩm có thể có nhiều đánh giá (1:n)
+•	Review - Review_images: Một đánh giá có thể có nhiều hình ảnh (1:n)
+
+
+
+
+
+
