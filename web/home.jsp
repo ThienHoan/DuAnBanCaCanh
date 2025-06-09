@@ -35,7 +35,7 @@
 
     <!-- HEADER -->
     <header id="header" class="header-area style-01 layout-04">
-        <div class="header-top bg-main hidden-xs">
+        <div class="header-top bg-main hidden-xs" style="background-color: #29B9C4;">
             <div class="container">
                 <div class="top-bar left">
                     <ul class="horizontal-menu">
@@ -498,7 +498,7 @@
                     <div class="col-lg-3 col-md-4 hidden-sm hidden-xs">
                         <div class="biolife-vertical-menu none-box-shadow  ">
                             <div class="vertical-menu vertical-category-block always ">
-                                <div class="block-title">
+                                <div class="block-title" style="background-color: #29B9C4;">
                                     <span class="menu-icon">
                                         <span class="line-1"></span>
                                         <span class="line-2"></span>
@@ -770,12 +770,12 @@
                                     <div class="slide-contain slider-opt04__layout01">
                                         <div class="media"></div>
                                         <div class="text-content">
-                                            <i class="first-line">Pomegranate</i>
-                                            <h3 class="second-line">Fresh Juice 100% Organic</h3>
-                                            <p class="third-line">A blend of freshly squeezed green apple & fruits</p>
-                                            <p class="buttons">
-                                                <a href="#" class="btn btn-bold">Shop now</a>
-                                                <a href="#" class="btn btn-thin">View lookbook</a>
+                                            <i class="first-line" style="color: #99959C;">Fish shop</i>
+                                            <h3 class="second-line" style="color: #99959C;">Colorful & Healthy Aquarium Fish</h3>
+                                            <p class="third-line" style="color: #99959C;">A perfect choice for home & office decoration</p>
+                                            <p class="buttons" style="color: #99959C;">
+                                                <a href="#" class="btn btn-bold" style="background-color: #99959C;">Shop now</a>
+                                                <a href="#" class="btn btn-thin" style="background-color: #99959C;">View lookbook</a>
                                             </p>
                                         </div>
                                     </div>
@@ -2937,13 +2937,7 @@
                         <li><img src="assets/images/details-product/detail_07.jpg" alt="" width="500" height="500"></li>
                     </ul>
                     <ul class="biolife-carousel quickview-nav" data-slick='{"arrows":true,"dots":false,"centerMode":false,"focusOnSelect":true,"slidesMargin":10,"slidesToShow":3,"slidesToScroll":1,"asNavFor":".quickview-for"}'>
-                        <li><img src="assets/images/details-product/thumb_01.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_02.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_03.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_04.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_05.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_06.jpg" alt="" width="88" height="88"></li>
-                        <li><img src="assets/images/details-product/thumb_07.jpg" alt="" width="88" height="88"></li>
+                       
                     </ul>
                 </div>
                 <div class="product-attribute">

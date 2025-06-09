@@ -6992,7 +6992,7 @@ body.open-overlay #overlay{
 }
 .slider-opt04__layout01 .media{
     z-index: 10;
-    background-image: url('../images/home-04/main_slide.jpg');
+    background-image: url('images/betta_halfmoon_1');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
