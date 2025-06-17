@@ -1,13 +1,13 @@
 services:
-  # PostgreSQL Database - Free tier cho demo
+  # PostgreSQL Database
   - type: pserv
     name: fishshop-db
     plan: free
     
-  # Java Web Application - Demo version
+  # Java Web Application
   - type: web
     name: fishshop-demo
-    env: docker
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
@@ -23,10 +23,10 @@ services:
       - key: APP_DEBUG
         value: "true"
         
-      # OAuth cho demo (sẽ update URL sau)
+      # OAuth cho demo
       - key: GOOGLE_CLIENT_ID
         value: 338086073257-7bnq7vac6tvg8r7um3494488f2fvd10k.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET  
         value: 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
       - key: GOOGLE_REDIRECT_URI
-        value: http://localhost:8080/googlecallback
+        value: https://fishshop-demo.onrender.com/googlecallback
