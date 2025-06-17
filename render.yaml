@@ -1,9 +1,8 @@
 services:
-  # Database service - PostgreSQL (thay thế cho SQL Server)
+  # Database service - PostgreSQL
   - type: pserv
     name: fishshop-db
     env: docker
-    dockerfilePath: ./docker/Dockerfile.postgres
     plan: free
     databases:
       - name: fishshopp
@@ -14,20 +13,12 @@ services:
       - key: POSTGRES_USER
         value: fishshop_user
       - key: POSTGRES_PASSWORD
-        generateValue: true
-        
+        generateValue: true        
   # Web service - Java Web Application  
   - type: web
     name: fishshop-web
-    env: java
-    buildCommand: |
-      # Install dependencies and build project
-      chmod +x ./scripts/build.sh
-      ./scripts/build.sh
-    startCommand: |
-      # Start Tomcat server
-      chmod +x ./scripts/start.sh
-      ./scripts/start.sh
+    env: docker
+    dockerfilePath: ./Dockerfile
     plan: free
     healthCheckPath: /
     envVars:

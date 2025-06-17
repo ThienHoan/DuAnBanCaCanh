@@ -4,7 +4,6 @@ FROM openjdk:11-jdk-slim
 RUN apt-get update && apt-get install -y \
     ant \
     wget \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -13,30 +12,32 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
-# Set environment variables
-ENV JAVA_HOME=/usr/local/openjdk-11
-ENV CATALINA_HOME=/opt/tomcat
-ENV CATALINA_BASE=/opt/tomcat
-
 # Download and install Tomcat
-RUN wget https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.15/bin/apache-tomcat-10.1.15.tar.gz \
+RUN wget -q https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.15/bin/apache-tomcat-10.1.15.tar.gz \
     && tar -xzf apache-tomcat-10.1.15.tar.gz \
     && mv apache-tomcat-10.1.15 /opt/tomcat \
-    && rm apache-tomcat-10.1.15.tar.gz \
-    && chmod +x /opt/tomcat/bin/*.sh
-
-# Make scripts executable
-RUN chmod +x ./scripts/*.sh
+    && rm apache-tomcat-10.1.15.tar.gz
 
 # Build the application
-RUN ./scripts/build.sh
+RUN ant clean compile dist
 
-# Expose port
-EXPOSE 8080
+# Copy built app to Tomcat
+RUN cp -r build/web/* /opt/tomcat/webapps/ROOT/
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/ || exit 1
+# Set permissions
+RUN chmod +x /opt/tomcat/bin/*.sh
+
+# Expose port (Render uses PORT env var)
+EXPOSE $PORT
+
+# Simple start script for demo
+RUN echo '#!/bin/bash\n\
+export CATALINA_HOME=/opt/tomcat\n\
+export JAVA_HOME=/usr/local/openjdk-11\n\
+export PORT=${PORT:-8080}\n\
+sed -i "s/port=\"8080\"/port=\"$PORT\"/g" /opt/tomcat/conf/server.xml\n\
+exec /opt/tomcat/bin/catalina.sh run' > /app/start.sh \
+    && chmod +x /app/start.sh
 
 # Start the application
-CMD ["./scripts/start.sh"]
+CMD ["/app/start.sh"]
