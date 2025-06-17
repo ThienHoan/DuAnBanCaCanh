@@ -112,6 +112,7 @@ public class ProductAttributeDAO {
     }
     
     
+    
     private ProductAttribute createProductAttributeFromResultSet(ResultSet rs) throws SQLException {
         ProductAttribute productAttribute = new ProductAttribute();
         productAttribute.setAttributeId(rs.getInt("attribute_id"));

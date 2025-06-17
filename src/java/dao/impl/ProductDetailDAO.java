@@ -158,7 +158,7 @@ public class ProductDetailDAO {
         String query = "UPDATE Product_details SET product_id = ?, scientific_name = ?, common_name = ?, " +
                       "origin = ?, size = ?, lifespan = ?, water_type = ?, water_temperature = ?, " +
                       "water_ph = ?, diet = ?, breeding_difficulty = ?, care_level = ?, compatibility = ? " +
-                      "WHERE product_detail_id = ? AND is_deleted = 0";
+                      "WHERE product_detail_id = ?";
         try {
             conn = Db.getConnection();
             ps = conn.prepareStatement(query);
