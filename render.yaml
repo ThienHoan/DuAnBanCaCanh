@@ -7,7 +7,7 @@ services:
   # Java Web Application
   - type: web
     name: fishshop-demo
-    env: docker
+    runtime: docker
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
