@@ -27,17 +27,18 @@ RUN cp -r build/web/* /opt/tomcat/webapps/ROOT/
 # Set permissions
 RUN chmod +x /opt/tomcat/bin/*.sh
 
-# Expose port (Render uses PORT env var)
+# Expose port for Render
 EXPOSE $PORT
 
-# Simple start script for demo
+# Create start script for Render
 RUN echo '#!/bin/bash\n\
 export CATALINA_HOME=/opt/tomcat\n\
 export JAVA_HOME=/usr/local/openjdk-11\n\
-export PORT=${PORT:-8080}\n\
+export PORT=${PORT:-10000}\n\
+echo "Starting Tomcat on port $PORT"\n\
 sed -i "s/port=\"8080\"/port=\"$PORT\"/g" /opt/tomcat/conf/server.xml\n\
-exec /opt/tomcat/bin/catalina.sh run' > /app/start.sh \
-    && chmod +x /app/start.sh
+exec /opt/tomcat/bin/catalina.sh run' > /app/start-render.sh \
+    && chmod +x /app/start-render.sh
 
 # Start the application
-CMD ["/app/start.sh"]
+CMD ["/app/start-render.sh"]

@@ -2,31 +2,52 @@ services:
   # PostgreSQL Database
   - type: pserv
     name: fishshop-db
+    databaseName: fishshop
+    user: postgres
     plan: free
     
   # Java Web Application
   - type: web
     name: fishshop-demo
-    runtime: docker
-    plan: free
+    env: docker
     dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: false
     envVars:
       # Database connection
       - key: DATABASE_URL
         fromDatabase:
           name: fishshop-db
           property: connectionString
+      - key: DB_HOST
+        fromDatabase:
+          name: fishshop-db
+          property: host
+      - key: DB_PORT  
+        fromDatabase:
+          name: fishshop-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: fishshop-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: fishshop-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: fishshop-db
+          property: password
           
-      # Demo settings
+      # App settings
+      - key: PORT
+        value: 10000
       - key: APP_ENV
         value: demo
-      - key: APP_DEBUG
-        value: "true"
         
-      # OAuth cho demo
+      # Google OAuth (tạm thời dùng localhost, sẽ update sau)
       - key: GOOGLE_CLIENT_ID
         value: 338086073257-7bnq7vac6tvg8r7um3494488f2fvd10k.apps.googleusercontent.com
       - key: GOOGLE_CLIENT_SECRET  
         value: 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
-      - key: GOOGLE_REDIRECT_URI
-        value: https://fishshop-demo.onrender.com/googlecallback
