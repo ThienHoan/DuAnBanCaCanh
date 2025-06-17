@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Testing Fundamentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-link.active { color: #14b8a6; font-weight: 700; }
+        .principle-btn.active { background-color: #0d9488; color: white; }
+        .process-step.active .process-dot { background-color: #14b8a6; transform: scale(1.25); }
+        .process-step.active .process-title { color: #0d9488; font-weight: 700; }
+        .fade-in { animation: fadeIn 0.7s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-slate-900 tracking-wide">Testing Fundamentals</a>
+            <div class="hidden md:flex space-x-6 text-base">
+                <a href="#what" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">What is Testing?</a>
+                <a href="#why" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Why Test?</a>
+                <a href="#principles" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">7 Principles</a>
+                <a href="#process" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Test Process</a>
+                <a href="#psychology" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Psychology</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-slate-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-2 bg-white">
+             <a href="#what" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">What is Testing?</a>
+             <a href="#why" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Why Test?</a>
+             <a href="#principles" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">7 Principles</a>
+             <a href="#process" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Test Process</a>
+             <a href="#psychology" class="nav-link text-slate-600 hover:text-teal-600 transition-colors">Psychology</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- 1. What is Testing? -->
+        <section id="what" class="mb-20 scroll-mt-20 fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-slate-900">What is Testing?</h2>
+            <p class="text-center text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                <span class="inline-block p-2 bg-teal-50 rounded-xl mb-2">
+                Software testing is the process of evaluating and verifying that a software product or application does what it is supposed to do. The purpose isn't just to find bugs, but to ensure quality, reliability, and that user needs are truly met.
+                </span>
+            </p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1">
+                    <div class="text-5xl mb-3">🎯</div>
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Definition</h3>
+                    <p class="text-slate-600">Executing software with the intent of finding errors and confirming it works as expected.</p>
+                    <hr class="my-4 border-t border-dashed">
+                    <span class="text-xs text-slate-400">E.g. Running test cases, simulations, exploratory tests.</span>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1">
+                    <div class="text-5xl mb-3">✅</div>
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Purpose</h3>
+                    <p class="text-slate-600">To check that requirements are satisfied, to validate user expectations, and to provide actionable information about product quality.</p>
+                    <hr class="my-4 border-t border-dashed">
+                    <span class="text-xs text-slate-400">E.g. Do all features work? Is the UI intuitive? Is data secure?</span>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1">
+                    <div class="text-5xl mb-3">🤝</div>
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Beyond Bugs</h3>
+                    <p class="text-slate-600">Testing also builds trust, boosts user confidence, and verifies suitability for the intended use— not just defect detection.</p>
+                    <hr class="my-4 border-t border-dashed">
+                    <span class="text-xs text-slate-400">E.g. Stress testing, performance, usability, security.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Why is Testing Necessary? -->
+        <section id="why" class="mb-20 scroll-mt-20 fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-slate-900">Why is Testing Necessary?</h2>
+            <p class="text-center text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                Software failures can have financial, legal, and reputational consequences. Testing minimizes these risks by catching problems early and ensuring a better user experience.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">🧠 Human Error</h3>
+                    <p class="text-slate-600">Even skilled developers make mistakes. Testing acts as a safety net to catch overlooked defects before users do.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>Typos, misinterpretation of specs</li>
+                        <li>Missed edge cases</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">🕸️ Complexity</h3>
+                    <p class="text-slate-600">Modern applications have many components and integrations. The more complex, the more chances for errors to slip through.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>API, databases, multi-device</li>
+                        <li>Legacy & new code together</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">💰 Cost of Failure</h3>
+                    <p class="text-slate-600">A bug in production costs far more to fix than in development. Early testing reduces expensive, late-stage issues.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>Fix cost rises exponentially</li>
+                        <li>Potential business impact</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">🛡️ Risk Mitigation</h3>
+                    <p class="text-slate-600">Testing helps prevent critical issues like data loss, security breaches, and system downtime.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>Security, privacy concerns</li>
+                        <li>Protect brand reputation</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">🌟 Quality Assurance</h3>
+                    <p class="text-slate-600">Ensures your product is robust, reliable, and user-friendly, fostering trust with customers and stakeholders.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>Consistent experience</li>
+                        <li>Meets user needs</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl hover:scale-105 transition text-center">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-2">⚖️ Legal Requirements</h3>
+                    <p class="text-slate-600">Many industries have compliance standards. Testing is essential to demonstrate conformity to regulations and contracts.</p>
+                    <ul class="text-xs text-left mt-3 text-slate-500 list-disc list-inside">
+                        <li>GDPR, HIPAA, ISO 9001...</li>
+                        <li>Contractual obligations</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Seven Testing Principles -->
+        <section id="principles" class="mb-20 scroll-mt-20 fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-slate-900">The Seven Principles of Testing</h2>
+            <p class="text-center text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                These core principles guide every effective testing strategy. Click each tab to explore real-world meaning and practical impact.
+            </p>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div id="principle-buttons" class="flex md:flex-col md:w-1/3 overflow-x-auto pb-2"></div>
+                    <div class="md:w-2/3">
+                        <div id="principle-content" class="min-h-[110px]"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. The Test Process -->
+        <section id="process" class="mb-20 scroll-mt-20 fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-slate-900">The Fundamental Test Process</h2>
+            <p class="text-center text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                Testing is not a one-off task, but a cycle of steps that ensures software quality at every stage. Click each stage for details and best practices.
+            </p>
+            <div id="process-timeline" class="relative max-w-2xl mx-auto"></div>
+        </section>
+
+        <!-- 5. The Psychology of Testing -->
+        <section id="psychology" class="scroll-mt-20 fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-4 text-slate-900">The Psychology of Testing</h2>
+            <p class="text-center text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                Good testers blend technical skills with empathy, communication, and teamwork. Psychology impacts every bug report and every project outcome.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Constructive vs. Destructive Mindset</h3>
+                    <p class="text-slate-600">A tester’s goal is to help the team deliver higher quality software, not to “break” the system or blame others. Testing is about partnership and improvement.</p>
+                    <hr class="my-3 border-t border-dashed">
+                    <span class="text-xs text-slate-400">Feedback should be actionable, not personal.</span>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Independence of Testing</h3>
+                    <p class="text-slate-600">Independent testers often spot issues missed by developers, who may be too close to their own work. Objectivity is key.</p>
+                    <hr class="my-3 border-t border-dashed">
+                    <span class="text-xs text-slate-400">Peer reviews, dedicated QA teams are valuable.</span>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Communication & Collaboration</h3>
+                    <p class="text-slate-600">Clear, respectful reporting of bugs and risks helps teams prioritize and solve problems together, not in isolation.</p>
+                    <hr class="my-3 border-t border-dashed">
+                    <span class="text-xs text-slate-400">Fact-based, solution-focused dialogue.</span>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                    <h3 class="text-2xl font-semibold mb-2 text-teal-700">Empathy & Reporting</h3>
+                    <p class="text-slate-600">Empathy helps testers understand developer perspective and user needs, leading to better bug reports and better products.</p>
+                    <hr class="my-3 border-t border-dashed">
+                    <span class="text-xs text-slate-400">Describe the impact, not assign blame.</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-slate-400">
+            <p>Interactive Guide to Testing Fundamentals &copy; 2025 | Built with Tailwind CSS & Vanilla JS</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Principles - chi tiết & ví dụ thực tiễn
+        const principles = [
+            { 
+                title: '1. Testing shows presence of defects',
+                content: `<b>Testing finds bugs, but never proves the absence of them.</b><br>
+                <i>Example:</i> Running hundreds of tests may not find an issue, but it doesn’t guarantee perfection. “Absence of evidence is not evidence of absence.”`
+            },
+            { 
+                title: '2. Exhaustive testing is impossible',
+                content: `<b>Testing every input, path, and combination is unfeasible.</b><br>
+                <i>Example:</i> A login form with 5 fields can have millions of input combinations. Instead, focus on the riskiest and most common scenarios.`
+            },
+            { 
+                title: '3. Early testing saves time and money',
+                content: `<b>Start testing as soon as possible.</b><br>
+                <i>Example:</i> Reviewing requirements and code early catches misunderstandings and bugs before they become expensive to fix in later stages.`
+            },
+            { 
+                title: '4. Defect clustering',
+                content: `<b>Most defects are concentrated in a few areas.</b><br>
+                <i>Example:</i> Often, 80% of bugs are found in 20% of modules. Target testing efforts at complex or recently changed code.`
+            },
+            { 
+                title: '5. The pesticide paradox',
+                content: `<b>Repeating the same tests eventually stops finding new bugs.</b><br>
+                <i>Example:</i> If you never update your regression tests, you’ll stop discovering new issues. Refresh your test cases often!`
+            },
+            { 
+                title: '6. Testing is context dependent',
+                content: `<b>How you test changes with the project.</b><br>
+                <i>Example:</i> Medical software demands stricter testing than a prototype app. Adjust test types and depth to suit the situation.`
+            },
+            { 
+                title: '7. Absence-of-errors fallacy',
+                content: `<b>No bugs doesn’t mean the software is useful.</b><br>
+                <i>Example:</i> A perfectly coded app that doesn’t solve real user needs is still a failure. Testing should include validating the actual requirements and user experience.`
+            }
+        ];
+
+        const processes = [
+            { title: '1. Test Planning', content: `<b>Define the strategy for testing.</b><br>
+                Set scope, objectives, required resources, risks, test environment, timeline, and deliverables.<br>
+                <i>Tip:</i> Planning prevents wasted effort and missed goals.` },
+            { title: '2. Test Monitoring & Control', content: `<b>Track progress and adapt as needed.</b><br>
+                Measure test execution vs. plan, report issues, and adjust schedules or scope if needed.<br>
+                <i>Tip:</i> Use test metrics (e.g., defect density, test coverage) for insights.` },
+            { title: '3. Test Analysis', content: `<b>Figure out <u>what</u> to test.</b><br>
+                Review requirements, specs, and risks to derive test conditions.<br>
+                <i>Tip:</i> Involve all stakeholders to cover real-world scenarios.` },
+            { title: '4. Test Design', content: `<b>Create test cases & prioritize them.</b><br>
+                Convert conditions into clear, prioritized cases and identify needed test data.<br>
+                <i>Tip:</i> Consider boundary, negative, and “happy path” tests.` },
+            { title: '5. Test Implementation', content: `<b>Prepare everything for execution.</b><br>
+                Write scripts, arrange environments, organize test suites, and double-check test data.<br>
+                <i>Tip:</i> Automate repetitive tasks where possible.` },
+            { title: '6. Test Execution', content: `<b>Run the tests, log the outcomes.</b><br>
+                Execute cases, record results, report and track bugs.<br>
+                <i>Tip:</i> Re-test after fixes; regression test related areas.` },
+            { title: '7. Test Completion', content: `<b>Wrap up and learn from results.</b><br>
+                Summarize findings, document lessons learned, and archive testware.<br>
+                <i>Tip:</i> Retrospectives help improve future projects.` }
+        ];
+
+        // Principles Tabbed Interface
+        const principleButtonsContainer = document.getElementById('principle-buttons');
+        const principleContentContainer = document.getElementById('principle-content');
+        principles.forEach((p, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'principle-btn text-left p-3 mb-2 rounded-md font-medium text-slate-700 hover:bg-teal-100 transition-colors whitespace-nowrap mr-2 md:mr-0 shadow-sm';
+            btn.innerHTML = p.title;
+            btn.dataset.index = index;
+            principleButtonsContainer.appendChild(btn);
+        });
+
+        function showPrinciple(index) {
+            const activePrinciple = principles[index];
+            principleContentContainer.innerHTML = `<div class="text-slate-700 text-lg fade-in">${activePrinciple.content}</div>`;
+            document.querySelectorAll('.principle-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.index == index) btn.classList.add('active');
+            });
+        }
+
+        principleButtonsContainer.addEventListener('click', e => {
+            if (e.target.closest('.principle-btn')) {
+                showPrinciple(e.target.closest('.principle-btn').dataset.index);
+            }
+        });
+        showPrinciple(0); // Show first principle initially
+
+        // Test Process Timeline
+        const timelineContainer = document.getElementById('process-timeline');
+        processes.forEach((p, index) => {
+            const item = document.createElement('div');
+            item.className = 'process-step relative pl-8 pb-8 cursor-pointer fade-in';
+            item.dataset.index = index;
+            item.innerHTML = `
+                <div class="process-dot absolute w-3 h-3 bg-gray-300 rounded-full mt-1.5 -left-1.5 border-2 border-white transition-all duration-300"></div>
+                <h4 class="process-title text-xl font-semibold text-slate-800 transition-colors">${p.title}</h4>
+                <div class="process-content hidden mt-2 text-slate-700 text-base leading-relaxed">
+                    <p>${p.content}</p>
+                </div>
+            `;
+            timelineContainer.appendChild(item);
+        });
+
+        let activeStep = -1;
+        timelineContainer.addEventListener('click', e => {
+            const step = e.target.closest('.process-step');
+            if (step) {
+                const index = parseInt(step.dataset.index);
+                if (activeStep === index) {
+                    step.classList.remove('active');
+                    step.querySelector('.process-content').classList.add('hidden');
+                    activeStep = -1;
+                } else {
+                    if (activeStep !== -1) {
+                        const oldActiveStep = timelineContainer.querySelector(`.process-step[data-index='${activeStep}']`);
+                        if (oldActiveStep) {
+                            oldActiveStep.classList.remove('active');
+                            oldActiveStep.querySelector('.process-content').classList.add('hidden');
+                        }
+                    }
+                    step.classList.add('active');
+                    step.querySelector('.process-content').classList.remove('hidden');
+                    activeStep = index;
+                }
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+
+        // Active nav link highlighting on scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) link.classList.add('active');
+                    });
+                }
+            });
+        }, { rootMargin: '-30% 0px -70% 0px' });
+        sections.forEach(section => observer.observe(section));
+    });
+    </script>
+</body>
+</html>

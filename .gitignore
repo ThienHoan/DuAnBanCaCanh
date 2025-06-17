@@ -3,3 +3,36 @@
 /nbproject/private/
 /build/
 /dist/
+
+# Configuration files with sensitive data
+src/java/config.properties
+src/java/oauth.properties
+*.properties
+!*.properties.example
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Log files
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# API Keys and secrets
+api-keys.txt
+secrets.txt
