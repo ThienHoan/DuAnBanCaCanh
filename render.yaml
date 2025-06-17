@@ -3,28 +3,33 @@ services:
   - type: pserv
     name: fishshop-db
     plan: free
-    
-  # Java Web Application
+
+  # Java Web Application chạy WAR (JSP)
   - type: web
     name: fishshop-demo
-    runtime: docker
-    dockerfilePath: ./Dockerfile
+    runtime: java
     plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: |
+      wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz && \
+      tar xzf apache-tomcat-9.0.85.tar.gz && \
+      cp target/*.war apache-tomcat-9.0.85/webapps/ROOT.war && \
+      apache-tomcat-9.0.85/bin/catalina.sh run
     envVars:
       # Database connection
       - key: DATABASE_URL
         fromDatabase:
           name: fishshop-db
           property: connectionString
-          
+
       # App settings
       - key: PORT
         value: 10000
       - key: APP_ENV
         value: demo
-        
+
       # Google OAuth
       - key: GOOGLE_CLIENT_ID
         value: 338086073257-7bnq7vac6tvg8r7um3494488f2fvd10k.apps.googleusercontent.com
-      - key: GOOGLE_CLIENT_SECRET  
+      - key: GOOGLE_CLIENT_SECRET
         value: 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
