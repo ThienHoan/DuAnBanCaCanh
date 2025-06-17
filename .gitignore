@@ -2,7 +2,7 @@
 /DuAnCaCanh/nbproject/private/
 /nbproject/private/
 /build/
-/dist/
+#/dist/
 
 # Configuration files with sensitive data
 src/java/config.properties
