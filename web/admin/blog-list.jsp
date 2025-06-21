@@ -9,12 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Blog - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">    <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
         .status-badge {
             font-size: 0.875rem;
         }
@@ -77,46 +73,12 @@
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid">        <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h4 class="text-white mb-4"><i class="bi bi-speedometer2"></i> Admin Panel</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin-dashboard">
-                                <i class="bi bi-house"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-users.jsp">
-                                <i class="bi bi-people"></i> Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-products.jsp">
-                                <i class="bi bi-box"></i> Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-orders.jsp">
-                                <i class="bi bi-cart"></i> Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white active" href="${pageContext.request.contextPath}/admin-blog">
-                                <i class="bi bi-journal-text"></i> Blog Management
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/home">
-                                <i class="bi bi-arrow-left"></i> Back to Site
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <jsp:include page="includes/sidebar.jsp">
+                <jsp:param name="page" value="blog" />
+                <jsp:param name="subpage" value="list" />
+            </jsp:include>
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -127,7 +89,7 @@
                             <a href="${pageContext.request.contextPath}/admin-blog-form?action=create" class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i> Tạo bài viết mới
                             </a>
-                            <a href="${pageContext.request.contextPath}/admin-blog-categories" class="btn btn-outline-secondary">
+                            <a href="${pageContext.request.contextPath}/admin-categories" class="btn btn-outline-secondary">
                                 <i class="bi bi-tags"></i> Quản lý danh mục
                             </a>
                         </div>

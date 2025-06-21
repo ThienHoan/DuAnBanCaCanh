@@ -46,18 +46,17 @@ GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
-GO
-
-    CREATE VIEW [dbo].[v_popular_posts] AS
+GO    CREATE VIEW [dbo].[v_popular_posts] AS
     SELECT TOP 10
-        post_id,
-        title,
-        view_count,
-        published_at,
-        category
-    FROM blog_posts 
-    WHERE status = 'published' AND is_deleted = 0
-    ORDER BY view_count DESC
+        bp.post_id,
+        bp.title,
+        bp.view_count,
+        bp.published_at,
+        bc.category_name as category
+    FROM blog_posts bp
+    LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
+    WHERE bp.status = 'published' AND bp.is_deleted = 0
+    ORDER BY bp.view_count DESC
 GO
 /****** Object:  Table [dbo].[Addresses]    Script Date: 6/17/2025 4:29:28 PM ******/
 SET ANSI_NULLS ON
@@ -861,9 +860,7 @@ GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
-GO
-
-    CREATE PROCEDURE [dbo].[sp_GetPostsByCategory]
+GO    CREATE PROCEDURE [dbo].[sp_GetPostsByCategory]
         @CategoryName NVARCHAR(100),
         @PageNumber INT = 1,
         @PageSize INT = 10
@@ -874,10 +871,12 @@ GO
         SELECT 
             bp.*,
             u.username as author_name,
+            bc.category_name,
             COUNT(*) OVER() as total_count
         FROM blog_posts bp
         INNER JOIN Users u ON bp.author_id = u.user_id
-        WHERE bp.category = @CategoryName 
+        LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
+        WHERE bc.category_name = @CategoryName 
             AND bp.status = 'published' 
             AND bp.is_deleted = 0
         ORDER BY bp.published_at DESC
@@ -889,9 +888,7 @@ GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
-GO
-
-    CREATE PROCEDURE [dbo].[sp_SearchPosts]
+GO    CREATE PROCEDURE [dbo].[sp_SearchPosts]
         @Keyword NVARCHAR(255),
         @PageNumber INT = 1,
         @PageSize INT = 10
@@ -902,9 +899,11 @@ GO
         SELECT 
             bp.*,
             u.username as author_name,
+            bc.category_name,
             COUNT(*) OVER() as total_count
         FROM blog_posts bp
         INNER JOIN Users u ON bp.author_id = u.user_id
+        LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
         WHERE (bp.title LIKE '%' + @Keyword + '%' 
                OR bp.content LIKE '%' + @Keyword + '%' 
                OR bp.tags LIKE '%' + @Keyword + '%')

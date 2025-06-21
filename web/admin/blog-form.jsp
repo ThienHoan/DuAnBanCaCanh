@@ -23,12 +23,7 @@
             <!-- Fallback to self-hosted TinyMCE or show warning -->
             <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
         </c:otherwise>
-    </c:choose>
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+    </c:choose>    <style>
         .card {
             border: none;
             border-radius: 15px;
@@ -43,46 +38,12 @@
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid">        <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h4 class="text-white mb-4"><i class="bi bi-speedometer2"></i> Admin Panel</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin-dashboard">
-                                <i class="bi bi-house"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-users.jsp">
-                                <i class="bi bi-people"></i> Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-products.jsp">
-                                <i class="bi bi-box"></i> Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-orders.jsp">
-                                <i class="bi bi-cart"></i> Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white active" href="${pageContext.request.contextPath}/admin-blog">
-                                <i class="bi bi-journal-text"></i> Blog Management
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/home">
-                                <i class="bi bi-arrow-left"></i> Back to Site
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <jsp:include page="includes/sidebar.jsp">
+                <jsp:param name="page" value="blog" />
+                <jsp:param name="subpage" value="form" />
+            </jsp:include>
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -94,7 +55,7 @@
                         </c:choose>
                     </h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <a href="${pageContext.request.contextPath}/admin-blog" class="btn btn-outline-secondary">
+                        <a href="${pageContext.request.contextPath}/admin-blogs" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i> Quay lại danh sách
                         </a>
                     </div>
@@ -217,7 +178,7 @@
                                             <i class="bi bi-save"></i> Lưu nháp
                                         </button>
                                         
-                                        <a href="${pageContext.request.contextPath}/admin-blog" class="btn btn-outline-danger">
+                                        <a href="${pageContext.request.contextPath}/admin-blogs" class="btn btn-outline-danger">
                                             <i class="bi bi-x-circle"></i> Hủy
                                         </a>
                                     </div>

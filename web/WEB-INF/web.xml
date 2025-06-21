@@ -109,7 +109,51 @@
         <url-pattern>/reset-password</url-pattern>
     </servlet-mapping>
     
+    <!-- Admin User Management servlet -->
+    <servlet>
+        <servlet-name>AdminUserController</servlet-name>
+        <servlet-class>controller.admin.AdminUserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminUserController</servlet-name>
+        <url-pattern>/admin-users</url-pattern>
+    </servlet-mapping>
     
+    <!-- Admin Blog Controller servlet -->
+    <servlet>
+        <servlet-name>AdminBlogController</servlet-name>
+        <servlet-class>controller.admin.AdminBlogController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blogs</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-form</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-categories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-action</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Admin Category Controller servlet -->
+    <servlet>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <servlet-class>controller.admin.AdminCategoryController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <url-pattern>/admin-categories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <url-pattern>/admin-category-action</url-pattern>
+    </servlet-mapping>
     
     <!-- Authentication Filter -->
     <filter>
@@ -131,9 +175,81 @@
         <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
     
+    <!-- Test User servlet -->
+    <servlet>
+        <servlet-name>TestUserServlet</servlet-name>
+        <servlet-class>controller.test.TestUserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestUserServlet</servlet-name>
+        <url-pattern>/test-user</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Reset Identity servlet -->
+    <servlet>
+        <servlet-name>ResetIdentityServlet</servlet-name>
+        <servlet-class>controller.test.ResetIdentityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResetIdentityServlet</servlet-name>
+        <url-pattern>/admin/reset-identity</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Reset All Identity servlet -->
+    <servlet>
+        <servlet-name>ResetAllIdentityServlet</servlet-name>
+        <servlet-class>controller.admin.ResetAllIdentityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResetAllIdentityServlet</servlet-name>
+        <url-pattern>/admin/reset-all-identity</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test Blog Category servlet -->
+    <servlet>
+        <servlet-name>TestBlogCategoryServlet</servlet-name>
+        <servlet-class>controller.test.TestBlogCategoryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestBlogCategoryServlet</servlet-name>
+        <url-pattern>/test-blog-category</url-pattern>
+    </servlet-mapping>
+    
     <!-- Trang chủ mặc định -->
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>
+    
+    <!-- MIME type mappings cho các file đặc biệt -->
+    <mime-mapping>
+        <extension>glb</extension>
+        <mime-type>model/gltf-binary</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>gltf</extension>
+        <mime-type>model/gltf+json</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>bin</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+    
+    <!-- Error pages -->
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+    </error-page>
     
 </web-app>

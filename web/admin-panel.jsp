@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ page import="model.entity.User" %>
 
 <%
@@ -115,7 +114,7 @@
                     <div class="collapse show" id="blogMenu">
                         <ul class="nav flex-column ms-3">
                             <li class="nav-item">
-                                <a class="nav-link text-white-50" href="${pageContext.request.contextPath}/admin-blog">
+                                <a class="nav-link text-white-50" href="${pageContext.request.contextPath}/admin-blogs">
                                     <i class="bi bi-list-ul"></i> Danh sách bài viết
                                 </a>
                             </li>
@@ -134,7 +133,7 @@
                 </li>
                 
                 <li class="nav-item mb-2">
-                    <a class="nav-link text-white" href="admin-users.jsp">
+                    <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin-users">
                         <i class="bi bi-people"></i> Quản lý Users
                     </a>
                 </li>
@@ -196,7 +195,7 @@
                             <p class="card-text">Quản lý bài viết, danh mục blog và nội dung</p>
                             <div class="row">
                                 <div class="col-4">
-                                    <a href="${pageContext.request.contextPath}/admin-blog" class="btn btn-light btn-sm">
+                                    <a href="${pageContext.request.contextPath}/admin-blogs" class="btn btn-light btn-sm">
                                         <i class="bi bi-list-ul"></i><br>Bài viết
                                     </a>
                                 </div>

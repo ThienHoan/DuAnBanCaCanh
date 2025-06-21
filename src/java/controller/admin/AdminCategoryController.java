@@ -20,7 +20,6 @@ import java.util.logging.Logger;
  * Admin Category Management Controller
  * URL patterns: /admin-categories, /admin-category-action
  */
-@WebServlet(urlPatterns = {"/admin-categories", "/admin-category-action"})
 public class AdminCategoryController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminCategoryController.class.getName());
     private BlogService blogService;

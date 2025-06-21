@@ -36,3 +36,4 @@ Thumbs.db
 # API Keys and secrets
 api-keys.txt
 secrets.txt
+/dist/

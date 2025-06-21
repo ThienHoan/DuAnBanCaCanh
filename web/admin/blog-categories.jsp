@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -8,42 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý danh mục Blog - Admin Dashboard</title>
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/font-awesome.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-    
-    <style>
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
+      <style>
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        .content-header {
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .content-wrapper {
-            background: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
         .btn-action {
             margin: 2px;
         }
-        
         .modal-body .form-group {
             margin-bottom: 15px;
         }
-        
         .error-message {
             color: #dc3545;
             font-size: 14px;
@@ -77,52 +58,49 @@
         
         .status-inactive {
             color: #dc3545;
-        }
-    </style>
+        }    </style>
 </head>
 <body>
-    <div class="main-content">
-        <!-- Header -->
-        <div class="content-header">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h2 class="page-title">Quản lý danh mục Blog</h2>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin-dashboard">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/admin-blog">Blog</a></li>
-                            <li class="breadcrumb-item active">Danh mục</li>
-                        </ol>
-                    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <jsp:include page="includes/sidebar.jsp">
+                <jsp:param name="page" value="categories" />
+            </jsp:include>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Quản lý danh mục Blog</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                            <i class="bi bi-plus-circle"></i> Thêm danh mục mới
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-6 text-end">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
-                        <i class="fa fa-plus"></i> Thêm danh mục mới
                     </button>
                 </div>
             </div>
-        </div>
+        </div>                <!-- Messages -->
+                <c:if test="${not empty successMessage}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ${successMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
+                
+                <c:if test="${not empty errorMessage}">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
 
-        <!-- Content -->
-        <div class="content-wrapper">
-            <!-- Messages -->
-            <c:if test="${not empty successMessage}">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    ${successMessage}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            </c:if>
-            
-            <c:if test="${not empty errorMessage}">
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    ${errorMessage}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            </c:if>
-
-            <!-- Categories Table -->
-            <div class="table-responsive">
-                <table id="categoriesTable" class="table table-striped table-hover">
+                <!-- Categories Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="categoriesTable" class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
                             <th width="8%">ID</th>
@@ -185,12 +163,11 @@
                                     </button>
                                 </td>
                             </tr>
-                        </c:forEach>
-                    </tbody>
+                        </c:forEach>                    </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
+                        </div>
+                    </div>
+                </div>
 
     <!-- Category Modal -->
     <div class="modal fade" id="categoryModal" tabindex="-1">
@@ -455,8 +432,10 @@
             form.append($('<input>', { type: 'hidden', name: 'categoryId', value: categoryId }));
             
             $('body').append(form);
-            form.submit();
-        });
+            form.submit();        });
     </script>
+            </main>
+        </div>
+    </div>
 </body>
 </html>

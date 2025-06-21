@@ -75,4 +75,15 @@ public class PasswordEncryption {
             return false;
         }
     }
-} 
+    
+    /**
+     * Alias cho method checkPassword để tương thích
+     * 
+     * @param plainTextPassword Mật khẩu dạng văn bản thường
+     * @param hashedPassword Mật khẩu đã được mã hóa (format: salt:hashedPassword)
+     * @return true nếu mật khẩu khớp, false nếu không khớp
+     */
+    public static boolean verifyPassword(String plainTextPassword, String hashedPassword) {
+        return checkPassword(plainTextPassword, hashedPassword);
+    }
+}

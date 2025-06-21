@@ -901,7 +901,7 @@ body{
 .header-top .right .horizontal-menu>li{
     vertical-align: middle;
     min-width: 140px;
-    padding: 0 20px;
+    padding: 10px 20px;
     border-right: 1px solid rgba(255,255,255,0.33);
 }
 .header-top .right .horizontal-menu>li:first-child{
@@ -6992,7 +6992,7 @@ body.open-overlay #overlay{
 }
 .slider-opt04__layout01 .media{
     z-index: 10;
-    background-image: url('../images/home-04/main_slide.jpg');
+    background-image: url('https://w0.peakpx.com/wallpaper/547/612/HD-wallpaper-beta-fish-red-vara-fish-pesti-beta-summer-dhiky-aditya-blue-black.jpg');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -7044,7 +7044,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     animation-delay: 0.2s;
 }
 .slider-opt04__layout01 .buttons .btn.btn-bold:not(:hover){
-    background-color: #87be00;
+    background-color: #64E2F8;
 }
 .slider-opt04__layout01.light-version .buttons .btn-thin:not(:hover){
     color: #333333;
@@ -8068,7 +8068,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 .biolife-banner__promotion4{
     display: block;
     clear: both;
-    background: url('../images/home-04/banner-promotion01.jpg');
+    background: url('https://images.unsplash.com/photo-1530053969600-caed2596d242?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
     background-position: center center;
     background-size: cover;
     height: 650px;
@@ -8136,7 +8136,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     transition: all 0.3s ease;
 }
 .biolife-banner__promotion4 .buttons .btn.green-btn:not(:hover){
-    background-color: #87be00;
+    background-color: #00CAFF;
 }
 .biolife-banner__promotion4.v2{
     height: 450px;
@@ -9114,7 +9114,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     overflow: hidden;
     position: relative;
     height: 250px;
-    background-color: #c4a8d5;
+    background-color: #9FB3DF;
     background-position: top left;
     background-size: initial;
 }
@@ -9238,7 +9238,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 }
 .biolife-banner__style-14,
 .biolife-banner__style-03{
-    background-color: #f6919c;
+    background-color: #9EC6F3;
 }
 .biolife-banner__style-03 .media{
     top: 25px;
@@ -9287,7 +9287,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     left: 4px;
 }
 .biolife-banner__style-04{
-    background-color: #f6f1de;
+    background-color: #BDDDE4;
 }
 .biolife-banner__style-10 .media,
 .biolife-banner__style-04 .media{

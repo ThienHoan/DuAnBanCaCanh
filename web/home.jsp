@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 
@@ -44,7 +45,7 @@
         
         .header-top .horizontal-menu li a,
         .header-top .horizontal-menu li span {
-            color: #fff !important;
+            color: black !important;
             
         }
         
@@ -113,7 +114,7 @@
                                         <span class="line-3"></span>
                                     </span>
                                     <span class="menu-title">All departments</span>
-                                    <span class="angle" data-tgleclass="fa fa-caret-down"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                                    
                                 </div>
                                 <div class="wrap-menu">
                                     <ul class="menu clone-main-menu">
@@ -471,7 +472,7 @@
                             <div class="biolife-banner style-04 biolife-banner__style-04">
                                 <div class="banner-contain">
                                     <div class="media">
-                                        <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style04-child.png" width="135" height="206" alt=""></a>
+                                        <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style04-child.png" width="160" height="206" alt=""></a>
                                     </div>
                                     <div class="text-content">
                                         <span class="text1">Naturally fresh taste</span>
@@ -1494,7 +1495,7 @@
                         <div class="banner-contain">
                             <div class="media">
                                 <div class="img-moving position-1">
-                                    <a href="#" class="banner-link"><img src="assets/images/home-04/bn_promotion-child01.png" width="711" height="507" alt="img msv"></a>
+                                    <a href="#" class="banner-link"><img src="assets/images/home-04/bn_promotion-child01.png" width="800" height="600" alt="img msv"></a>
                                 </div>
                                 <div class="img-moving position-2">
                                     <img src="assets/images/home-04/bn_promotion-child02.png" width="155" height="145" alt="img msv">
@@ -1504,7 +1505,7 @@
                                 <b class="first-line">Special discount<br>for all fruit products</b>
                                 <div class="biolife-countdown" data-datetime="2020/01/18 00:00:00"></div>
                                 <p class="buttons">
-                                    <a href="#" class="btn btn-bold green-btn">See Offer Now!</a>
+                                    <a href="home" class="btn btn-bold green-btn">See Offer Now!</a>
                                 </p>
                             </div>
                         </div>
@@ -2120,220 +2121,104 @@
                 <div class="container">
                     <div class="biolife-title-box link-all">
                         <h3 class="main-title">Our Latest Articles</h3>
-                        <a href="#" class="blog-link">View All Articles</a>
+                        <a href="blog" class="blog-link">View All Articles</a>
                     </div>
                     <ul class="biolife-carousel nav-center xs-margin-top-33px nav-none-on-mobile" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":30,"slidesToShow":3, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 3}},{"breakpoint":992, "settings":{ "slidesToShow": 2}},{"breakpoint":768, "settings":{ "slidesToShow": 2}},{"breakpoint":600, "settings":{ "slidesToShow": 1}}]}'>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02 ">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-01.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
+    <c:choose>
+        <c:when test="${not empty headerLatestPosts}">
+            <c:forEach var="post" items="${headerLatestPosts}" varStatus="status">
+                <li>
+                    <div class="post-item style-bottom-info layout-02">
+                        <div class="thumbnail">
+                            <a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}" class="link-to-post">
+                                <c:choose>
+                                    <c:when test="${not empty post.featuredImage}">
+                                        <img src="${post.featuredImage}" width="370" height="270" alt="${post.title}">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img src="assets/images/our-blog/post-thumb-01.jpg" width="370" height="270" alt="${post.title}">
+                                    </c:otherwise>
+                                </c:choose>
+                            </a>
+                            <div class="post-date">
+                                <c:choose>
+                                    <c:when test="${not empty post.publishedAt}">
+                                        <span class="date"><fmt:formatDate value="${post.publishedAt}" pattern="dd"/></span>
+                                        <span class="month"><fmt:formatDate value="${post.publishedAt}" pattern="MMM"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="date"><fmt:formatDate value="${post.createdAt}" pattern="dd"/></span>
+                                        <span class="month"><fmt:formatDate value="${post.createdAt}" pattern="MMM"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <h4 class="post-name">
+                                <a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}" class="linktopost">
+                                    <c:choose>
+                                        <c:when test="${fn:length(post.title) > 40}">
+                                            ${fn:substring(post.title, 0, 40)}...
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${post.title}
+                                        </c:otherwise>
+                                    </c:choose>
+                                </a>
+                            </h4>
+                            <div class="post-meta">
+                                <a href="#" class="post-meta__item author">
+                                    <span>${post.authorName}</span>
+                                </a>
+                                <a href="#" class="post-meta__item btn liked-count">${post.viewCount}<span class="biolife-icon icon-comment"></span></a>
+                                <!-- Có thể có thêm biến commentCount nếu bạn có -->
+                                <!-- Social share giữ nguyên -->
+                                <div class="post-meta__item post-meta__item-social-box">
+                                    <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
+                                    <div class="inner-content">
+                                        <ul class="socials">
+                                            <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                                            <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                            <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+                                            <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
+                                            <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
-                        </li>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-02.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
-                                    </div>
-                                </div>
+                            <p class="excerpt">
+                                <c:choose>
+                                    <c:when test="${not empty post.summary}">
+                                        ${post.summary}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:out value="${fn:substring(post.content, 0, 80)}..." />
+                                    </c:otherwise>
+                                </c:choose>
+                            </p>
+                            <div class="group-buttons">
+                                <a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}" class="btn readmore">continue reading</a>
                             </div>
-                        </li>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-04.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-03.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-05.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="post-item style-bottom-info layout-02">
-                                <div class="thumbnail">
-                                    <a href="#" class="link-to-post"><img src="assets/images/our-blog/post-thumb-06.jpg" width="370" height="270" alt=""></a>
-                                    <div class="post-date">
-                                        <span class="date">26</span>
-                                        <span class="month">dec</span>
-                                    </div>
-                                </div>
-                                <div class="post-content">
-                                    <h4 class="post-name"><a href="#" class="linktopost">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                    <div class="post-meta">
-                                        <a href="#" class="post-meta__item author"><img src="assets/images/home-03/post-author.png" width="28" height="28" alt=""><span>Admin</span></a>
-                                        <a href="#" class="post-meta__item btn liked-count">2<span class="biolife-icon icon-comment"></span></a>
-                                        <a href="#" class="post-meta__item btn comment-count">6<span class="biolife-icon icon-like"></span></a>
-                                        <div class="post-meta__item post-meta__item-social-box">
-                                            <span class="tbn"><i class="fa fa-share-alt" aria-hidden="true"></i></span>
-                                            <div class="inner-content">
-                                                <ul class="socials">
-                                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
-                                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="excerpt">Did you know that red-staining foods are excellent lymph-movers? In fact, many plants that were historically used as dyes...</p>
-                                    <div class="group-buttons">
-                                        <a href="#" class="btn readmore">continue reading</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
+                </li>
+            </c:forEach>
+        </c:when>
+        <c:otherwise>
+            <li>
+                <div class="post-item style-bottom-info layout-02">
+                    <div class="post-content">
+                        <h4 class="post-name">
+                            <a href="${pageContext.request.contextPath}/blog">Chưa có bài viết</a>
+                        </h4>
+                        <span class="p-date">Thêm bài viết mới</span>
+                    </div>
+                </div>
+            </li>
+        </c:otherwise>
+    </c:choose>
+</ul>
+
                 </div>
             </div>
 
@@ -2517,11 +2402,11 @@
                         </ul>
                     </c:when>
                     <c:otherwise>
-                        <ul class="list">
-                            <li class="list-item"><a href="login">Login/register</a></li>
-                            <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
-                            <li class="list-item"><a href="#">Checkout</a></li>
-                        </ul>
+                <ul class="list">
+                    <li class="list-item"><a href="login">Login/register</a></li>
+                    <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
+                    <li class="list-item"><a href="#">Checkout</a></li>
+                </ul>
                     </c:otherwise>
                 </c:choose>
             </div>

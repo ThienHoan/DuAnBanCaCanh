@@ -457,85 +457,103 @@ public class BlogDAOImpl implements BlogDAO {
     }
 
     @Override    public boolean createCategory(BlogCategory category) {
-        String sql = "INSERT INTO blog_categories (category_name, description, slug, is_active) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO blog_categories (category_name, description, slug, created_at, is_deleted, is_active) VALUES (?, ?, ?, GETDATE(), 0, ?)";
         
         try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
             stmt.setString(1, category.getCategoryName());
             stmt.setString(2, category.getDescription());
             stmt.setString(3, category.getSlug());
             stmt.setBoolean(4, category.isActive());
-
-            return stmt.executeUpdate() > 0;
+            
+            int affectedRows = stmt.executeUpdate();
+            
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        category.setCategoryId(generatedKeys.getInt(1));
+                        return true;
+                    }
+                }
+            }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error creating category", e);
-            return false;
+            LOGGER.log(Level.SEVERE, "Error creating category: " + category.getCategoryName(), e);
         }
+        return false;
     }
-
-    @Override    public boolean updateCategory(BlogCategory category) {
-        String sql = "UPDATE blog_categories SET category_name = ?, description = ?, slug = ?, is_active = ? WHERE category_id = ?";
+    
+    @Override
+    public boolean updateCategory(BlogCategory category) {
+        String sql = "UPDATE blog_categories SET category_name = ?, description = ?, slug = ?, is_active = ? WHERE category_id = ? AND is_deleted = 0";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setString(1, category.getCategoryName());
             stmt.setString(2, category.getDescription());
             stmt.setString(3, category.getSlug());
             stmt.setBoolean(4, category.isActive());
             stmt.setInt(5, category.getCategoryId());
-
-            return stmt.executeUpdate() > 0;
+            
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+            
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating category", e);
+            LOGGER.log(Level.SEVERE, "Error updating category: " + category.getCategoryId(), e);
             return false;
         }
     }
-
+    
     @Override
     public boolean deleteCategory(int categoryId) {
         String sql = "UPDATE blog_categories SET is_deleted = 1 WHERE category_id = ?";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setInt(1, categoryId);
-            return stmt.executeUpdate() > 0;
+            
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+            
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting category: " + categoryId, e);
             return false;
         }
     }
-
+    
     @Override
     public boolean activateCategory(int categoryId) {
-        String sql = "UPDATE blog_categories SET is_active = 1 WHERE category_id = ?";
+        String sql = "UPDATE blog_categories SET is_active = 1 WHERE category_id = ? AND is_deleted = 0";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setInt(1, categoryId);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
             
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error activating category: " + categoryId, e);
             return false;
         }
     }
-
+    
     @Override
     public boolean deactivateCategory(int categoryId) {
-        String sql = "UPDATE blog_categories SET is_active = 0 WHERE category_id = ?";
+        String sql = "UPDATE blog_categories SET is_active = 0 WHERE category_id = ? AND is_deleted = 0";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+            
             stmt.setInt(1, categoryId);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-              } catch (SQLException e) {
+            
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+            
+        } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deactivating category: " + categoryId, e);
             return false;
         }

@@ -470,21 +470,7 @@
                     </c:if>
                     
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="category-filter">
-                                <label for="categoryFilter">
-                                    <i class="fa fa-filter"></i> Lọc theo danh mục:
-                                </label>                                <select id="categoryFilter" class="form-control" onchange="filterByCategory()" style="height: 45px;">
-                                    <option value="">Tất cả danh mục</option>
-                                    <!-- Debug: Categories count = ${fn:length(categories)} -->
-                                    <c:forEach var="category" items="${categories}">
-                                        <option value="${category.slug}" ${selectedCategory eq category.slug ? 'selected' : ''}>
-                                            ${category.categoryName}
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                        </div>
+                        
                         <div class="col-md-6">
                             <div class="search-form">
                                 <label>

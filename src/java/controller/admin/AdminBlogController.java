@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 
 /**
  * Admin Blog Management Controller
- * URL patterns: /admin-blog, /admin-blog-form, /admin-blog-categories
+ * URL patterns: /admin-blogs, /admin-blog-form, /admin-blog-categories, /admin-blog-action
  */
-@WebServlet(urlPatterns = {"/admin-blog", "/admin-blog-form", "/admin-blog-categories", "/admin-blog-action"})
+// @WebServlet(urlPatterns = {"/admin-blog", "/admin-blog-form", "/admin-blog-categories", "/admin-blog-action"})
 public class AdminBlogController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(AdminBlogController.class.getName());
     private BlogService blogService;
@@ -47,11 +47,9 @@ public class AdminBlogController extends HttpServlet {
         String contextPath = request.getContextPath();
         String path = requestURI.substring(contextPath.length());
 
-        LOGGER.info("AdminBlogController handling GET request: " + path);
-
-        try {
+        LOGGER.info("AdminBlogController handling GET request: " + path);        try {
             switch (path) {
-                case "/admin-blog":
+                case "/admin-blogs":
                     handleBlogList(request, response);
                     break;
                 case "/admin-blog-form":

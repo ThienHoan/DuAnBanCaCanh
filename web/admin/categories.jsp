@@ -9,12 +9,7 @@
     <title>Quản lý danh mục - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+    <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">    <style>
         .card {
             border: none;
             border-radius: 15px;
@@ -32,52 +27,12 @@
         }
     </style>
 </head>
-<body>
-    <div class="container-fluid">
+<body>    <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h4 class="text-white mb-4"><i class="bi bi-speedometer2"></i> Admin Panel</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin-dashboard">
-                                <i class="bi bi-house"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-users.jsp">
-                                <i class="bi bi-people"></i> Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-products.jsp">
-                                <i class="bi bi-box"></i> Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-orders.jsp">
-                                <i class="bi bi-cart"></i> Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/admin-blog">
-                                <i class="bi bi-journal-text"></i> Blog Management
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white active" href="${pageContext.request.contextPath}/admin-categories">
-                                <i class="bi bi-tags"></i> Blog Categories
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/home">
-                                <i class="bi bi-arrow-left"></i> Back to Site
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <jsp:include page="includes/sidebar.jsp">
+                <jsp:param name="page" value="categories" />
+            </jsp:include>
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -105,6 +60,39 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                     <c:remove var="errorMessage" scope="session"/>
+                </c:if>
+
+                <!-- Debug section - có thể xóa sau khi fix xong -->
+                <c:if test="${param.debug eq '1'}">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Debug Information
+                        </div>
+                        <div class="card-body">
+                            <h5>Categories Data:</h5>
+                            <p>Size: ${not empty categories ? fn:length(categories) : 'null'}</p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>isActive() Value</th>
+                                        <th>active Property</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="cat" items="${categories}">
+                                        <tr>
+                                            <td>${cat.categoryId}</td>
+                                            <td>${cat.categoryName}</td>
+                                            <td>${cat.isActive()}</td>
+                                            <td>${cat.active}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </c:if>
 
                 <!-- Categories Table -->
@@ -140,10 +128,9 @@
                                                         <em class="text-muted">Không có mô tả</em>
                                                     </c:otherwise>
                                                 </c:choose>
-                                            </td>
-                                            <td>
+                                            </td>                                            <td>
                                                 <c:choose>
-                                                    <c:when test="${category.active}">
+                                                    <c:when test="${category.isActive()}">
                                                         <span class="badge bg-success status-badge">Đang hoạt động</span>
                                                     </c:when>
                                                     <c:otherwise>
@@ -161,18 +148,16 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary edit-btn" 
+                                                <div class="btn-group" role="group">                                                    <button type="button" class="btn btn-sm btn-outline-primary edit-btn" 
                                                             data-id="${category.categoryId}"
                                                             data-name="${category.categoryName}"
                                                             data-slug="${category.slug}"
                                                             data-description="${category.description}"
-                                                            data-active="${category.active}">
+                                                            data-active="${category.isActive()}">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
-                                                    
-                                                    <c:choose>
-                                                        <c:when test="${category.active}">
+                                                      <c:choose>
+                                                        <c:when test="${category.isActive()}">
                                                             <button type="button" class="btn btn-sm btn-outline-warning toggle-btn" 
                                                                     data-id="${category.categoryId}" data-action="deactivate">
                                                                 <i class="bi bi-eye-slash"></i>

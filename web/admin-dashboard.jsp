@@ -82,10 +82,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
         .card {
             border: none;
             border-radius: 15px;
@@ -115,63 +111,12 @@
         }
     </style>
 </head>
-<body>
-    <div class="container-fluid">
+<body>    <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h4 class="text-white mb-4"><i class="bi bi-speedometer2"></i> Admin Panel</h4>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white active" href="#dashboard">
-                                <i class="bi bi-house"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-users.jsp">
-                                <i class="bi bi-people"></i> Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-products.jsp">
-                                <i class="bi bi-box"></i> Products
-                            </a>
-                        </li>                        <li class="nav-item">
-                            <a class="nav-link text-white" href="admin-orders.jsp">
-                                <i class="bi bi-cart"></i> Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#" data-bs-toggle="collapse" data-bs-target="#blogMenu" aria-expanded="false">
-                                <i class="bi bi-journal-text"></i> Blog Management <i class="bi bi-chevron-down ms-auto"></i>
-                            </a>
-                            <div class="collapse" id="blogMenu">
-                                <ul class="nav flex-column ms-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white-50" href="${pageContext.request.contextPath}/admin-blog">
-                                            <i class="bi bi-list-ul"></i> Danh sách bài viết
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-white-50" href="${pageContext.request.contextPath}/admin-blog-form">
-                                            <i class="bi bi-plus-circle"></i> Thêm bài viết
-                                        </a>
-                                    </li>                                    <li class="nav-item">
-                                        <a class="nav-link text-white-50" href="${pageContext.request.contextPath}/admin-categories">
-                                            <i class="bi bi-tags"></i> Quản lý danh mục
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>                        <li class="nav-item">
-                            <a class="nav-link text-white" href="${pageContext.request.contextPath}/home">
-                                <i class="bi bi-arrow-left"></i> Back to Site
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <!-- Include Admin Sidebar -->
+            <jsp:include page="admin/includes/sidebar.jsp">
+                <jsp:param name="page" value="dashboard" />
+            </jsp:include>
 
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -221,7 +166,7 @@
                                 <i class="bi bi-journal-text fs-1 mb-2"></i>
                                 <h6 class="card-title">Blog Posts</h6>
                                 <h3>${totalBlogPosts}</h3>
-                                <small><a href="${pageContext.request.contextPath}/admin-blog" class="text-white">Manage Posts</a></small>
+                                <small><a href="${pageContext.request.contextPath}/admin-blogs" class="text-white">Manage Posts</a></small>
                             </div>
                         </div>
                     </div>
