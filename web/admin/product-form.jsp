@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!DOCTYPE html>
 <html>
     <head>
@@ -10,6 +11,7 @@
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                 <style>
                     
                     :root {
@@ -571,7 +573,495 @@
                     }
 
 
+.attributes-table {
+    background: var(--card-background);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+}
+
+.attribute-row {
+    display: grid;
+    grid-template-columns: 250px 1fr 120px;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.attribute-row:last-child {
+    border-bottom: none;
+}
+
+.attribute-row:hover {
+    background: rgba(0,0,0,0.02);
+}
+
+.attribute-label {
+    padding-right: 1rem;
+}
+
+.attribute-label .form-label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.attribute-input .form-control {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.attribute-input .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.attribute-status {
+    text-align: right;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-saved {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.status-new {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .attribute-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .attribute-label {
+        padding-right: 0;
+    }
+    
+    .attribute-status {
+        text-align: left;
+    }
+}
+
                 </style>
+<!--                imge-->
+                <!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý hình ảnh - Fixed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .form-card-header i {
+            font-size: 24px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .form-card-header h5 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .current-images {
+            margin-bottom: 40px;
+        }
+
+        .main-image-section {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e1e8ff;
+        }
+
+        .additional-images-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .image-preview {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== FIX CHÍNH: Thay đổi cách hiển thị ảnh ===== */
+        .image-preview img {
+            width: 100%;
+            max-height: 150px;
+            object-fit: contain; /* Thay đổi từ cover thành contain */
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #f8f9fa; /* Thêm background cho phần trống */
+        }
+
+        .main-image-preview {
+            grid-column: span 2;
+        }
+
+        .main-image-preview img {
+            max-height: 200px; /* Thay đổi từ height thành max-height */
+        }
+.main-image-preview .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+}
+
+        /* ===== THÊM: Styles cho container ảnh tối ưu - FIT CONTENT ===== */
+        .image-container {
+            display: inline-flex; /* Thay đổi từ flex thành inline-flex */
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+            width: fit-content; /* Container tự co theo ảnh */
+            max-width: 100%; /* Không vượt quá parent */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Container cho ảnh phụ - linh hoạt theo ảnh */
+        .additional-images-section .image-container {
+            min-height: auto; /* Bỏ min-height cố định */
+            max-height: 150px; /* Tăng max-height một chút */
+        }
+
+        /* Container cho ảnh chính - linh hoạt hơn */
+        .main-image-preview .image-container {
+            min-height: auto; /* Bỏ min-height cố định */
+            aspect-ratio: unset; /* Bỏ tỷ lệ cố định */
+            max-height: 300px; /* Tăng max-height */
+            max-width: 100%;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 0;
+            background: transparent;
+            display: block; /* Đảm bảo ảnh hiển thị đúng */
+        }
+
+        /* Đặc biệt cho ảnh chính - tự động theo kích thước ảnh */
+        .main-image-preview .image-container img {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        .image-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .main-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            align-self: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            accent-color: #dc3545;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .radio-group input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, #f1f8ff 0%, #e8f4fd 100%);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px dashed #b3d9ff;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .image-upload-area {
+            background: white;
+            border: 2px dashed #d1ecf1;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .image-upload-area i {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .image-upload-area p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .order-input {
+            width: 80px;
+        }
+
+        .delete-section {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        @media (max-width: 768px) {
+            .upload-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .main-image-preview {
+                grid-column: span 1;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        .is-invalid {
+    border-color: red !important;
+    background-color: #fff5f5;
+}
+    </style>
             </head>
             <body>
                 <div class="main-container">
@@ -598,8 +1088,8 @@
                         </a>
                     </div>
                 </div>
-
-                <form action="products" method="post" onsubmit="return validateForm()" >
+ 
+                <form action="products" method="post" onsubmit="return validateForm()"  enctype="multipart/form-data" >
                     <c:if test="${product != null}">
                         <input type="hidden" name="action" value="update">
                         <input type="hidden" name="id" value="${product.productId}">
@@ -931,136 +1421,155 @@
 </div>
          
 <!-- Product Attributes Card -->
-<c:forEach var="attr" items="${listProductAttribute}">
-    <c:set var="matchedValue" value="" />
-    <c:set var="matchedValueId" value="" />
-    <c:forEach var="value" items="${listProductAttributeValueByPID}">
-        <c:if test="${value.attributeId == attr.attributeId}">
-            <c:set var="matchedValue" value="${value.value}" />
-            <c:set var="matchedValueId" value="${value.valueId}" />
-        </c:if>
-    </c:forEach>
+<div class="form-card fade-in">
+    <div class="form-card-header">
+        <i class="fas fa-tags"></i>
+        <h5>Thuộc tính sản phẩm</h5>
+    </div>
+    <div class="form-card-body">
+        <div class="attributes-table">
+            <c:forEach var="attr" items="${listProductAttribute}">
+                <c:set var="matchedValue" value="" />
+                <c:set var="matchedValueId" value="" />
+                <c:forEach var="value" items="${listProductAttributeValueByPID}">
+                    <c:if test="${value.attributeId == attr.attributeId}">
+                        <c:set var="matchedValue" value="${value.value}" />
+                        <c:set var="matchedValueId" value="${value.valueId}" />
+                    </c:if>
+                </c:forEach>
 
-    <tr data-attribute-value-id="${matchedValueId}">
-        <td><label for="attr_${attr.attributeId}" class="mb-0">${attr.name}</label></td>
-        <td>
-            <div class="input-group">
-                <input type="hidden" name="attributeIds[]" value="${attr.attributeId}">
-                <input type="text"
-                       class="form-control"
-                       id="attr_${attr.attributeId}"
-                       name="attributeValues[${attr.attributeId}]"
-                       placeholder="Nhập ${attr.name}"
-                       value="${matchedValue}">
-            </div>
-        </td>
-        <td>
-            <c:if test="${not empty matchedValueId}">
-                <button type="button" 
-                        class="btn btn-danger btn-sm delete-attribute-value" 
-                        onclick="deleteAttributeValue(${matchedValueId}, '${attr.name}')"
-                        title="Xóa giá trị thuộc tính">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </c:if>
-        </td>
-    </tr>
-</c:forEach>
+                <div class="attribute-row" data-attribute-value-id="${matchedValueId}">
+                    <div class="attribute-label">
+                        <label for="attr_${attr.attributeId}" class="form-label">
+                            ${attr.name}
+                        </label>
+                    </div>
+                    <div class="attribute-input">
+                        <div class="input-group">
+                            <input type="hidden" name="attributeIds[]" value="${attr.attributeId}">
+                            <input type="text"
+                                   class="form-control"
+                                   id="attr_${attr.attributeId}"
+                                   name="attributeValues[${attr.attributeId}]"
+                                   placeholder="Nhập ${attr.name}"
+                                   value="${matchedValue}">
+                        </div>
+                    </div>
+                    <div class="attribute-status">
+                        <c:if test="${not empty matchedValueId}">
+                            <span class="status-badge status-saved">
+                                <i class="fas fa-check-circle"></i> Đã lưu
+                            </span>
+                        </c:if>
+                        <c:if test="${empty matchedValueId}">
+                            <span class="status-badge status-new">cần thêm</span>
+                        </c:if>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </div>
+</div>
+
 
                     <!-- Image Management Card -->
                     <div class="form-card fade-in">
-                        <div class="form-card-header">
-                            <i class="fas fa-images"></i>
-                            <h5>Quản lý hình ảnh</h5>
+    <div class="form-card-header">
+        <i class="fas fa-images"></i>
+        <h5>Quản lý hình ảnh</h5>
+    </div>
+    <div class="form-card-body">
+        <!-- Hiển thị ảnh hiện tại -->
+        <c:if test="${not empty productImages}">
+            <div class="section-title">
+                <i class="fas fa-image"></i> Hình ảnh hiện tại
+            </div>
+            <div class="image-grid">
+                <c:forEach var="image" items="${productImages}">
+                    <div class="image-preview ${image.isMain == 1 ? 'main-image-preview' : ''}">
+                        <div class="image-container">
+                            <img src="${pageContext.request.contextPath}/${image.imageUrl}" alt="Ảnh sản phẩm">
                         </div>
-                        <div class="form-card-body">
-                            <!-- Current Images -->
-                            <c:if test="${not empty productImages}">
-                                <div class="mb-4">
-                                    <h6 class="text-muted mb-3">
-                                        <i class="fas fa-image"></i> Hình ảnh hiện tại
-                                    </h6>
-
-                                    <!-- Main Image -->
-                                    <div class="row mb-4">
-                                        <c:forEach var="image" items="${productImages}">
-                                            <c:if test="${image.isMain == 1}">
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="image-preview">
-                                                        <img src="${image.imageUrl}" alt="Ảnh chính">
-                                                        <div class="main-image-badge">
-                                                            <i class="fas fa-star"></i> Ảnh chính
-                                                        </div>
-                                                        <button type="button" class="image-remove" onclick="removeImage(${image.imageId})">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </c:if>
-                                        </c:forEach>
-                                    </div>
-                                    <h6 class="text-muted mb-3">
-                                        <i class="fas fa-image"></i> ảnh phụ
-                                    </h6>
-                                    <!-- Additional Images -->
-                                    <div class="row">
-                                        <c:forEach var="image" items="${productImages}">
-                                            <c:if test="${image.isMain != 1}">
-                                                <div class="col-md-3 col-6 mb-3">
-                                                    <div class="image-preview">
-                                                        <img src="${image.imageUrl}" alt="Ảnh phụ">
-                                                        <button type="button" class="image-remove" onclick="removeImage(${image.imageId})">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </c:if>
-                                        </c:forEach>
-                                    </div>
-                                </div>
-                            </c:if>
-                            
-
-                            <!-- Upload New Images -->
-                            <div class="upload-section">
-                                <h6 class="text-muted mb-3">
-                                    <i class="fas fa-upload"></i> Thêm hình ảnh mới
-                                </h6>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Ảnh chính</label>
-                                        <div class="image-upload-area" id="mainImageArea">
-                                            <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
-                                            <p class="text-muted mb-2">Kéo thả hoặc click để chọn ảnh chính</p>
-                                            <input type="file" class="d-none" id="mainImage" name="mainImage" accept="image/*">
-                                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('mainImage').click()">
-                                                <i class="fas fa-folder-open"></i> Chọn file
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Ảnh phụ</label>
-                                        <div class="image-upload-area" id="additionalImagesArea">
-                                            <i class="fas fa-images fa-2x text-muted mb-2"></i>
-                                            <p class="text-muted mb-2">Có thể chọn nhiều ảnh</p>
-                                            <input type="file" class="d-none" id="additionalImages" name="additionalImages" accept="image/*" multiple>
-                                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('additionalImages').click()">
-                                                <i class="fas fa-folder-open"></i> Chọn files
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Image Preview -->
-                            <div id="imagePreview" class="mt-4">
-                                <div class="row" id="previewContainer"></div>
-                            </div>
+                        <input type="hidden" name="existingImageIds" value="${image.imageId}" />
+                        <c:if test="${image.isMain == 1}">
+                            <div class="main-badge">Ảnh chính</div>
+                            <input type="radio" name="mainImageId" value="${image.imageId}" checked />
+                        </c:if>
+                        <label>Thứ tự hiển thị:</label>
+                        <input type="number" name="displayOrders[${image.imageId}]" value="${image.displayOrder}" class="form-control form-control-sm order-input" />
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" name="deleteImageIds[]" value="${image.imageId}" id="delete_${image.imageId}">
+                            <label class="form-check-label text-danger" for="delete_${image.imageId}">Xóa ảnh này</label>
                         </div>
                     </div>
-                    
+                </c:forEach>
+            </div>
+        </c:if>
+
+        <!-- Tải ảnh mới -->
+        <div class="upload-section mt-4">
+    <div class="section-title">
+        <i class="fas fa-upload"></i> Thêm hình ảnh mới
+    </div>
+
+    <div class="upload-grid row">
+        <!-- Ảnh chính -->
+        <div class="col-md-6">
+            <label class="form-label">Ảnh chính</label>
+            <ul class="nav nav-tabs" id="mainImageTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#uploadMain" role="tab">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#linkMain" role="tab">Link ảnh</a>
+                </li>
+            </ul>
+            <div class="tab-content border rounded p-3 mt-2">
+                <div class="tab-pane fade show active" id="uploadMain" role="tabpanel">
+                    <div class="image-upload-area text-center" onclick="document.getElementById('mainImage').click()">
+                        <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                        <p class="text-muted">Kéo thả hoặc click để chọn ảnh chính</p>
+                        <input type="file" class="d-none" id="mainImage" name="mainImage" accept="image/*">
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="linkMain" role="tabpanel">
+                    <label>URL ảnh chính</label>
+                    <input type="text" name="mainImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Ảnh phụ -->
+        <div class="col-md-6">
+            <label class="form-label">Ảnh phụ</label>
+            <ul class="nav nav-tabs" id="additionalImageTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#uploadAdditional" role="tab">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#linkAdditional" role="tab">Link ảnh</a>
+                </li>
+            </ul>
+            <div class="tab-content border rounded p-3 mt-2">
+                <div class="tab-pane fade show active" id="uploadAdditional" role="tabpanel">
+                    <div class="image-upload-area text-center" onclick="document.getElementById('additionalImages').click()">
+                        <i class="fas fa-images fa-2x mb-2"></i>
+                        <p class="text-muted">Chọn nhiều ảnh phụ</p>
+                        <input type="file" class="d-none" id="additionalImages" name="additionalImages" multiple accept="image/*">
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="linkAdditional" role="tabpanel">
+                    <label>URL ảnh phụ (mỗi dòng một link)</label>
+                    <textarea name="additionalImageUrls" class="form-control" rows="4" placeholder="https://img1.jpg\nhttps://img2.jpg"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
 
                     <!-- Form Actions -->
                     <div class="form-card fade-in">
@@ -1082,91 +1591,47 @@
                             </button>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
+            
+        
+                                    </form>
+
 
         <!-- Scripts -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!--        imge-->
 <script>
-    function deleteAttributeValue(valueId, attributeName) {
-        // Tìm button được click và từ đó tìm row cha
-        const button = event.target.closest('button');
-        const row = button.closest('tr');
-        const input = row.querySelector('input[type="text"]');
-        
-        // Set value thành "null"
-        input.value = '';
-        input.classList.add('text-muted');
-        
-        // Xóa nút delete
-        button.remove();
-    }
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (e) {
+        const orderInputs = document.querySelectorAll('input[name^="displayOrders["]');
+        const seen = new Set();
+        let duplicated = false;
+
+        orderInputs.forEach(input => {
+            const val = input.value.trim();
+            if (val !== "") {
+                if (seen.has(val)) {
+                    duplicated = true;
+                    input.classList.add("is-invalid");
+                } else {
+                    seen.add(val);
+                    input.classList.remove("is-invalid");
+                }
+            }
+        });
+
+        if (duplicated) {
+            e.preventDefault();
+            alert("Thứ tự hiển thị (Display Order) không được trùng nhau.");
+        }
+    });
+});
+
 </script>
         <script>
-                                                // Form validation
-                                                function validateForm() {
-                                                    let isValid = true;
-                                                    const submitBtn = document.getElementById('submitBtn');
-                                                    const originalText = submitBtn.innerHTML;
-
-                                                    // Show loading state
-                                                    submitBtn.innerHTML = '<span class="loading-spinner"></span> Đang xử lý...';
-                                                    submitBtn.disabled = true;
-
-                                                    // Clear previous validation states
-                                                    document.querySelectorAll('.form-control').forEach(field => {
-                                                        field.classList.remove('is-invalid', 'is-valid');
-                                                    });
-
-                                                    // Validate required fields
-                                                    const requiredFields = ['name', 'categoryId', 'sku', 'price', 'quantity', 'status', 'origin', 'size'];
-
-                                                    requiredFields.forEach(fieldId => {
-                                                        const field = document.getElementById(fieldId);
-                                                        if (!field.value.trim()) {
-                                                            field.classList.add('is-invalid');
-                                                            isValid = false;
-                                                        } else {
-                                                            field.classList.add('is-valid');
-                                                        }
-                                                    });
-
-                                                    // Validate price
-                                                    const price = parseFloat(document.getElementById('price').value);
-                                                    const salePrice = parseFloat(document.getElementById('salePrice').value);
-
-                                                    if (price < 0) {
-                                                        document.getElementById('price').classList.add('is-invalid');
-                                                        showNotification('Giá gốc phải lớn hơn hoặc bằng 0!', 'danger');
-                                                        isValid = false;
-                                                    }
-
-                                                    if (salePrice && salePrice >= price) {
-                                                        document.getElementById('salePrice').classList.add('is-invalid');
-                                                        showNotification('Giá khuyến mãi phải nhỏ hơn giá gốc!', 'danger');
-                                                        isValid = false;
-                                                    }
-
-                                                    // Validate quantity
-                                                    const quantity = parseInt(document.getElementById('quantity').value);
-                                                    if (quantity < 0) {
-                                                        document.getElementById('quantity').classList.add('is-invalid');
-                                                        showNotification('Số lượng phải lớn hơn hoặc bằng 0!', 'danger');
-                                                        isValid = false;
-                                                    }
-
-                                                    if (!isValid) {
-                                                        // Reset button state
-                                                        submitBtn.innerHTML = originalText;
-                                                        submitBtn.disabled = false;
-                                                        showNotification('Vui lòng kiểm tra lại các thông tin bắt buộc!', 'danger');
-                                                    }
-
-                                                    return isValid;
-                                                }
+                                                
 
                                                 // Real-time validation
                                                 document.getElementById('salePrice').addEventListener('blur', function () {
@@ -1181,19 +1646,6 @@
                                                         if (this.value)
                                                             this.classList.add('is-valid');
                                                     }
-                                                });
-
-                                                // Format number inputs
-                                                ['price', 'salePrice'].forEach(id => {
-                                                    document.getElementById(id).addEventListener('blur', function () {
-                                                        if (this.value) {
-                                                            this.value = parseInt(this.value).toLocaleString('vi-VN');
-                                                        }
-                                                    });
-
-                                                    document.getElementById(id).addEventListener('focus', function () {
-                                                        this.value = this.value.replace(/[^\d]/g, '');
-                                                    });
                                                 });
 
                                                 // Image upload handling
@@ -1309,38 +1761,46 @@
 
                                                 // Notification system
                                                 function showNotification(message, type = 'info') {
-                                                    const notification = document.createElement('div');
-                                                    notification.className = `alert alert-${type} alert-dismissible fade show`;
-                                                    notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 1050;
-                    min-width: 300px;
-                    animation: slideInRight 0.3s ease;
-                `;
+    // Nếu message không hợp lệ, hiển thị nội dung mặc định
+    if (!message || (typeof message === 'string' && message.trim() === '')) {
+        message = 'Lỗi không phân định';
+    }
 
-                                                    let icon = 'info-circle';
-                                                    if (type === 'success') {
-                                                        icon = 'check-circle';
-                                                    } else if (type === 'danger') {
-                                                        icon = 'exclamation-circle';
-                                                    }
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease;
+    `;
 
-                                                    notification.innerHTML = `
-            <i class="fas fa-${icon}"></i>
-            ${message}
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        `;
+    let icon = 'info-circle';
+    if (type === 'success') {
+        icon = 'check-circle';
+    } else if (type === 'danger') {
+        icon = 'exclamation-circle';
+    } else if (type === 'warning') {
+        icon = 'exclamation-triangle';
+    }
 
-                                                    document.body.appendChild(notification);
+    notification.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        ${message}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    `;
 
-                                                    setTimeout(() => {
-                                                        if (notification.parentNode) {
-                                                            notification.remove();
-                                                        }
-                                                    }, 5000);
-                                                }
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
 
                                                 // Initialize everything when DOM is ready
                                                 document.addEventListener('DOMContentLoaded', function () {

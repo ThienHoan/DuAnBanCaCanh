@@ -157,6 +157,30 @@ public class ProductDAO {
             }
         }
     }
+    public int getLastInsertProductId() {
+    String query = "SELECT IDENT_CURRENT('Products') AS last_id"; // SQL Server
+    // Nếu dùng MySQL: String query = "SELECT LAST_INSERT_ID() AS last_id";
+    int id = -1;
+    try {
+        conn = new Db().getConnection();
+        ps = conn.prepareStatement(query);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            id = rs.getInt("last_id");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    return id;
+}
     
     public Product getProductById(int productId) {
         String query = "SELECT * FROM Products WHERE product_id = ?";
