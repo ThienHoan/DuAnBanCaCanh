@@ -17,9 +17,27 @@
             </div>
             <div class="top-bar right">                <ul class="horizontal-menu">
                     <c:choose>
-                        <c:when test="${not empty sessionScope.user}">
-                            <li class="horz-menu-item user-info dropdown-account">                                <a href="#" class="user-greeting dropdown-toggle" style="color: #fff; margin-right: 10px; font-weight: 500; text-decoration: none;">
-                                    <i class="fa fa-user" aria-hidden="true" style="margin-right: 5px;"></i>
+                        <c:when test="${not empty sessionScope.user}">                            <li class="horz-menu-item user-info dropdown-account">                                <a href="#" class="user-greeting dropdown-toggle" style="color: #fff; margin-right: 10px; font-weight: 500; text-decoration: none;">
+                                    <!-- DEBUG: Avatar value = ${sessionScope.user.avatar} -->
+                                    <!-- Display user avatar or default icon -->
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.user.avatar}">
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(sessionScope.user.avatar, 'http')}">
+                                                    <!-- Google avatar URL -->
+                                                    <img src="${sessionScope.user.avatar}" alt="Avatar" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; vertical-align: middle;" onerror="console.log('Avatar load error:', this.src);">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <!-- Local avatar file -->
+                                                    <img src="${pageContext.request.contextPath}/uploads/avatars/${sessionScope.user.avatar}" alt="Avatar" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; vertical-align: middle;" onerror="console.log('Avatar load error:', this.src);">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <!-- Default user icon -->
+                                            <i class="fa fa-user" aria-hidden="true" style="margin-right: 5px;"></i>
+                                        </c:otherwise>
+                                    </c:choose>
                                     Xin Chào, <strong>
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.user.fullName}">

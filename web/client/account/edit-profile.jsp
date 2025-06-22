@@ -40,7 +40,7 @@
         }
         
         .form-header {
-            background: linear-gradient(135deg, #73814B, #8fa05c);
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             color: white;
             padding: 30px;
             text-align: center;
@@ -73,7 +73,7 @@
             height: 120px;
             border-radius: 50%;
             margin: 0 auto 20px;
-            border: 5px solid #73814B;
+            border: 3px solid  #0038a8;
             object-fit: cover;
             background: white;
             display: flex;
@@ -94,7 +94,7 @@
         }
         
         .avatar-upload-btn {
-            background: #73814B;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             color: white;
             padding: 10px 20px;
             border-radius: 25px;
@@ -104,7 +104,7 @@
         }
         
         .avatar-upload-btn:hover {
-            background: #8fa05c;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             transform: translateY(-2px);
         }
         
@@ -170,12 +170,12 @@
         }
         
         .btn-primary {
-            background: #73814B;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             color: white;
         }
         
         .btn-primary:hover {
-            background: #8fa05c;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             transform: translateY(-2px);
         }
         
@@ -312,7 +312,7 @@
                     
                     <div class="current-avatar">                        <c:choose>
                             <c:when test="${not empty user.avatar}">
-                                <img src="${pageContext.request.contextPath}/uploads/avatars/${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                <img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                             </c:when>
                             <c:otherwise>
                                 <i class="fas fa-user"></i>
@@ -408,16 +408,25 @@
                 </div>
             </div>
         </div>
-    </div>
-      <!-- Footer -->
+    </div>      <!-- Footer -->
     <%-- <jsp:include page="../components/footer.jsp" /> --%>
-      <!-- Scripts -->
+    
+    <!-- Load Bootstrap JS sau header -->
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
+    
+    <!-- Load profile.js để có initAccountDropdown function -->
+    <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
+    
+    <!-- Scripts -->
     <script>
         // Khởi tạo lại dropdown sau khi trang load
         $(document).ready(function() {
-            if (typeof initAccountDropdown === 'function') {
-                initAccountDropdown();
-            }
+            // Đảm bảo các script đã load xong trước khi gọi initAccountDropdown
+            setTimeout(function() {
+                if (typeof initAccountDropdown === 'function') {
+                    initAccountDropdown();
+                }
+            }, 100);
         });
         
         // Preview avatar before upload

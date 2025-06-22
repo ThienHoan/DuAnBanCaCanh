@@ -13,18 +13,17 @@ import utils.db.DBContext;
 public class ProductDAO {
     Connection conn = null;
     PreparedStatement ps = null;
-    ResultSet rs = null;
-
-    public List<Product> getAllProducts() {
+    ResultSet rs = null;    public ProductDAO() {
+        // Connection sẽ được tạo trong mỗi method để tránh timeout
+    }    public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
         String query = "SELECT product_id, category_id, name, description, short_description, " +
                       "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted " +
                       "FROM Products";
         
-        try {
-            conn = new DBContext().getConnection(); // Open connection using DBContext
-            ps = conn.prepareStatement(query);
-            rs = ps.executeQuery();
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             
             while (rs.next()) {
                 Product product = new Product(
@@ -42,57 +41,36 @@ public class ProductDAO {
                     rs.getString("created_at"),
                     rs.getString("updated_at"),
                     rs.getInt("is_deleted")
-                );
-                products.add(product);
+                );                products.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            // Close resources
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         
         return products;
     }
-    
-    
-    public boolean toggleIsDeleted(int productId) {
+        public boolean toggleIsDeleted(int productId) {
         String query = "UPDATE Products SET is_deleted = CASE WHEN is_deleted = 0 THEN 1 ELSE 0 END, " +
                       "updated_at = GETDATE() WHERE product_id = ?";
         
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
             ps.setInt(1, productId);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-    }
-    
-    public boolean createProduct(Product product) {
+    }    public boolean createProduct(Product product) {
         String query = "INSERT INTO Products (category_id, name, description, short_description, " +
                       "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted) " +
                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
             ps.setObject(1, product.getCategoryId(), java.sql.Types.INTEGER);
             ps.setString(2, product.getName());
             ps.setString(3, product.getDescription());
@@ -106,30 +84,21 @@ public class ProductDAO {
             ps.setString(11, product.getCreatedAt());
             ps.setString(12, product.getUpdatedAt());
             ps.setInt(13, product.getIsDeleted() != null ? product.getIsDeleted() : 0);
-            
-            int rowsAffected = ps.executeUpdate();
+              int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
-    
-    public boolean updateProduct(Product product) {
+      public boolean updateProduct(Product product) {
         String query = "UPDATE Products SET category_id = ?, name = ?, description = ?, short_description = ?, " +
                       "price = ?, sale_price = ?, quantity = ?, sku = ?, status = ?, featured = ?, " +
                       "is_deleted = ?, updated_at = GETDATE() WHERE product_id = ?";
         
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
             ps.setObject(1, product.getCategoryId(), java.sql.Types.INTEGER);
             ps.setString(2, product.getName());
             ps.setString(3, product.getDescription());
@@ -142,30 +111,38 @@ public class ProductDAO {
             ps.setInt(10, product.getFeatured());
             ps.setInt(11, product.getIsDeleted() );
             ps.setInt(12, product.getProductId());
-            
-            int rowsAffected = ps.executeUpdate();
+              int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
+    }
+      public int getLastInsertProductId() {
+        String query = "SELECT IDENT_CURRENT('Products') AS last_id"; // SQL Server
+        // Nếu dùng MySQL: String query = "SELECT LAST_INSERT_ID() AS last_id";
+        int id = -1;
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                id = rs.getInt("last_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();        }
+        return id;
     }
     
     public Product getProductById(int productId) {
         String query = "SELECT * FROM Products WHERE product_id = ?";
         
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
             ps.setInt(1, productId);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
                 return new Product(
@@ -187,15 +164,12 @@ public class ProductDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return null;
+    }
+
+    // Private method để lấy connection
+    private Connection getConnection() throws SQLException {
+        return DBContext.getConnection();
     }
 }

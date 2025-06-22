@@ -47,7 +47,7 @@
         }
         
         .form-header {
-            background: linear-gradient(135deg, #73814B, #8fa05c);
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             color: white;
             padding: 30px;
             text-align: center;
@@ -195,12 +195,11 @@
         }
         
         .btn-primary {
-            background: #73814B;
             color: white;
         }
         
         .btn-primary:hover {
-            background: #8fa05c;
+            
             transform: translateY(-2px);
         }
         
@@ -441,9 +440,12 @@
                 </form>
             </div>
         </div>
-    </div>
-      <!-- Footer -->
-    <%-- <jsp:include page="../components/footer.jsp" /> --%>    <!-- Scripts -->
+    </div>    <!-- Footer -->
+    <%-- <jsp:include page="../components/footer.jsp" /> --%>
+    
+    <!-- Scripts -->
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
     <script>
         // Khởi tạo lại dropdown sau khi trang load
         $(document).ready(function() {
@@ -452,8 +454,6 @@
             }
         });
     </script>
-    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
     <script>
         // Toggle password visibility
         function togglePassword(fieldId) {

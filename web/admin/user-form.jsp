@@ -226,9 +226,8 @@
                                         </div>
                                     </c:when>
                                     
-                                    <c:otherwise>
-                                        <!-- Create/Edit Form -->
-                                        <form method="POST" action="${pageContext.request.contextPath}/admin-users" id="userForm">
+                                    <c:otherwise>                                        <!-- Create/Edit Form -->
+                                        <form method="POST" action="${pageContext.request.contextPath}/admin-users" id="userForm" enctype="multipart/form-data">
                                             <input type="hidden" name="action" value="${createMode ? 'create' : 'update'}">
                                             <c:if test="${editMode}">
                                                 <input type="hidden" name="userId" value="${user.userId}">
@@ -304,12 +303,34 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </div>
-                                              <div class="mb-3">
-                                                <label for="avatar" class="form-label">URL Avatar</label>
-                                                <input type="url" class="form-control" id="avatar" name="avatar" 
-                                                       value="${createMode ? '' : user.avatar}" onchange="previewAvatar()">
-                                                <div class="form-text">Nhập URL của hình ảnh avatar</div>
+                                            </div>                                              <div class="mb-3">
+                                                <label class="form-label">Avatar</label>
+                                                
+                                                <!-- Radio buttons để chọn loại avatar -->
+                                                <div class="mb-2">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="avatarType" id="avatarTypeUrl" value="url" checked onchange="toggleAvatarInput()">
+                                                        <label class="form-check-label" for="avatarTypeUrl">URL Avatar</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="avatarType" id="avatarTypeFile" value="file" onchange="toggleAvatarInput()">
+                                                        <label class="form-check-label" for="avatarTypeFile">Upload File</label>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- URL Avatar Input -->
+                                                <div id="avatarUrlInput">
+                                                    <input type="url" class="form-control" id="avatar" name="avatar" 
+                                                           value="${createMode ? '' : user.avatar}" onchange="previewAvatar()">
+                                                    <div class="form-text">Nhập URL của hình ảnh avatar</div>
+                                                </div>
+                                                
+                                                <!-- File Upload Input -->
+                                                <div id="avatarFileInput" style="display: none;">
+                                                    <input type="file" class="form-control" id="avatarFile" name="avatarFile" 
+                                                           accept="image/*" onchange="previewAvatarFile()">
+                                                    <div class="form-text">Chọn file ảnh avatar (JPG, PNG, GIF). Tối đa 5MB.</div>
+                                                </div>
                                             </div>
                                             
                                             <div class="d-flex justify-content-end">
@@ -340,7 +361,16 @@
                             </div>
                             <div class="card-body text-center">                                <c:choose>
                                     <c:when test="${not empty user.avatar}">
-                                        <img src="${pageContext.request.contextPath}/uploads/avatars/${user.avatar}" alt="Avatar" class="user-avatar-preview mb-3" id="avatarPreview">
+                                        <c:choose>
+                                            <c:when test="${fn:startsWith(user.avatar, 'http')}">
+                                                <!-- Avatar từ Google hoặc URL khác -->
+                                                <img src="${user.avatar}" alt="Avatar" class="user-avatar-preview mb-3" id="avatarPreview">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- Avatar từ file upload local -->
+                                                <img src="${pageContext.request.contextPath}/uploads/avatars/${user.avatar}" alt="Avatar" class="user-avatar-preview mb-3" id="avatarPreview">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:when>
                                     <c:otherwise>
                                         <div class="user-avatar-preview bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" id="avatarPreview">
@@ -403,14 +433,47 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
+      <script>
+        function toggleAvatarInput() {
+            const avatarTypeUrl = document.getElementById('avatarTypeUrl').checked;
+            const avatarTypeFile = document.getElementById('avatarTypeFile').checked;
+            const urlInput = document.getElementById('avatarUrlInput');
+            const fileInput = document.getElementById('avatarFileInput');
+            
+            if (avatarTypeUrl) {
+                urlInput.style.display = 'block';
+                fileInput.style.display = 'none';
+                document.getElementById('avatarFile').value = ''; // Clear file input
+            } else if (avatarTypeFile) {
+                urlInput.style.display = 'none';
+                fileInput.style.display = 'block';
+                document.getElementById('avatar').value = ''; // Clear URL input
+                previewAvatar(); // Reset preview
+            }
+        }
+        
         function previewAvatar() {
             const avatarUrl = document.getElementById('avatar').value;
             const preview = document.getElementById('avatarPreview');
             
             if (avatarUrl) {
                 preview.innerHTML = '<img src="' + avatarUrl + '" alt="Avatar" class="user-avatar-preview">';
+            } else {
+                preview.innerHTML = '<i class="fas fa-user fa-3x text-white"></i>';
+                preview.className = 'user-avatar-preview bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3';
+            }
+        }
+        
+        function previewAvatarFile() {
+            const fileInput = document.getElementById('avatarFile');
+            const preview = document.getElementById('avatarPreview');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="Avatar" class="user-avatar-preview">';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
             } else {
                 preview.innerHTML = '<i class="fas fa-user fa-3x text-white"></i>';
                 preview.className = 'user-avatar-preview bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3';

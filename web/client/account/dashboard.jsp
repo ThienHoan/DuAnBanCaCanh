@@ -42,7 +42,7 @@
         }
         
         .welcome-section {
-            background: linear-gradient(135deg, #73814B, #8fa05c);
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 40px;
@@ -366,7 +366,7 @@
             <div class="welcome-content">                <div class="welcome-avatar">
                     <c:choose>
                         <c:when test="${not empty sessionScope.user.avatar}">
-                            <img src="${pageContext.request.contextPath}/uploads/avatars/${sessionScope.user.avatar}?v=${sessionScope.user.userId}" 
+                            <img src="${sessionScope.user.avatar}?v=${sessionScope.user.userId}" 
                                  alt="${sessionScope.user.fullName}" 
                                  style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
                         </c:when>
@@ -601,13 +601,23 @@
             </div>
         </div>
     </div>    <!-- Footer -->
-    <%-- <jsp:include page="../../footer.jsp" /> --%>    <!-- Scripts -->
+    <%-- <jsp:include page="../../footer.jsp" /> --%>
+    
+    <!-- Load Bootstrap JS sau header -->
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
+    
+    <!-- Load profile.js để có initAccountDropdown function -->
     <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
-      <script>        $(document).ready(function() {
-            // Khởi tạo lại dropdown sau khi trang load
-            if (typeof initAccountDropdown === 'function') {
-                initAccountDropdown();
-            }
+    
+    <!-- Scripts -->
+    <script>
+        $(document).ready(function() {
+            // Đảm bảo các script đã load xong trước khi gọi initAccountDropdown
+            setTimeout(function() {
+                if (typeof initAccountDropdown === 'function') {
+                    initAccountDropdown();
+                }
+            }, 100);
             
             // Force reload avatar image to avoid cache
             refreshAvatarImage();

@@ -396,8 +396,7 @@ public class UserDAO {
             return false;
         }
     }
-    
-    /**
+      /**
      * Tạo user mới từ Google OAuth
      */
     public boolean createGoogleUser(User user) {
@@ -422,6 +421,81 @@ public class UserDAO {
             
         } catch (SQLException e) {
             System.out.println("Database error creating Google user: " + e.getMessage());
+            
+            // Kiểm tra nếu là lỗi Primary Key violation
+            if (e.getMessage().contains("PRIMARY KEY constraint")) {
+                System.out.println("Primary key violation detected. Attempting to fix identity and retry...");
+                
+                // Thử fix identity và retry 1 lần
+                if (fixUsersIdentity()) {
+                    return retryCreateGoogleUser(user);
+                }
+            }
+            
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Fix Users table identity value
+     */
+    private boolean fixUsersIdentity() {
+        String checkSql = "SELECT ISNULL(MAX(user_id), 0) as max_id FROM Users";
+        String resetSql = "DBCC CHECKIDENT ('Users', RESEED, ?)";
+        
+        try (Connection conn = DBContext.getConnection()) {
+            // Lấy max user_id hiện tại
+            int maxId = 0;
+            try (PreparedStatement ps = conn.prepareStatement(checkSql);
+                 ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    maxId = rs.getInt("max_id");
+                }
+            }
+            
+            System.out.println("Current max user_id: " + maxId + ", resetting identity to: " + maxId);
+            
+            // Reset identity
+            try (PreparedStatement ps = conn.prepareStatement(resetSql)) {
+                ps.setInt(1, maxId);
+                ps.execute();
+                System.out.println("Successfully reset Users identity to: " + maxId);
+                return true;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println("Error fixing Users identity: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * Retry creating Google user after fixing identity
+     */
+    private boolean retryCreateGoogleUser(User user) {
+        String sql = "INSERT INTO Users (username, email, full_name, google_id, avatar, role, status, created_at, is_deleted) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, GETDATE(), ?)";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getFullName());
+            ps.setString(4, user.getGoogleId());
+            ps.setString(5, user.getAvatar());
+            ps.setString(6, user.getRole());
+            ps.setString(7, user.getStatus());
+            ps.setBoolean(8, user.isIsDeleted());
+            
+            int result = ps.executeUpdate();
+            System.out.println("Google user creation retry result: " + result);
+            return result > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Database error on retry creating Google user: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

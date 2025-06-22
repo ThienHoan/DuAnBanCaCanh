@@ -1,20 +1,34 @@
 package controller.admin;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 import model.entity.User;
 import service.interfaces.UserService;
 import service.impl.UserServiceImpl;
 import dao.interfaces.UserDAO.UserStatistics;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
+
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+    maxFileSize = 1024 * 1024 * 10,       // 10MB
+    maxRequestSize = 1024 * 1024 * 50     // 50MB
+)
 
 
 public class AdminUserController extends HttpServlet {
@@ -378,8 +392,7 @@ public class AdminUserController extends HttpServlet {
         request.setAttribute("userStatistics", stats);
         request.setAttribute("statisticsOnly", true);
           request.getRequestDispatcher("/admin/user-statistics.jsp").forward(request, response);
-    }
-    
+    }    
     // POST handlers
     private void handleCreateUserPost(HttpServletRequest request, HttpServletResponse response, int adminUserId) 
             throws ServletException, IOException {
@@ -393,7 +406,27 @@ public class AdminUserController extends HttpServlet {
             user.setFullName(request.getParameter("fullName"));
             user.setRole(request.getParameter("role"));
             user.setStatus(request.getParameter("status"));
-            user.setAvatar(request.getParameter("avatar"));
+            
+            // Xử lý avatar
+            String avatarType = request.getParameter("avatarType");
+            if ("file".equals(avatarType)) {
+                // Xử lý upload file avatar
+                Part avatarPart = request.getPart("avatarFile");
+                if (avatarPart != null && avatarPart.getSize() > 0) {
+                    String fileName = uploadAvatarFile(avatarPart, request);
+                    if (fileName != null) {
+                        user.setAvatar(fileName);
+                    } else {
+                        request.setAttribute("errorMessage", "Không thể upload avatar");
+                        request.setAttribute("createMode", true);
+                        request.getRequestDispatcher("/admin/user-form.jsp").forward(request, response);
+                        return;
+                    }
+                }
+            } else {
+                // Xử lý URL avatar
+                user.setAvatar(request.getParameter("avatar"));
+            }
             
             if (userService.createUser(user, adminUserId)) {
                 request.getSession().setAttribute("successMessage", "Tạo người dùng '" + user.getUsername() + "' thành công!");
@@ -411,8 +444,7 @@ public class AdminUserController extends HttpServlet {
         request.setAttribute("createMode", true);
         request.getRequestDispatcher("/admin/user-form.jsp").forward(request, response);
     }
-    
-    private void handleUpdateUserPost(HttpServletRequest request, HttpServletResponse response, int adminUserId) 
+      private void handleUpdateUserPost(HttpServletRequest request, HttpServletResponse response, int adminUserId) 
             throws ServletException, IOException {
         
         try {
@@ -431,7 +463,29 @@ public class AdminUserController extends HttpServlet {
             user.setFullName(request.getParameter("fullName"));
             user.setRole(request.getParameter("role"));
             user.setStatus(request.getParameter("status"));
-            user.setAvatar(request.getParameter("avatar"));
+            
+            // Xử lý avatar
+            String avatarType = request.getParameter("avatarType");
+            if ("file".equals(avatarType)) {
+                // Xử lý upload file avatar
+                Part avatarPart = request.getPart("avatarFile");
+                if (avatarPart != null && avatarPart.getSize() > 0) {
+                    String fileName = uploadAvatarFile(avatarPart, request);
+                    if (fileName != null) {
+                        user.setAvatar(fileName);
+                    } else {
+                        request.setAttribute("errorMessage", "Không thể upload avatar");
+                        request.setAttribute("editMode", true);
+                        request.setAttribute("user", user);
+                        request.getRequestDispatcher("/admin/user-form.jsp").forward(request, response);
+                        return;
+                    }
+                }
+                // Nếu không có file mới, giữ nguyên avatar cũ
+            } else {
+                // Xử lý URL avatar
+                user.setAvatar(request.getParameter("avatar"));
+            }
               if (userService.updateUser(user, adminUserId)) {
                 request.getSession().setAttribute("successMessage", "Cập nhật người dùng '" + user.getUsername() + "' thành công!");
                 response.sendRedirect(request.getContextPath() + "/admin-users");
@@ -516,6 +570,52 @@ public class AdminUserController extends HttpServlet {
         } catch (Exception e) {
             request.getSession().setAttribute("errorMessage", "Lỗi đặt lại mật khẩu: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/admin-users");
+        }
+    }
+    
+    /**
+     * Upload avatar file và trả về tên file đã lưu
+     */
+    private String uploadAvatarFile(Part filePart, HttpServletRequest request) {
+        try {
+            String fileName = filePart.getSubmittedFileName();
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return null;
+            }
+            
+            // Kiểm tra extension
+            String fileExtension = "";
+            int lastDotIndex = fileName.lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                fileExtension = fileName.substring(lastDotIndex).toLowerCase();
+            }
+            
+            if (!fileExtension.matches("\\.(jpg|jpeg|png|gif)")) {
+                LOGGER.warning("Invalid file extension: " + fileExtension);
+                return null;
+            }
+            
+            // Tạo tên file unique
+            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+            
+            // Tạo đường dẫn upload
+            String uploadPath = request.getServletContext().getRealPath("/uploads/avatars");
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            
+            // Save file
+            Path filePath = Paths.get(uploadPath, uniqueFileName);
+            Files.copy(filePart.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
+            LOGGER.info("Avatar uploaded successfully: " + uniqueFileName);
+            return uniqueFileName;
+            
+        } catch (Exception e) {
+            LOGGER.severe("Error uploading avatar file: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 }

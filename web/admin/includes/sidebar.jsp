@@ -20,7 +20,7 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link text-white ${param.page == 'products' ? 'active' : ''}" href="${pageContext.request.contextPath}/admin-products">
+                <a class="nav-link text-white ${param.page == 'products' ? 'active' : ''}" href="${pageContext.request.contextPath}/products">
                     <i class="bi bi-box"></i> Products
                 </a>
             </li>

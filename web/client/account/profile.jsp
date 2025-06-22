@@ -33,7 +33,7 @@
         }
         
         .profile-header {
-            background: linear-gradient(135deg, #73814B, #8fa05c);
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
@@ -92,7 +92,7 @@
         
         .stat-icon {
             font-size: 2rem;
-            color: #73814B;
+            color:  #0038a8;
             margin-bottom: 10px;
         }
         
@@ -134,7 +134,7 @@
         }
         
         .tab-button.active {
-            color: #73814B;
+            color:  #0038a8;
             background: white;
         }
         
@@ -145,7 +145,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: #73814B;
+            background:  #0038a8;
         }
         
         .tab-content {
@@ -183,7 +183,7 @@
         }
         
         .btn-primary {
-            background: #73814B;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             color: white;
             padding: 12px 30px;
             border: none;
@@ -196,7 +196,7 @@
         }
         
         .btn-primary:hover {
-            background: #8fa05c;
+            background: linear-gradient(135deg, #8bc8ec, #0038a8);
             transform: translateY(-2px);
         }
         
@@ -319,7 +319,7 @@
         <div class="profile-header">
             <div class="profile-avatar">                <c:choose>
                     <c:when test="${not empty user.avatar}">
-                        <img src="${pageContext.request.contextPath}/uploads/avatars/${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     </c:when>
                     <c:otherwise>
                         <i class="fas fa-user"></i>
@@ -562,17 +562,25 @@
                 </div>
             </div>
         </div>
-    </div>
-      <!-- Footer -->
+    </div>      <!-- Footer -->
     <%-- <jsp:include page="../components/footer.jsp" /> --%>
-      <!-- Scripts -->
+    
+    <!-- Load Bootstrap JS sau header -->
+    <script src="${pageContext.request.contextPath}/assets/js/bootstrap.min.js"></script>
+    
+    <!-- Load profile.js để có initAccountDropdown function -->
     <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
+    
+    <!-- Scripts -->
     <script>
         // Khởi tạo lại dropdown sau khi trang load
         $(document).ready(function() {
-            if (typeof initAccountDropdown === 'function') {
-                initAccountDropdown();
-            }
+            // Đảm bảo các script đã load xong trước khi gọi initAccountDropdown
+            setTimeout(function() {
+                if (typeof initAccountDropdown === 'function') {
+                    initAccountDropdown();
+                }
+            }, 100);
         });
         
         // Tab switching

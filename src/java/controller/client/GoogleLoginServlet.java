@@ -180,6 +180,7 @@ public class GoogleLoginServlet extends HttpServlet {
         String picture = userInfo.has("picture") ? userInfo.get("picture").getAsString() : null;
         
         System.out.println("Google user info - ID: " + googleId + ", Email: " + email + ", Name: " + name);
+        System.out.println("Google avatar URL: " + picture);
         
         UserDAO userDAO = new UserDAO();
         
@@ -192,17 +193,16 @@ public class GoogleLoginServlet extends HttpServlet {
                 userDAO.updateGoogleId(existingUser.getUserId(), googleId);
                 existingUser.setGoogleId(googleId);
             }
-            
-            // Cập nhật avatar nếu chưa có
-            if ((existingUser.getAvatar() == null || existingUser.getAvatar().isEmpty()) && picture != null) {
+              // Cập nhật avatar từ Google (luôn cập nhật để có avatar mới nhất)
+            if (picture != null && !picture.trim().isEmpty()) {
+                System.out.println("Updating avatar for existing user: " + picture);
                 userDAO.updateAvatar(existingUser.getUserId(), picture);
                 existingUser.setAvatar(picture);
             }
             
             // Đăng nhập user
             loginUser(existingUser, request, response);
-            
-        } else {
+              } else {
             // Tạo user mới từ Google
             User newUser = new User();
             newUser.setUsername(generateUsername(email)); // Tạo username từ email
@@ -223,28 +223,63 @@ public class GoogleLoginServlet extends HttpServlet {
                 if (createdUser != null) {
                     loginUser(createdUser, request, response);
                 } else {
-                    throw new ServletException("Không thể tạo tài khoản Google");
+                    // Nếu không tìm thấy user sau khi tạo, có thể user đã tồn tại
+                    System.out.println("User not found after creation, checking again...");
+                    User retryUser = userDAO.getUserByEmail(email);
+                    if (retryUser != null) {
+                        // User đã tồn tại, cập nhật Google ID
+                        userDAO.updateGoogleId(retryUser.getUserId(), googleId);
+                        retryUser.setGoogleId(googleId);
+                        loginUser(retryUser, request, response);
+                    } else {
+                        throw new ServletException("Không thể tạo tài khoản Google");
+                    }
                 }
             } else {
-                throw new ServletException("Không thể tạo tài khoản Google");
+                // Thất bại tạo user, kiểm tra lại xem user có tồn tại không
+                System.out.println("Failed to create user, checking if user exists...");
+                User retryUser = userDAO.getUserByEmail(email);
+                if (retryUser != null) {                    // User đã tồn tại, cập nhật Google ID và avatar
+                    System.out.println("User exists, updating Google ID and avatar...");
+                    userDAO.updateGoogleId(retryUser.getUserId(), googleId);
+                    retryUser.setGoogleId(googleId);
+                    
+                    // Cập nhật avatar từ Google
+                    if (picture != null && !picture.trim().isEmpty()) {
+                        System.out.println("Updating avatar for retry user: " + picture);
+                        userDAO.updateAvatar(retryUser.getUserId(), picture);
+                        retryUser.setAvatar(picture);
+                    }
+                    
+                    loginUser(retryUser, request, response);
+                } else {
+                    throw new ServletException("Không thể tạo tài khoản Google");
+                }
             }
         }
     }
-    
-    /**
+      /**
      * Đăng nhập user vào session
      */
     private void loginUser(User user, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        UserDAO userDAO = new UserDAO();
+        
+        // Cập nhật lastLogin
+        userDAO.updateLastLogin(user.getUserId());
+        
+        // Lấy lại user từ database để đảm bảo có thông tin mới nhất (bao gồm avatar)
+        User refreshedUser = userDAO.getUserById(user.getUserId());
+        if (refreshedUser != null) {
+            user = refreshedUser;
+        }
+        
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
         
         System.out.println("Google login successful for user: " + user.getUsername());
-        
-        // Cập nhật lastLogin
-        UserDAO userDAO = new UserDAO();
-        userDAO.updateLastLogin(user.getUserId());
+        System.out.println("User avatar in session: " + user.getAvatar());
         
         // Chuyển hướng theo role
         if ("admin".equals(user.getRole())) {
