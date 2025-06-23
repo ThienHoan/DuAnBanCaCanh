@@ -74,18 +74,16 @@ public class ProductImageDAO {
         }
 
         return images;
-    }
-
-    // Lấy hình ảnh chính theo product_id
+    }    // Lấy hình ảnh chính theo product_id
     public ProductImage getMainImageByProductId(int productId) {
         String query = "SELECT image_id, product_id, image_url, is_main, display_order, is_deleted " +
-                       "FROM Product_images WHERE product_id = ? AND is_main = 1";
+                       "FROM Product_images WHERE product_id = ? AND is_main = 1 AND is_deleted = 0";
 
-        try {
-            conn = new DBContext().getConnection();
-            ps = conn.prepareStatement(query);
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
             ps.setInt(1, productId);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 return new ProductImage(
@@ -99,8 +97,6 @@ public class ProductImageDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
 
         return null;

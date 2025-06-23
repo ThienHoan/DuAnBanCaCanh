@@ -690,217 +690,88 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="tab-content">
-                            <div id="tab01_1st" class="tab-contain active">
+                        <div class="tab-content">                            <div id="tab01_1st" class="tab-contain active">
                                 <ul class="products-list biolife-carousel nav-center-02 nav-none-on-mobile eq-height-contain" data-slick='{"rows":1 ,"arrows":true,"dots":false,"infinite":true,"speed":400,"slidesMargin":10,"slidesToShow":4, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 4}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesMargin":20}},{"breakpoint":768, "settings":{ "slidesToShow": 2, "rows":2, "slidesMargin":15}}]}'>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-05.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Organic Hass Avocado, Large</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                                    <c:choose>
+                                        <c:when test="${not empty homeProducts}">
+                                            <c:forEach var="product" items="${homeProducts}">
+                                                <li class="product-item">
+                                                    <div class="contain-product layout-default">
+                                                        <div class="product-thumb">
+                                                            <a href="product-detail?id=${product.productId}" class="link-to-product">                                                                <c:choose>
+                                                                    <c:when test="${not empty productImages[product.productId]}">
+                                                                        <img src="${productImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </a>
+                                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                                        </div>
+                                                        <div class="info">
+                                                            <c:choose>
+                                                                <c:when test="${not empty productCategories[product.productId]}">
+                                                                    <b class="categories">${productCategories[product.productId]}</b>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <b class="categories">General</b>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
+                                                            <div class="price">
+                                                                <c:choose>
+                                                                    <c:when test="${not empty product.salePrice and product.salePrice > 0}">
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                        <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </div>
+                                                            <div class="slide-down-box">
+                                                                <p class="message">All products are carefully selected to ensure quality.</p>
+                                                                <div class="buttons">
+                                                                    <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
+                                                                    <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
+                                                                    <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <!-- Default products when no products from database -->                                            <!-- Default products when no products from database -->
+                                            <li class="product-item">
+                                                <div class="contain-product layout-default">
+                                                    <div class="product-thumb">
+                                                        <a href="#" class="link-to-product">
+                                                            <img src="assets/images/products/p-05.jpg" alt="Sample Product" width="270" height="270" class="product-thumnail">
+                                                        </a>
+                                                        <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                                    </div>
+                                                    <div class="info">
+                                                        <b class="categories">General</b>
+                                                        <h4 class="product-title"><a href="#" class="pr-name">Sample Product</a></h4>
+                                                        <div class="price">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">$</span>85.00</span></ins>
+                                                        </div>
+                                                        <div class="slide-down-box">
+                                                            <p class="message">All products are carefully selected to ensure quality.</p>
+                                                            <div class="buttons">
+                                                                <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
+                                                                <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
+                                                                <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-07.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">13 Healing Powers of Lemons</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-02.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Hot Chili Peppers Magnetic Salt</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-03.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Passover Cauliflower Kugel</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-06.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Packham's Pears</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-20.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-19.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="product-item">
-                                        <div class="contain-product layout-default">
-                                            <div class="product-thumb">
-                                                <a href="#" class="link-to-product">
-                                                    <img src="assets/images/products/p-01.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                </a>
-                                                <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                            </div>
-                                            <div class="info">
-                                                <b class="categories">Vegetables</b>
-                                                <h4 class="product-title"><a href="#" class="pr-name">Organic Hass Avocado</a></h4>
-                                                <div class="price ">
-                                                    <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                    <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                                </div>
-                                                <div class="slide-down-box">
-                                                    <p class="message">All products are carefully selected to ensure food safety.</p>
-                                                    <div class="buttons">
-                                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
                                     <li class="product-item">
                                         <div class="contain-product layout-default">
                                             <div class="product-thumb">
@@ -1975,141 +1846,143 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-4 col-xs-12">
-                        <div class="advance-product-box">
+                    <div class="col-sm-6 col-md-4 col-xs-12">                        <div class="advance-product-box">
                             <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny">
                                 <h3 class="title">Featured Products</h3>
                             </div>
                             <ul class="products-list vertical-layout products-list__vertical-layout">
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-04.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                <c:choose>
+                                    <c:when test="${not empty homeProducts}">
+                                        <c:forEach var="product" items="${homeProducts}" begin="0" end="2">
+                                            <li class="product-item">
+                                                <div class="contain-product contain-product__right-info-layout2">
+                                                    <div class="product-thumb">
+                                                        <a href="product-detail?id=${product.productId}" class="link-to-product">
+                                                            <c:choose>
+                                                                <c:when test="${not empty productImages[product.productId]}">
+                                                                    <img src="${productImages[product.productId]}" alt="${product.name}" width="100" height="100" class="product-thumnail">
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <img src="assets/images/no-image.jpg" alt="No Image" width="100" height="100" class="product-thumnail">
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </a>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
+                                                        <div class="price">
+                                                            <c:choose>
+                                                                <c:when test="${not empty product.salePrice and product.salePrice > 0}">
+                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                    <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
+                                                        <div class="rating">
+                                                            <p class="star-rating"><span class="width-80percent"></span></p>
+                                                            <span class="review-count">(0 Reviews)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- Default products when no products from database -->
+                                        <li class="product-item">
+                                            <div class="contain-product contain-product__right-info-layout2">
+                                                <div class="product-thumb">
+                                                    <a href="#" class="link-to-product">
+                                                        <img src="assets/images/home-04/pr-100-04.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
+                                                    </a>
+                                                </div>
+                                                <div class="info">
+                                                    <h4 class="product-title"><a href="#" class="pr-name">Sample Product</a></h4>
+                                                    <div class="price ">
+                                                        <ins><span class="price-amount"><span class="currencySymbol">$</span>85.00</span></ins>
+                                                    </div>
+                                                    <div class="rating">
+                                                        <p class="star-rating"><span class="width-80percent"></span></p>
+                                                        <span class="review-count">(0 Reviews)</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-05.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                            </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-06.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                            </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
+                                        </li>
+                                    </c:otherwise>
+                                </c:choose>
                             </ul>
                         </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4 col-xs-12 sm-margin-top-54px md-margin-top-0">
+                    </div>                    <div class="col-sm-6 col-md-4 col-xs-12 sm-margin-top-54px md-margin-top-0">
                         <div class="advance-product-box">
                             <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny">
                                 <h3 class="title">Bestseller Products</h3>
                             </div>
                             <ul class="products-list vertical-layout products-list__vertical-layout">
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-07.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
+                                <c:choose>
+                                    <c:when test="${not empty homeProducts}">
+                                        <c:forEach var="product" items="${homeProducts}" begin="3" end="5">
+                                            <li class="product-item">
+                                                <div class="contain-product contain-product__right-info-layout2">
+                                                    <div class="product-thumb">
+                                                        <a href="product-detail?id=${product.productId}" class="link-to-product">
+                                                            <c:choose>
+                                                                <c:when test="${not empty productImages[product.productId]}">
+                                                                    <img src="${productImages[product.productId]}" alt="${product.name}" width="100" height="100" class="product-thumnail">
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <img src="assets/images/no-image.jpg" alt="No Image" width="100" height="100" class="product-thumnail">
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </a>
+                                                    </div>
+                                                    <div class="info">
+                                                        <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
+                                                        <div class="price">
+                                                            <c:choose>
+                                                                <c:when test="${not empty product.salePrice and product.salePrice > 0}">
+                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                    <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
+                                                        <div class="rating">
+                                                            <p class="star-rating"><span class="width-80percent"></span></p>
+                                                            <span class="review-count">(0 Reviews)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- Default products when no products from database -->
+                                        <li class="product-item">
+                                            <div class="contain-product contain-product__right-info-layout2">
+                                                <div class="product-thumb">
+                                                    <a href="#" class="link-to-product">
+                                                        <img src="assets/images/home-04/pr-100-07.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
+                                                    </a>
+                                                </div>
+                                                <div class="info">
+                                                    <h4 class="product-title"><a href="#" class="pr-name">Sample Product</a></h4>
+                                                    <div class="price ">
+                                                        <ins><span class="price-amount"><span class="currencySymbol">$</span>85.00</span></ins>
+                                                    </div>
+                                                    <div class="rating">
+                                                        <p class="star-rating"><span class="width-80percent"></span></p>
+                                                        <span class="review-count">(0 Reviews)</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-08.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                            </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="product-item">
-                                    <div class="contain-product contain-product__right-info-layout2">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                <img src="assets/images/home-04/pr-100-09.jpg" alt="Vegetables" width="100" height="100" class="product-thumnail">
-                                            </a>
-                                        </div>
-                                        <div class="info">
-                                            <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
-                                            <div class="price ">
-                                                <ins><span class="price-amount"><span class="currencySymbol">ï¿½</span>85.00</span></ins>
-                                                <del><span class="price-amount"><span class="currencySymbol">ï¿½</span>95.00</span></del>
-                                            </div>
-                                            <div class="rating">
-                                                <p class="star-rating"><span class="width-80percent"></span></p>
-                                                <span class="review-count">(05 Reviews)</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
+                                        </li>
+                                    </c:otherwise>
+                                </c:choose>
                             </ul>
                         </div>
                     </div>

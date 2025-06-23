@@ -125,9 +125,9 @@ public class LoginServlet extends HttpServlet {
             
             // Chuyển hướng theo role
             if ("admin".equals(user.getRole())) {
-                response.sendRedirect("home.jsp");
+                response.sendRedirect("home");
             } else {
-                response.sendRedirect("home.jsp");
+                response.sendRedirect("home");
             }
         } else {            // Đăng nhập thất bại
             System.out.println("Login failed for username: " + username);

@@ -24,24 +24,24 @@ public class ProductDAO {
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
-            
-            while (rs.next()) {
-                Product product = new Product(
-                    rs.getInt("product_id"),
-                    rs.getInt("category_id") != 0 ? rs.getInt("category_id") : 0,
-                    rs.getString("name"),
-                    rs.getString("description"),
-                    rs.getString("short_description"),
-                    rs.getBigDecimal("price"),
-                    rs.getBigDecimal("sale_price") != null ? rs.getBigDecimal("sale_price") : BigDecimal.ZERO,
-                    rs.getInt("quantity"),
-                    rs.getString("sku"),
-                    rs.getString("status"),
-                    rs.getInt("featured"),
-                    rs.getString("created_at"),
-                    rs.getString("updated_at"),
-                    rs.getInt("is_deleted")
-                );                products.add(product);
+              while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id") != 0 ? rs.getInt("category_id") : null);
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price") != null ? rs.getBigDecimal("sale_price") : BigDecimal.ZERO);
+                product.setQuantity(rs.getInt("quantity"));
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getString("created_at"));
+                product.setUpdatedAt(rs.getString("updated_at"));
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                products.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,7 +60,6 @@ public class ProductDAO {
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }    public boolean createProduct(Product product) {
@@ -143,16 +142,50 @@ public class ProductDAO {
             
             ps.setInt(1, productId);
             ResultSet rs = ps.executeQuery();
+              if (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getString("created_at"));
+                product.setUpdatedAt(rs.getString("updated_at"));
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                return product;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Product> getActiveProducts() {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT product_id, category_id, name, description, short_description, " +
+                      "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted " +
+                      "FROM Products WHERE status = 'active' AND is_deleted = 0 ORDER BY created_at DESC";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             
-            if (rs.next()) {
-                return new Product(
+            while (rs.next()) {
+                Product product = new Product(
                     rs.getInt("product_id"),
-                    rs.getInt("category_id"),
+                    rs.getInt("category_id") != 0 ? rs.getInt("category_id") : 0,
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getString("short_description"),
                     rs.getBigDecimal("price"),
-                    rs.getBigDecimal("sale_price"),
+                    rs.getBigDecimal("sale_price") != null ? rs.getBigDecimal("sale_price") : BigDecimal.ZERO,
                     rs.getInt("quantity"),
                     rs.getString("sku"),
                     rs.getString("status"),
@@ -161,11 +194,12 @@ public class ProductDAO {
                     rs.getString("updated_at"),
                     rs.getInt("is_deleted")
                 );
+                products.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+          return products;
     }
 
     // Private method để lấy connection

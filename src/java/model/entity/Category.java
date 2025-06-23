@@ -150,6 +150,15 @@ public class Category {
     public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted ? 1 : 0;
     }
+    
+    // Boolean convenience methods for status
+    public boolean isActive() {
+        return "active".equalsIgnoreCase(status);
+    }
+    
+    public void setActive(boolean active) {
+        this.status = active ? "active" : "inactive";
+    }
 
     @Override
     public String toString() {

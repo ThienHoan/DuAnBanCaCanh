@@ -17,17 +17,14 @@ public class Product {
     private String status;
     private Integer featured;  // Changed from boolean to Integer
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private Integer isDeleted; // Changed from boolean to Integer
+    private LocalDateTime updatedAt;    private Integer isDeleted; // Changed from boolean to Integer
     
     // Date format pattern
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // Default constructor
     public Product() {
-    }
-
-    // Constructor with all fields
+    }    // Constructor with all fields
     public Product(int productId, Integer categoryId, String name, String description, 
                   String shortDescription, BigDecimal price, BigDecimal salePrice, int quantity, 
                   String sku, String status, Integer featured, String createdAt, 
@@ -193,9 +190,17 @@ public class Product {
     public boolean isDeleted() {
         return isDeleted != null && isDeleted == 1;
     }
-    
-    public void setDeleted(boolean isDeleted) {
+      public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted ? 1 : 0;
+    }
+    
+    // Boolean convenience methods for status
+    public boolean isActive() {
+        return "active".equalsIgnoreCase(status);
+    }
+    
+    public void setActive(boolean active) {
+        this.status = active ? "active" : "inactive";
     }
 
     @Override
