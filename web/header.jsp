@@ -94,26 +94,21 @@
                                 <ul class="sub-menu">
                                     <li class="menu-item"><a href="#">Omelettes</a></li>
                                     <li class="menu-item"><a href="#">Breakfast Scrambles</a></li>
-                                    <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Eggs & other considerations">Eggs & other considerations</a>
+                                    <li class="menu-item menu-item-has-children has-child">
+                                        <a href="#" class="menu-name" data-title="Cá cảnh">Cá cảnh</a>
                                         <ul class="sub-menu">
-                                            <li class="menu-item"><a href="#">Classic Breakfast</a></li>
-                                            <li class="menu-item"><a href="#">Huevos Rancheros</a></li>
-                                            <li class="menu-item"><a href="#">Everything Egg Sandwich</a></li>
-                                            <li class="menu-item"><a href="#">Egg Sandwich</a></li>
-                                            <li class="menu-item"><a href="#">Vegan Burrito</a></li>
-                                            <li class="menu-item"><a href="#">Biscuits and Gravy</a></li>
-                                            <li class="menu-item"><a href="#">Bacon Avo Egg Sandwich</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=3">Cá nước ngọt</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=4">Cá nước lợ</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=5">Cá nước mặn</a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item"><a href="#">Griddle</a></li>
-                                    <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Sides & Extras">Sides & Extras</a>
+                                    <li class="menu-item menu-item-has-children has-child">
+                                        <a href="#" class="menu-name" data-title="Thiết bị và thực phẩm">Thiết bị và thực phẩm</a>
                                         <ul class="sub-menu">
-                                            <li class="menu-item"><a href="#">Breakfast Burrito</a></li>
-                                            <li class="menu-item"><a href="#">Crab Cake Benedict</a></li>
-                                            <li class="menu-item"><a href="#">Corned Beef Hash</a></li>
-                                            <li class="menu-item"><a href="#">Steak & Eggs</a></li>
-                                            <li class="menu-item"><a href="#">Oatmeal</a></li>
-                                            <li class="menu-item"><a href="#">Fruit & Yogurt Parfait</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=7">Thiết bị hồ cá</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=6">Thức ăn cho cá</a></li>
+                                            <li class="menu-item"><a href="CategoryServlet?categoryId=8">Thuốc cho cá</a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item"><a href="#">Biscuits</a></li>
