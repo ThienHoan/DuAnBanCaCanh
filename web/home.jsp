@@ -712,7 +712,7 @@
                                                         <div class="info">
                                                             <c:choose>
                                                                 <c:when test="${not empty productCategories[product.productId]}">
-                                                                    <b class="categories">${productCategories[product.productId]}</b>
+                                                                    <b class="categories">${productCategories[product.productId].name}</b>
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <b class="categories">General</b>
@@ -734,7 +734,12 @@
                                                                 <p class="message">All products are carefully selected to ensure quality.</p>
                                                                 <div class="buttons">
                                                                     <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                                    <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
+                                                                    <a class="btn add-to-cart-btn"
+   data-product-id="${product.productId}"
+   href="javascript:void(0);"
+   onclick="addToCart(event, ${product.productId})">
+    <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart
+</a>
                                                                     <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
                                                                 </div>
                                                             </div>
@@ -1853,43 +1858,58 @@
                             <ul class="products-list vertical-layout products-list__vertical-layout">
                                 <c:choose>
                                     <c:when test="${not empty homeProducts}">
-                                        <c:forEach var="product" items="${homeProducts}" begin="0" end="2">
-                                            <li class="product-item">
-                                                <div class="contain-product contain-product__right-info-layout2">
-                                                    <div class="product-thumb">
-                                                        <a href="product-detail?id=${product.productId}" class="link-to-product">
-                                                            <c:choose>
-                                                                <c:when test="${not empty productImages[product.productId]}">
-                                                                    <img src="${productImages[product.productId]}" alt="${product.name}" width="100" height="100" class="product-thumnail">
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <img src="assets/images/no-image.jpg" alt="No Image" width="100" height="100" class="product-thumnail">
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </a>
-                                                    </div>
-                                                    <div class="info">
-                                                        <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
-                                                        <div class="price">
-                                                            <c:choose>
-                                                                <c:when test="${not empty product.salePrice and product.salePrice > 0}">
-                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
-                                                                    <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </div>
-                                                        <div class="rating">
-                                                            <p class="star-rating"><span class="width-80percent"></span></p>
-                                                            <span class="review-count">(0 Reviews)</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </c:forEach>
-                                    </c:when>
+    <c:forEach var="product" items="${homeProducts}">
+        <li class="product-item">
+            <div class="contain-product layout-default">
+                <div class="product-thumb">
+                    <a href="product-detail?id=${product.productId}" class="link-to-product">
+                        <c:choose>
+                            <c:when test="${not empty productImages[product.productId]}">
+                                <img src="${productImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                            </c:when>
+                            <c:otherwise>
+                                <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                            </c:otherwise>
+                        </c:choose>
+                    </a>
+                    <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                </div>
+                <div class="info">
+                    <c:choose>
+                        <c:when test="${not empty productCategories[product.productId]}">
+                            <b class="categories">${productCategories[product.productId].name}</b>
+                        </c:when>
+                        <c:otherwise>
+                            <b class="categories">General</b>
+                        </c:otherwise>
+                    </c:choose>
+                    <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
+                    <div class="price">
+                        <c:choose>
+                            <c:when test="${not empty product.salePrice and product.salePrice > 0}">
+                                <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
+                                <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                            </c:when>
+                            <c:otherwise>
+                                <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                    <div class="slide-down-box">
+                        <p class="message">All products are carefully selected to ensure quality.</p>
+                        <div class="buttons">
+                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
+                            <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(${product.productId})">
+                                <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart
+                            </a>
+                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </c:forEach>
+</c:when>
                                     <c:otherwise>
                                         <!-- Default products when no products from database -->
                                         <li class="product-item">
@@ -2404,6 +2424,66 @@
     <script src="assets/js/slick.min.js"></script>
     <script src="assets/js/biolife.framework.js"></script>
     <script src="assets/js/functions.js"></script>
+<!--    ==scrip cho addto cart==-->
+    <script>
+function addToCart(event, productId) {
+    if (event) event.preventDefault();
+
+    var formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('productId', productId);
+    formData.append('quantity', 1);
+
+    fetch('cartClient', { // Đúng url servlet!
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage(data.message, 'success');
+            updateCartCount(data.itemCount);
+        } else {
+            showMessage(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
+    });
+}
+
+
+
+function showMessage(message, type) {
+    // Create message element
+    var messageDiv = document.createElement('div');
+    messageDiv.className = 'alert alert-' + type;
+    messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
+    
+    if (type === 'success') {
+        messageDiv.style.backgroundColor = '#28a745';
+    } else {
+        messageDiv.style.backgroundColor = '#dc3545';
+    }
+    
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    
+    // Remove message after 3 seconds
+    setTimeout(function() {
+        document.body.removeChild(messageDiv);
+    }, 3000);
+}
+
+function updateCartCount(count) {
+    // Update cart counter if you have one
+    var cartCounter = document.querySelector('.cart-counter');
+    if (cartCounter) {
+        cartCounter.textContent = count;
+    }
+}
+</script>
 </body>
 
 </html>
