@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller.client;
 
 import dao.impl.CategoryDAO;
@@ -22,51 +18,81 @@ import java.util.List;
 
 @WebServlet("/CategoryServlet")
 public class CategoryServlet extends HttpServlet {
-    private static final int PAGE_SIZE = 10; // Default products per page
+    private static final int PAGE_SIZE = 5; // Products per page
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy categoryId và page từ request parameter
         int categoryId;
+        boolean isParent = "true".equals(request.getParameter("isParent"));
+        String search = request.getParameter("search");
+        String sort = request.getParameter("sort");
         int page;
         try {
-            categoryId = Integer.parseInt(request.getParameter("categoryId"));
+            categoryId = request.getParameter("categoryId") != null ? Integer.parseInt(request.getParameter("categoryId")) : 0;
         } catch (NumberFormatException e) {
-            categoryId = 1; // Default to category 1 if invalid
+            categoryId = 0;
         }
         try {
             page = Integer.parseInt(request.getParameter("page"));
         } catch (NumberFormatException e) {
-            page = 1; // Default to page 1 if invalid
+            page = 1;
         }
 
         Connection conn = null;
         try {
-            // Sử dụng DBContext để lấy kết nối
             conn = DBContext.getConnection();
             if (conn == null) {
                 throw new SQLException("Failed to get database connection");
             }
 
-            // Lấy danh sách sản phẩm với phân trang
             ProductViewDAO productViewDAO = new ProductViewDAO(conn);
-            ProductViewDAO.PaginatedResult paginatedResult = productViewDAO.getProductsByCategoryId(categoryId, page, PAGE_SIZE);
-            List<ProductView> products = paginatedResult.getProducts();
-            int totalPages = paginatedResult.getTotalPages();
+            // Fetch all products for the main listing
+            List<ProductView> allProducts;
+            if (categoryId == 0) {
+                allProducts = productViewDAO.getAllProducts(sort, search);
+            } else if (isParent) {
+                allProducts = productViewDAO.getProductsByParentCategoryId(categoryId, sort, search);
+            } else {
+                allProducts = productViewDAO.getProductsByCategoryId(categoryId, sort, search);
+            }
 
-            // Lấy danh sách tất cả danh mục
+            // Calculate total pages for main product listing
+            int totalCount = allProducts.size();
+            int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
+            page = Math.max(1, Math.min(page, totalPages));
+
+            // Paginate the main product list
+            int startIndex = (page - 1) * PAGE_SIZE;
+            int endIndex = Math.min(startIndex + PAGE_SIZE, totalCount);
+            List<ProductView> paginatedProducts = allProducts.subList(startIndex, endIndex);
+
+            // Fetch discounted products for the Hero Section
+            List<ProductView> discountedProducts;
+            if (categoryId == 0) {
+                discountedProducts = productViewDAO.getAllDiscountedProducts(search);
+            } else if (isParent) {
+                discountedProducts = productViewDAO.getDiscountedProductsByParentCategoryId(categoryId, search);
+            } else {
+                discountedProducts = productViewDAO.getDiscountedProductsByCategoryId(categoryId, search);
+            }
+
+            // Limit to PAGE_SIZE
+            if (discountedProducts.size() > PAGE_SIZE) {
+                discountedProducts = discountedProducts.subList(0, PAGE_SIZE);
+            }
+
             CategoryDAO categoryDAO = new CategoryDAO();
             List<Category> categories = categoryDAO.getAllCategories();
 
-            // Đặt dữ liệu vào request
-            request.setAttribute("products", products);
+            // Set attributes for JSP
+            request.setAttribute("products", paginatedProducts);
+            request.setAttribute("discountedProducts", discountedProducts);
             request.setAttribute("categoryId", categoryId);
             request.setAttribute("categories", categories);
             request.setAttribute("currentPage", page);
             request.setAttribute("totalPages", totalPages);
 
-            // Forward đến category1.jsp
             request.getRequestDispatcher("/category1.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();

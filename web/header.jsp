@@ -93,9 +93,9 @@
                                 <a href="#" class="menu-name" data-title="Product">Product</a>
                                 <ul class="sub-menu">
                                     <li class="menu-item"><a href="#">Omelettes</a></li>
-                                    <li class="menu-item"><a href="#">Breakfast Scrambles</a></li>
+                                    <li class="parent"><a href="CategoryServlet?categoryId=0">Show All</a></li>
                                     <li class="menu-item menu-item-has-children has-child">
-                                        <a href="#" class="menu-name" data-title="Cá cảnh">Cá cảnh</a>
+                                        <a href="CategoryServlet?categoryId=1&isParent=true" class="menu-name" data-title="Cá cảnh">Cá cảnh</a>
                                         <ul class="sub-menu">
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=3">Cá nước ngọt</a></li>
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=4">Cá nước lợ</a></li>
@@ -104,7 +104,7 @@
                                     </li>
                                     <li class="menu-item"><a href="#">Griddle</a></li>
                                     <li class="menu-item menu-item-has-children has-child">
-                                        <a href="#" class="menu-name" data-title="Thiết bị và thực phẩm">Thiết bị và thực phẩm</a>
+                                        <a href="CategoryServlet?categoryId=2&isParent=true" class="menu-name" data-title="Thiết bị và thực phẩm">Thiết bị và thực phẩm</a>
                                         <ul class="sub-menu">
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=7">Thiết bị hồ cá</a></li>
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=6">Thức ăn cho cá</a></li>
