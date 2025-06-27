@@ -16,12 +16,12 @@
     <meta name="robots" content="noindex, nofollow">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">
-      <!-- CSS -->
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/images/favicon.ico">      <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main-color.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/profile.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/avatar-picker.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <!-- Custom CSS -->
@@ -59,8 +59,7 @@
         .form-body {
             padding: 40px;
         }
-        
-        .avatar-section {
+          .avatar-section {
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
@@ -81,6 +80,79 @@
             justify-content: center;
             font-size: 48px;
             color: #73814B;
+            overflow: hidden;
+        }
+        
+        .avatar-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .avatar-option-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            width: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .avatar-option-card:hover {
+            border-color: #0038a8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,56,168,0.1);
+        }
+        
+        .avatar-option-card.active {
+            border-color: #0038a8;
+            background: #f8fafe;
+        }
+        
+        .avatar-option-icon {
+            font-size: 2rem;
+            color: #0038a8;
+            margin-bottom: 10px;
+        }
+        
+        .avatar-option-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .avatar-option-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .avatar-upload-section {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+        
+        .avatar-upload-section.active {
+            display: block;
+        }
+        
+        .avatar-url-section {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+        
+        .avatar-url-section.active {
+            display: block;
         }
         
         .avatar-upload {
@@ -106,6 +178,64 @@
         .avatar-upload-btn:hover {
             background: linear-gradient(135deg, #8bc8ec, #0038a8);
             transform: translateY(-2px);
+        }
+        
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            margin-bottom: 15px;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .url-input:focus {
+            border-color: #0038a8;
+            outline: none;
+        }
+        
+        .preview-url-btn {
+            padding: 12px 20px;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .preview-url-btn:hover {
+            background: #138496;
+        }
+        
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 15px auto;
+            border: 2px solid #ddd;
+            overflow: hidden;
+            display: none;
+            background: #f8f9fa;
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .upload-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
         }
         
         .form-group {
@@ -305,12 +435,12 @@
                         <i class="fas fa-exclamation-circle"></i> ${error}
                     </div>
                 </c:if>
-                
-                <!-- Avatar Section -->
+                  <!-- Avatar Section -->
                 <div class="avatar-section">
                     <h3><i class="fas fa-camera"></i> Ảnh đại diện</h3>
                     
-                    <div class="current-avatar">                        <c:choose>
+                    <div class="current-avatar" id="currentAvatar">
+                        <c:choose>
                             <c:when test="${not empty user.avatar}">
                                 <img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                             </c:when>
@@ -320,16 +450,85 @@
                         </c:choose>
                     </div>
                     
-                    <form action="${pageContext.request.contextPath}/profile" method="post" enctype="multipart/form-data" id="avatarForm">
-                        <input type="hidden" name="action" value="update-avatar">
-                        <div class="avatar-upload">
-                            <input type="file" id="avatar" name="avatar" accept="image/*" onchange="previewAvatar(this)">
-                            <label for="avatar" class="avatar-upload-btn">
-                                <i class="fas fa-upload"></i> Chọn ảnh mới
-                            </label>
+                    <!-- Avatar Options -->
+                    <div class="avatar-options">
+                        <div class="avatar-option-card active" onclick="selectAvatarOption('upload')">
+                            <div class="avatar-option-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="avatar-option-title">Upload từ máy</div>
+                            <div class="avatar-option-desc">Chọn ảnh từ thiết bị của bạn</div>
                         </div>
-                        <div class="form-help">Chấp nhận file JPG, PNG, GIF. Tối đa 10MB.</div>
-                    </form>
+                        
+                        <div class="avatar-option-card" onclick="selectAvatarOption('url')">
+                            <div class="avatar-option-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div class="avatar-option-title">Từ URL</div>
+                            <div class="avatar-option-desc">Nhập đường dẫn ảnh từ internet</div>
+                        </div>
+                    </div>
+                      <!-- Upload Section -->
+                    <div class="avatar-section-content active" id="uploadSection">
+                        <form action="${pageContext.request.contextPath}/profile" method="post" enctype="multipart/form-data" id="avatarUploadForm">
+                            <input type="hidden" name="action" value="update-avatar">
+                            <input type="hidden" name="avatarType" value="upload">
+                            
+                            <div class="upload-drop-zone" onclick="document.getElementById('avatar').click();">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">Kéo thả file ảnh vào đây</div>
+                                <div class="upload-subtext">hoặc click để chọn file</div>
+                            </div>
+                            
+                            <input type="file" id="avatar" name="avatar" accept="image/*" onchange="previewUploadAvatar(this)" style="display: none;">
+                            
+                            <div class="upload-info">
+                                <i class="fas fa-info-circle"></i> Chấp nhận file JPG, PNG, GIF, WEBP. Tối đa 10MB.
+                            </div>
+                            
+                            <div class="avatar-preview-container">
+                                <div class="avatar-preview" id="uploadPreview"></div>
+                                <button type="submit" class="submit-btn" id="uploadSubmitBtn">
+                                    <i class="fas fa-save"></i> Lưu ảnh đại diện
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- URL Section -->
+                    <div class="avatar-section-content" id="urlSection">
+                        <form action="${pageContext.request.contextPath}/profile" method="post" id="avatarUrlForm">
+                            <input type="hidden" name="action" value="update-avatar">
+                            <input type="hidden" name="avatarType" value="url">
+                            
+                            <div class="url-input-container">
+                                <div class="url-input-with-button">
+                                    <input type="url" 
+                                           id="avatarUrl" 
+                                           name="avatarUrl" 
+                                           class="avatar-url-input" 
+                                           placeholder="Nhập URL ảnh (ví dụ: https://example.com/avatar.jpg)"
+                                           oninput="validateUrl(this.value)">
+                                    <button type="button" class="url-preview-btn" onclick="previewUrlAvatar()">
+                                        <i class="fas fa-eye"></i> Xem trước
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="upload-info">
+                                <i class="fas fa-link"></i> Nhập đường dẫn đầy đủ đến ảnh từ internet
+                            </div>
+                            
+                            <div class="avatar-preview-container">
+                                <div class="avatar-preview" id="urlPreview"></div>
+                                <button type="submit" class="submit-btn" id="urlSubmitBtn">
+                                    <i class="fas fa-save"></i> Lưu ảnh đại diện
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
                 <!-- Profile Form -->
@@ -416,10 +615,46 @@
     
     <!-- Load profile.js để có initAccountDropdown function -->
     <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>
-    
-    <!-- Scripts -->
-    <script>
-        // Khởi tạo lại dropdown sau khi trang load
+      <!-- Scripts -->
+    <script>        // Avatar option selection
+        function selectAvatarOption(type) {
+            // Remove active class from all cards
+            document.querySelectorAll('.avatar-option-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Hide all sections
+            document.getElementById('uploadSection').classList.remove('active');
+            document.getElementById('urlSection').classList.remove('active');
+            
+            // Clear any error/success messages
+            document.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
+            
+            if (type === 'upload') {
+                // Activate upload option
+                document.querySelector('.avatar-option-card:first-child').classList.add('active');
+                document.getElementById('uploadSection').classList.add('active');
+                
+                // Reset URL form
+                document.getElementById('avatarUrl').value = '';
+                document.getElementById('urlPreview').classList.remove('show');
+                document.getElementById('urlSubmitBtn').classList.remove('show');
+                
+                // Setup drag and drop
+                setupDragDrop();
+            } else if (type === 'url') {
+                // Activate URL option
+                document.querySelector('.avatar-option-card:last-child').classList.add('active');
+                document.getElementById('urlSection').classList.add('active');
+                
+                // Reset upload form
+                document.getElementById('avatar').value = '';
+                document.getElementById('uploadPreview').classList.remove('show');
+                document.getElementById('uploadSubmitBtn').classList.remove('show');
+            }
+        }
+        
+        // Initialize page
         $(document).ready(function() {
             // Đảm bảo các script đã load xong trước khi gọi initAccountDropdown
             setTimeout(function() {
@@ -427,24 +662,199 @@
                     initAccountDropdown();
                 }
             }, 100);
+            
+            // Setup drag and drop for default upload option
+            setupDragDrop();
         });
-        
-        // Preview avatar before upload
-        function previewAvatar(input) {
+          // Preview uploaded avatar
+        function previewUploadAvatar(input) {
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                if (!validateUploadFile(file)) {
+                    input.value = '';
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const avatarContainer = document.querySelector('.current-avatar');
-                    avatarContainer.innerHTML = '<img src="' + e.target.result + '" alt="Preview" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+                    const preview = document.getElementById('uploadPreview');
+                    preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+                    preview.classList.add('show');
+                    
+                    const submitBtn = document.getElementById('uploadSubmitBtn');
+                    submitBtn.classList.add('show');
+                    
+                    // Update current avatar display
+                    updateCurrentAvatar(e.target.result);
                 };
-                reader.readAsDataURL(input.files[0]);
-                
-                // Auto submit avatar form
-                document.getElementById('avatarForm').submit();
+                reader.readAsDataURL(file);
             }
         }
         
-        // Form validation
+        // Validate upload file
+        function validateUploadFile(file) {
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.');
+                return false;
+            }
+            
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WEBP).');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Setup drag and drop
+        function setupDragDrop() {
+            const dropZone = document.querySelector('.upload-drop-zone');
+            if (!dropZone) return;
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight(e) {
+                dropZone.classList.add('dragover');
+            }
+            
+            function unhighlight(e) {
+                dropZone.classList.remove('dragover');
+            }
+            
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    const fileInput = document.getElementById('avatar');
+                    fileInput.files = files;
+                    previewUploadAvatar(fileInput);
+                }
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            // Remove existing error messages
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            const activeSection = document.querySelector('.avatar-section-content.active');
+            if (activeSection) {
+                activeSection.insertBefore(errorDiv, activeSection.firstChild);
+            }
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            // Remove existing messages
+            document.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            
+            const activeSection = document.querySelector('.avatar-section-content.active');
+            if (activeSection) {
+                activeSection.insertBefore(successDiv, activeSection.firstChild);
+            }
+        }
+        
+        // Validate and preview URL avatar
+        function validateUrl(url) {
+            const urlSubmitBtn = document.getElementById('urlSubmitBtn');
+            if (url.trim() === '') {
+                urlSubmitBtn.style.display = 'none';
+                document.getElementById('urlPreview').style.display = 'none';
+            }
+        }
+          function previewUrlAvatar() {
+            const url = document.getElementById('avatarUrl').value.trim();
+            
+            if (!url) {
+                showError('Vui lòng nhập URL ảnh.');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                showError('URL không hợp lệ. Vui lòng nhập URL đầy đủ.');
+                return;
+            }
+            
+            // Show loading
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.className = 'loading-spinner show';
+            document.getElementById('urlPreview').appendChild(loadingSpinner);
+            
+            // Create image to test if URL is valid
+            const img = new Image();
+            img.onload = function() {
+                loadingSpinner.remove();
+                const preview = document.getElementById('urlPreview');
+                preview.innerHTML = '<img src="' + url + '" alt="Preview">';
+                preview.classList.add('show');
+                
+                const submitBtn = document.getElementById('urlSubmitBtn');
+                submitBtn.classList.add('show');
+                
+                // Update current avatar display
+                updateCurrentAvatar(url);
+                showSuccess('Ảnh hợp lệ! Bạn có thể lưu để cập nhật avatar.');
+            };
+            
+            img.onerror = function() {
+                loadingSpinner.remove();
+                showError('Không thể tải ảnh từ URL này. Vui lòng kiểm tra lại.');
+                document.getElementById('urlPreview').classList.remove('show');
+                document.getElementById('urlSubmitBtn').classList.remove('show');
+            };
+            
+            img.src = url;
+        }
+        
+        // Update current avatar display
+        function updateCurrentAvatar(src) {
+            const currentAvatar = document.getElementById('currentAvatar');
+            currentAvatar.innerHTML = '<img src="' + src + '" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">';
+        }
+        
+        // Form submissions with loading
+        document.getElementById('avatarUploadForm').addEventListener('submit', function() {
+            showLoading();
+        });
+        
+        document.getElementById('avatarUrlForm').addEventListener('submit', function() {
+            showLoading();
+        });
+        
+        // Form validation for profile
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             const fullName = document.getElementById('fullName').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -473,11 +883,6 @@
             }
             
             // Show loading
-            showLoading();
-        });
-        
-        // Avatar form loading
-        document.getElementById('avatarForm').addEventListener('submit', function() {
             showLoading();
         });
         

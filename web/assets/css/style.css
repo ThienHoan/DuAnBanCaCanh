@@ -2605,12 +2605,7 @@ body.open-mobile-search .header-area.layout-02{
     line-height: 24px;
 }
 @media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0)
-{ @media {
-    /*
-      Define here the CSS styles applied only to Safari browsers
-      (any version and any device)
-     */
-}}
+{ }
 .newsletter-block.layout-03{
     display: block;
     font-size: 0;

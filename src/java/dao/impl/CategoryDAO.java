@@ -30,7 +30,8 @@ public class CategoryDAO {
             e.printStackTrace();
         }
         return categories;
-    }public Category getCategoryById(int categoryId) {
+    }
+    public Category getCategoryById(int categoryId) {
         Category category = null;
         String query = "SELECT * FROM Categories WHERE category_id = ? AND is_deleted = 0";
         
@@ -48,7 +49,7 @@ public class CategoryDAO {
         }
         return category;
     }    public boolean addCategory(Category category) {
-        String query = "INSERT INTO Categories (parent_id, name, description, image, status, display_order, created_at, updated_at, is_deleted) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 0)";
+        String query = "INSERT INTO Categories (parent_id, name, description, status, display_order, created_at, updated_at, is_deleted) VALUES (?, ?, ?, ?, ?, GETDATE(), GETDATE(), 0)";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -56,9 +57,8 @@ public class CategoryDAO {
             ps.setObject(1, category.getParentId());
             ps.setString(2, category.getName());
             ps.setString(3, category.getDescription());
-            ps.setString(4, category.getImage());
-            ps.setString(5, category.getStatus());
-            ps.setInt(6, category.getDisplayOrder());
+            ps.setString(4, category.getStatus());
+            ps.setInt(5, category.getDisplayOrder());
             
             int result = ps.executeUpdate();
             return result > 0;
@@ -66,8 +66,7 @@ public class CategoryDAO {
             e.printStackTrace();
             return false;
         }
-    }    public boolean updateCategory(Category category) {
-        String query = "UPDATE Categories SET parent_id = ?, name = ?, description = ?, image = ?, status = ?, display_order = ?, updated_at = GETDATE() WHERE category_id = ? AND is_deleted = 0";
+    }public boolean updateCategory(Category category) {        String query = "UPDATE Categories SET parent_id = ?, name = ?, description = ?, status = ?, display_order = ?, updated_at = GETDATE() WHERE category_id = ? AND is_deleted = 0";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -75,10 +74,9 @@ public class CategoryDAO {
             ps.setObject(1, category.getParentId());
             ps.setString(2, category.getName());
             ps.setString(3, category.getDescription());
-            ps.setString(4, category.getImage());
-            ps.setString(5, category.getStatus());
-            ps.setInt(6, category.getDisplayOrder());
-            ps.setInt(7, category.getCategoryId());
+            ps.setString(4, category.getStatus());
+            ps.setInt(5, category.getDisplayOrder());
+            ps.setInt(6, category.getCategoryId());
             
             int result = ps.executeUpdate();
             return result > 0;
@@ -116,19 +114,25 @@ public class CategoryDAO {
             e.printStackTrace();
         }
         return categories;
-    }
-
-    private Category mapResultSetToCategory(ResultSet rs) throws SQLException {
+    }    private Category mapResultSetToCategory(ResultSet rs) throws SQLException {
         Category category = new Category();
         category.setCategoryId(rs.getInt("category_id"));
         category.setParentId(rs.getObject("parent_id") != null ? rs.getInt("parent_id") : null);
         category.setName(rs.getString("name"));
         category.setDescription(rs.getString("description"));
-        category.setImage(rs.getString("image"));
         category.setStatus(rs.getString("status"));
         category.setDisplayOrder(rs.getInt("display_order"));
         category.setCreatedAt(rs.getString("created_at"));
         category.setUpdatedAt(rs.getString("updated_at"));
-        category.setIsDeleted(rs.getInt("is_deleted"));        return category;
+        category.setIsDeleted(rs.getInt("is_deleted"));
+        return category;
+    }    // Test method to check database connection
+    public boolean testConnection() {
+        try (Connection conn = DBContext.getConnection()) {
+            return conn != null && !conn.isClosed();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

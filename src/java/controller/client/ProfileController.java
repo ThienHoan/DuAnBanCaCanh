@@ -227,13 +227,82 @@ public class ProfileController extends HttpServlet {
             showEditProfile(request, response, currentUser);
         }
     }
-    
-    /**
+      /**
      * Cập nhật avatar
      */
     private void updateAvatar(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         
+        try {
+            String avatarType = request.getParameter("avatarType");
+            
+            if ("url".equals(avatarType)) {
+                updateAvatarFromUrl(request, response, currentUser);
+            } else {
+                updateAvatarFromUpload(request, response, currentUser);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Có lỗi xảy ra khi cập nhật avatar: " + e.getMessage());
+            showEditProfile(request, response, currentUser);
+        }
+    }
+    
+    /**
+     * Cập nhật avatar từ URL
+     */
+    private void updateAvatarFromUrl(HttpServletRequest request, HttpServletResponse response, User currentUser)
+            throws ServletException, IOException {
+        
+        String avatarUrl = request.getParameter("avatarUrl");
+        
+        if (avatarUrl == null || avatarUrl.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập URL ảnh");
+            showEditProfile(request, response, currentUser);
+            return;
+        }
+        
+        avatarUrl = avatarUrl.trim();
+        
+        // Validate URL format
+        try {
+            new java.net.URL(avatarUrl);
+        } catch (java.net.MalformedURLException e) {
+            request.setAttribute("error", "URL không hợp lệ");
+            showEditProfile(request, response, currentUser);
+            return;
+        }
+        
+        // Validate if it's an image URL (basic check)
+        String lowerUrl = avatarUrl.toLowerCase();
+        if (!lowerUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)(\\?.*)?$")) {
+            request.setAttribute("error", "URL phải là đường dẫn đến file ảnh (jpg, png, gif, webp)");
+            showEditProfile(request, response, currentUser);
+            return;
+        }
+        
+        // Update avatar URL in user
+        currentUser.setAvatar(avatarUrl);
+        
+        // Save to database
+        boolean success = userDAO.updateUser(currentUser);
+        
+        if (success) {
+            request.getSession().setAttribute("user", currentUser);
+            request.setAttribute("success", "Cập nhật avatar thành công");
+        } else {
+            request.setAttribute("error", "Có lỗi xảy ra khi lưu avatar");
+        }
+        
+        showEditProfile(request, response, currentUser);
+    }
+    
+    /**
+     * Cập nhật avatar từ upload file
+     */
+    private void updateAvatarFromUpload(HttpServletRequest request, HttpServletResponse response, User currentUser)
+            throws ServletException, IOException {        
         try {
             Part filePart = request.getPart("avatar");
             
@@ -265,8 +334,9 @@ public class ProfileController extends HttpServlet {
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-              // Xóa avatar cũ (nếu có)
-            if (currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) {
+              // Xóa avatar cũ (nếu có và là file local)
+            if (currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty() && 
+                !currentUser.getAvatar().startsWith("http")) {
                 String oldAvatarPath = uploadPath + File.separator + currentUser.getAvatar();
                 File oldFile = new File(oldAvatarPath);
                 if (oldFile.exists()) {
@@ -276,9 +346,9 @@ public class ProfileController extends HttpServlet {
             
             // Lưu file mới
             String filePath = uploadPath + File.separator + newFileName;
-            filePart.write(filePath);
-              // Cập nhật đường dẫn avatar trong user (chỉ lưu tên file)
-            currentUser.setAvatar(newFileName);
+            filePart.write(filePath);              // Cập nhật đường dẫn avatar trong user (lưu đường dẫn tương đối)
+            String webPath = "/uploads/avatars/" + newFileName;
+            currentUser.setAvatar(webPath);
             
             // Lưu vào database
             boolean success = userDAO.updateUser(currentUser);
@@ -297,7 +367,7 @@ public class ProfileController extends HttpServlet {
             request.setAttribute("error", "Có lỗi xảy ra khi upload ảnh: " + e.getMessage());
             showEditProfile(request, response, currentUser);
         }
-    }    /**
+    }/**
      * Đổi mật khẩu
      */
     private void changePassword(HttpServletRequest request, HttpServletResponse response, User currentUser)

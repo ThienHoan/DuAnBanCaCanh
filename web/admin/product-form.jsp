@@ -1526,11 +1526,12 @@
             </ul>
             <div class="tab-content border rounded p-3 mt-2">
                 <div class="tab-pane fade show active" id="uploadMain" role="tabpanel">
-                    <div class="image-upload-area text-center" onclick="document.getElementById('mainImage').click()">
-                        <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
-                        <p class="text-muted">Kéo thả hoặc click để chọn ảnh chính</p>
-                        <input type="file" class="d-none" id="mainImage" name="mainImage" accept="image/*">
-                    </div>
+                    <div class="image-upload-area text-center" onclick="document.getElementById('subImages').click()">
+                                                            <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                                            <p class="text-muted">Kéo thả hoặc click để chọn ảnh chính</p>
+                                                            <input type="file" class="d-none" id="subImages" name="subImages" accept="image/*" multiple onchange="showSubFilesName()">
+                                                            <div id="subImagesName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
+                                                        </div>
                 </div>
                 <div class="tab-pane fade" id="linkMain" role="tabpanel">
                     <label>URL ảnh chính</label>
@@ -1559,7 +1560,13 @@
                     </div>
                 </div>
                 <div class="tab-pane fade" id="linkAdditional" role="tabpanel">
-                    <label>URL ảnh phụ (mỗi dòng một link)</label>
+                    <div class="image-upload-area text-center" onclick="document.getElementById('subImages').click()">
+                                                            <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                                            <p class="text-muted">Kéo thả hoặc click để chọn ảnh phụ</p>
+                                                            <input type="file" class="d-none" id="subImages" name="subImages" accept="image/*" multiple onchange="showSubFilesName()">
+                                                            <div id="subImagesName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
+                                                        </div>
+                    
                     <textarea name="additionalImageUrls" class="form-control" rows="4" placeholder="https://img1.jpg\nhttps://img2.jpg"></textarea>
                 </div>
             </div>

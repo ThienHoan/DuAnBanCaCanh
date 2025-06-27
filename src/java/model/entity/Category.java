@@ -8,7 +8,6 @@ public class Category {
     private Integer parentId;
     private String name;
     private String description;
-    private String image;
     private String status;
     private int displayOrder;
     private LocalDateTime createdAt;
@@ -26,16 +25,13 @@ public class Category {
         this.categoryId = categoryId;
         this.name = name;
         this.status = status;
-    }
-
-    // Constructor with all fields
-    public Category(int categoryId, Integer parentId, String name, String description, String image, String status,
+    }    // Constructor with all fields
+    public Category(int categoryId, Integer parentId, String name, String description, String status,
                     int displayOrder, String createdAt, String updatedAt, Integer isDeleted) {
         this.categoryId = categoryId;
         this.parentId = parentId;
         this.name = name;
         this.description = description;
-        this.image = image;
         this.status = status;
         this.displayOrder = displayOrder;
         setCreatedAt(createdAt);
@@ -74,17 +70,7 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getStatus() {
+    }    public String getStatus() {
         return status;
     }
 
@@ -160,14 +146,12 @@ public class Category {
         this.status = active ? "active" : "inactive";
     }
 
-    @Override
-    public String toString() {
+    @Override    public String toString() {
         return "Category{" +
                 "categoryId=" + categoryId +
                 ", parentId=" + parentId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", image='" + image + '\'' +
                 ", status='" + status + '\'' +
                 ", displayOrder=" + displayOrder +
                 ", createdAt=" + getCreatedAt() +
