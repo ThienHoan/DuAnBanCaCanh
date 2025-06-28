@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main-color04.css">
     <style>
-        
         .hero-background {
             background-image: url('${pageContext.request.contextPath}/assets/images/about-us/bn01.jpg');
         }
@@ -299,7 +298,9 @@
 
     <!-- Hero Section -->
     <div class="hero-section hero-background">
-        <h1 class="page-title"><c:out value="${categoryId == 0 ? 'All Products' : (not empty products ? products[0].categoryName : 'Category')}" /></h1>
+        <h1 class="page-title">
+            <c:out value="${categoryId == 0 ? 'All Products' : (not empty categories && categoryId != 0 ? categories.stream().filter(c -> c.categoryId == categoryId).findFirst().orElse(null).name : 'Category')}" />
+        </h1>
     </div>
     <div id="main-content" class="main-content">
         <div class="container">
@@ -345,7 +346,7 @@
                                 <c:otherwise>
                                     <c:forEach var="product" items="${discountedProducts}">
                                         <div class="product-item">
-                                            <c:set var="mainImage" value="${product.images.stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+                                            <c:set var="mainImage" value="${discountedProductImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
                                             <c:choose>
                                                 <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
                                                     <img src="${pageContext.request.contextPath}${mainImage.imageUrl}" 
@@ -403,7 +404,7 @@
                             <div class="product-list">
                                 <c:forEach var="product" items="${products}">
                                     <div class="product-row">
-                                        <c:set var="mainImage" value="${product.images.stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+                                        <c:set var="mainImage" value="${productImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
                                         <c:choose>
                                             <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
                                                 <img src="${pageContext.request.contextPath}${mainImage.imageUrl}" 
@@ -421,7 +422,7 @@
                                                 <c:if test="${param.debug == 'true'}">
                                                     <div class="debug-info">
                                                         Debug: No main image found for "${product.name}"<br>
-                                                        Images count: ${product.images.size()}<br>
+                                                        Images count: ${fn:length(productImagesMap[product.productId])}<br>
                                                         Main image: ${mainImage}<br>
                                                         Image URL: ${mainImage != null ? mainImage.imageUrl : 'null'}
                                                     </div>
@@ -432,23 +433,24 @@
                                         <div class="product-info">
                                             <h3 class="product-title"><c:out value="${product.name}"/></h3>
                                             <p class="short-description"><c:out value="${product.shortDescription}" default="No description available"/></p>
-                                            <c:if test="${not empty product.productDetail}">
+                                            <c:set var="productDetail" value="${productDetailsMap[product.productId]}"/>
+                                            <c:if test="${not empty productDetail}">
                                                 <div class="product-details">
                                                     <div class="product-details-column">
-                                                        <p><strong>Scientific Name:</strong> <c:out value="${product.productDetail.scientificName}" default="N/A"/></p>
-                                                        <p><strong>Common Name:</strong> <c:out value="${product.productDetail.commonName}" default="N/A"/></p>
-                                                        <p><strong>Origin:</strong> <c:out value="${product.productDetail.origin}" default="N/A"/></p>
-                                                        <p><strong>Size:</strong> <c:out value="${product.productDetail.size}" default="N/A"/></p>
-                                                        <p><strong>Lifespan:</strong> <c:out value="${product.productDetail.lifespan}" default="N/A"/></p>
-                                                        <p><strong>Water Type:</strong> <c:out value="${product.productDetail.waterType}" default="N/A"/></p>
-                                                        <p><strong>Water Temperature:</strong> <c:out value="${product.productDetail.waterTemperature}" default="N/A"/></p>
+                                                        <p><strong>Scientific Name:</strong> <c:out value="${productDetail.scientificName}" default="N/A"/></p>
+                                                        <p><strong>Common Name:</strong> <c:out value="${productDetail.commonName}" default="N/A"/></p>
+                                                        <p><strong>Origin:</strong> <c:out value="${productDetail.origin}" default="N/A"/></p>
+                                                        <p><strong>Size:</strong> <c:out value="${productDetail.size}" default="N/A"/></p>
+                                                        <p><strong>Lifespan:</strong> <c:out value="${productDetail.lifespan}" default="N/A"/></p>
+                                                        <p><strong>Water Type:</strong> <c:out value="${productDetail.waterType}" default="N/A"/></p>
+                                                        <p><strong>Water Temperature:</strong> <c:out value="${productDetail.waterTemperature}" default="N/A"/></p>
                                                     </div>
                                                     <div class="product-details-column">
-                                                        <p><strong>Water pH:</strong> <c:out value="${product.productDetail.waterPh}" default="N/A"/></p>
-                                                        <p><strong>Diet:</strong> <c:out value="${product.productDetail.diet}" default="N/A"/></p>
-                                                        <p><strong>Breeding Difficulty:</strong> <c:out value="${product.productDetail.breedingDifficulty}" default="N/A"/></p>
-                                                        <p><strong>Care Level:</strong> <c:out value="${product.productDetail.careLevel}" default="N/A"/></p>
-                                                        <p><strong>Compatibility:</strong> <c:out value="${product.productDetail.compatibility}" default="N/A"/></p>
+                                                        <p><strong>Water pH:</strong> <c:out value="${productDetail.waterPh}" default="N/A"/></p>
+                                                        <p><strong>Diet:</strong> <c:out value="${productDetail.diet}" default="N/A"/></p>
+                                                        <p><strong>Breeding Difficulty:</strong> <c:out value="${productDetail.breedingDifficulty}" default="N/A"/></p>
+                                                        <p><strong>Care Level:</strong> <c:out value="${productDetail.careLevel}" default="N/A"/></p>
+                                                        <p><strong>Compatibility:</strong> <c:out value="${productDetail.compatibility}" default="N/A"/></p>
                                                         <p></p>
                                                         <p></p>
                                                     </div>
@@ -465,11 +467,12 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                             </p>
-                                            <c:if test="${not empty product.attributes}">
+                                            <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
+                                            <c:if test="${not empty attributes}">
                                                 <div class="attribute-select">
                                                     <!-- Group attributes by attributeName -->
                                                     <c:set var="attributeNames" value="" />
-                                                    <c:forEach var="attr" items="${product.attributes}">
+                                                    <c:forEach var="attr" items="${attributes}">
                                                         <c:if test="${!attr.isDeleted() && !fn:contains(attributeNames, attr.attributeName)}">
                                                             <c:set var="attributeNames" value="${attributeNames}${attr.attributeName}," />
                                                         </c:if>
@@ -477,8 +480,8 @@
                                                     <c:forEach var="attrName" items="${fn:split(attributeNames, ',')}">
                                                         <c:if test="${not empty attrName}">
                                                             <div class="attribute-group">
-                                                                <label>${attrName}:</label>
-                                                                <c:forEach var="attr" items="${product.attributes}">
+                                                                <label><c:out value="${attrName}"/>:</label>
+                                                                <c:forEach var="attr" items="${attributes}">
                                                                     <c:if test="${!attr.isDeleted() && attr.attributeName == attrName}">
                                                                         <button type="button" 
                                                                                 class="attribute-button" 
@@ -500,7 +503,7 @@
                                                 <input type="hidden" name="productId" value="${product.productId}"/>
                                                 <input type="hidden" name="categoryId" value="${categoryId}"/>
                                                 <!-- Dynamic attribute value IDs -->
-                                                <c:forEach var="attr" items="${product.attributes}" varStatus="loop">
+                                                <c:forEach var="attr" items="${attributes}" varStatus="loop">
                                                     <c:if test="${!attr.isDeleted()}">
                                                         <input type="hidden" 
                                                                name="attributeValueIds" 
