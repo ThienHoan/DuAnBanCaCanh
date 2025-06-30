@@ -536,7 +536,7 @@
                                                         <a href="#" class="cat-link">
                                                             <!-- Default category images cycling through available images -->
                                                             <c:set var="imageIndex" value="${(status.index % 4) + 1}"/>
-                                                            <img src="assets/images/home-04/cat-thumb0${imageIndex}.jpg" width="277" height="185" alt="${category.name}">
+                                                            <img src="assets/images/home-04/cat-thumb0${imageIndex}.jpg" alt="${category.name}">
                                                         </a>
                                                     </div><a class="cat-info" href="#">
                                         <h4 class="cat-name">${category.name}</h4>
@@ -555,7 +555,7 @@
                                             <div class="biolife-cat-box-item">
                                                 <div class="cat-thumb">
                                                     <a href="#" class="cat-link">
-                                                        <img src="assets/images/home-04/cat-thumb01.jpg" width="277" height="185" alt="">
+                                                        <img src="assets/images/home-04/cat-thumb01.jpg" alt="">
                                                     </a>
                                                 </div>
                                                 <a class="cat-info" href="#">
@@ -568,7 +568,7 @@
                                             <div class="biolife-cat-box-item">
                                                 <div class="cat-thumb">
                                                     <a href="#" class="cat-link">
-                                                        <img src="assets/images/home-04/cat-thumb02.jpg" width="277" height="185" alt="">
+                                                        <img src="assets/images/home-04/cat-thumb02.jpg" alt="">
                                                     </a>
                                                 </div>
                                                 <a class="cat-info" href="#">
@@ -581,7 +581,7 @@
                                             <div class="biolife-cat-box-item">
                                                 <div class="cat-thumb">
                                                     <a href="#" class="cat-link">
-                                                        <img src="assets/images/home-04/cat-thumb03.jpg" width="277" height="185" alt="">
+                                                        <img src="assets/images/home-04/cat-thumb03.jpg" alt="">
                                                     </a>
                                                 </div>
                                                 <a class="cat-info" href="#">

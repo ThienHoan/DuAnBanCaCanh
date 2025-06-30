@@ -9515,9 +9515,56 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     overflow: hidden;
     text-align: center;
 }
-.biolife-cat-box-item .cat-thumb img{
-    width: 100%;
-    display: block;
+
+/* Category image fixed size - Phù hợp với carousel slide */
+.biolife-cat-box-item .cat-thumb {
+    width: 270px !important;
+    height: 190px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    border-radius: 8px !important;
+    margin: 0 auto !important;
+    background: #f5f5f5 !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+/* Link bên trong cat-thumb */
+.biolife-cat-box-item .cat-thumb .cat-link,
+.biolife-cat-box-item .cat-thumb a {
+    display: block !important;
+    width: 270px !important;
+    height: 190px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+}
+
+/* Ảnh bên trong - cố định tuyệt đối */
+.biolife-cat-box-item .cat-thumb img,
+.biolife-cat-box-item .cat-thumb .cat-link img,
+.biolife-cat-box-item .cat-thumb a img {
+    width: 270px !important;
+    height: 190px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    border-radius: 8px !important;
+    transition: transform 0.3s ease !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 270px !important;
+    min-height: 180px !important;
+}
+
+/* Hiệu ứng hover */
+.biolife-cat-box-item .cat-thumb:hover img,
+.biolife-cat-box-item .cat-thumb .cat-link:hover img,
+.biolife-cat-box-item .cat-thumb a:hover img {
+    transform: scale(1.05) !important;
 }
 .biolife-cat-box-item .cat-info{
     display: inline-block;
