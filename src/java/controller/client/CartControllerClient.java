@@ -42,7 +42,7 @@ public class CartControllerClient extends HttpServlet {
             request.setAttribute("itemCount", itemCount);
             request.setAttribute("cartId", cart.getCartId());
 
-            request.getRequestDispatcher("client/products/cart.jsp").forward(request, response);
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
 
         } catch (SQLException e) {
             e.printStackTrace();
