@@ -114,48 +114,78 @@ public class CartControllerClient extends HttpServlet {
     }
 
     private void handleUpdateQuantity(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws IOException, SQLException {
-        int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        boolean success = cartDAO.updateCartItemQuantity(cartItemId, quantity);
-        
-        // Sử dụng session để lưu message thay vì URL parameter
-        HttpSession session = request.getSession();
-        if (success) {
-            session.setAttribute("message", "Cập nhật thành công!");
-        } else {
-            session.setAttribute("error", "Có lỗi xảy ra!");
+        throws IOException, SQLException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+    
+    int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
+    int quantity = Integer.parseInt(request.getParameter("quantity"));
+    boolean success = cartDAO.updateCartItemQuantity(cartItemId, quantity);
+    
+    Cart cart = cartDAO.getOrCreateCartByUserId(userId);
+    double itemTotal = 0;
+    
+    // Lấy tổng tiền của item vừa cập nhật
+    for (CartItem item : cartDAO.getCartItemsByCartId(cart.getCartId())) {
+        if (item.getCartItemId() == cartItemId) {
+            itemTotal = item.getTotalPrice();
+            break;
         }
-        response.sendRedirect("cartClient");
     }
-
+    
+    double cartTotal = cartDAO.getCartTotal(cart.getCartId());
+    int itemCount = cartDAO.getCartItemCount(cart.getCartId());
+    
+    String jsonResponse;
+    if (success) {
+        jsonResponse = "{\"success\": true, \"message\": \"Cập nhật thành công!\", " +
+                      "\"itemTotal\": " + itemTotal + ", " +
+                      "\"cartTotal\": " + cartTotal + ", " +
+                      "\"itemCount\": " + itemCount + "}";
+    } else {
+        jsonResponse = "{\"success\": false, \"message\": \"Có lỗi xảy ra khi cập nhật!\"}";
+    }
+    
+    response.getWriter().write(jsonResponse);
+}
     private void handleRemoveItem(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws IOException, SQLException {
-        int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
-        boolean success = cartDAO.removeCartItem(cartItemId);
-        
-        // Sử dụng session để lưu message thay vì URL parameter
-        HttpSession session = request.getSession();
-        if (success) {
-            session.setAttribute("message", "Đã xóa sản phẩm!");
-        } else {
-            session.setAttribute("error", "Có lỗi xảy ra!");
-        }
-        response.sendRedirect("cartClient");
+        throws IOException, SQLException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+    
+    int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
+    boolean success = cartDAO.removeCartItem(cartItemId);
+    
+    Cart cart = cartDAO.getOrCreateCartByUserId(userId);
+    double cartTotal = cartDAO.getCartTotal(cart.getCartId());
+    int itemCount = cartDAO.getCartItemCount(cart.getCartId());
+    
+    String jsonResponse;
+    if (success) {
+        jsonResponse = "{\"success\": true, \"message\": \"Đã xóa sản phẩm!\", " +
+                      "\"cartTotal\": " + cartTotal + ", " +
+                      "\"itemCount\": " + itemCount + "}";
+    } else {
+        jsonResponse = "{\"success\": false, \"message\": \"Có lỗi xảy ra khi xóa sản phẩm!\"}";
     }
-
-    private void handleClearCart(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws IOException, SQLException {
-        Cart cart = cartDAO.getOrCreateCartByUserId(userId);
-        boolean success = cartDAO.clearCart(cart.getCartId());
-        
-        // Sử dụng session để lưu message thay vì URL parameter
-        HttpSession session = request.getSession();
-        if (success) {
-            session.setAttribute("message", "Đã xóa tất cả sản phẩm!");
-        } else {
-            session.setAttribute("error", "Có lỗi xảy ra!");
-        }
-        response.sendRedirect("cartClient");
+    
+    response.getWriter().write(jsonResponse);
+}
+   private void handleClearCart(HttpServletRequest request, HttpServletResponse response, int userId)
+        throws IOException, SQLException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
+    
+    Cart cart = cartDAO.getOrCreateCartByUserId(userId);
+    boolean success = cartDAO.clearCart(cart.getCartId());
+    
+    String jsonResponse;
+    if (success) {
+        jsonResponse = "{\"success\": true, \"message\": \"Đã xóa tất cả sản phẩm!\"}";
+    } else {
+        jsonResponse = "{\"success\": false, \"message\": \"Có lỗi xảy ra khi xóa giỏ hàng!\"}";
     }
+    
+    response.getWriter().write(jsonResponse);
+}
 }

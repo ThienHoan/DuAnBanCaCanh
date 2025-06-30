@@ -941,6 +941,9 @@
 
                 <!--Cart Table-->
 <div class="container">
+    <!-- Container để hiển thị thông báo AJAX -->
+    <div class="alert-container" style="margin-top: 15px;"></div>
+    
     <!-- Alert Messages -->
     <c:if test="${not empty sessionScope.message}">
         <div class="alert alert-success alert-dismissible fade show">
@@ -983,7 +986,7 @@
                                     </thead>
                                     <tbody>
                                         <c:forEach var="item" items="${cartItems}" varStatus="status">
-                                            <tr>
+                                            <tr id="cart-item-${item.cartItemId}">
                                                 <td>
                                                     <span class="badge badge-primary">${status.index + 1}</span>
                                                 </td>
@@ -995,36 +998,27 @@
                                                         <fmt:formatNumber value="${item.productPrice}" pattern="#,##0"/> ₫
                                                     </span>
                                                 </td>
-                       <td>
-    <form action="cartClient" method="post" style="display:inline-block; margin-bottom:0;">
-        <input type="hidden" name="action" value="update"/>
-        <input type="hidden" name="cartItemId" value="${item.cartItemId}"/>
-        <div class="input-group" style="max-width: 120px; margin: 0 auto;">
-            <input type="number" name="quantity" value="${item.quantity}" 
-                   min="1" max="20" class="quantity-input"/>
-        </div>
-</td>
-<td>
-    <span class="price-total">
-        <fmt:formatNumber value="${item.totalPrice}" pattern="#,##0"/> ₫
-    </span>
-</td>
-<td>
-    <div class="action-buttons-center">
-        <button type="submit" class="btn btn-update btn-sm">
-            Cập nhật
-        </button>
-    </form>
-    <form action="cartClient" method="post" style="display:inline;">
-        <input type="hidden" name="action" value="remove"/>
-        <input type="hidden" name="cartItemId" value="${item.cartItemId}"/>
-        <button type="submit" class="btn btn-clear btn-sm"
-            onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')">
-            Xóa
-        </button>
-    </form>
-</div>
-</td>
+                                                <td>
+                                                    <div class="input-group" style="max-width: 120px; margin: 0 auto;">
+                                                        <input type="number" id="quantity-${item.cartItemId}" name="quantity" value="${item.quantity}" 
+                                                               min="1" max="20" class="quantity-input"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="price-total" id="item-total-${item.cartItemId}">
+                                                        <fmt:formatNumber value="${item.totalPrice}" pattern="#,##0"/> ₫
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons-center">
+                                                        <button type="button" class="btn btn-update btn-sm" onclick="updateCartItem(${item.cartItemId})">
+                                                            Cập nhật
+                                                        </button>
+                                                        <button type="button" class="btn btn-clear btn-sm" onclick="removeCartItem(${item.cartItemId})">
+                                                            Xóa
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -1035,13 +1029,9 @@
                                 <a href="products.jsp" class="btn btn-primary btn-lg back-to-shop-custom">
                                     Tiếp tục mua hàng
                                 </a>
-                                <form action="cartClient" method="post" class="clear-cart-form">
-                                    <input type="hidden" name="action" value="clear"/>
-                                    <button type="submit" class="btn btn-clear-all btn-lg"
-    onclick="return confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?')">
-    Xóa toàn bộ giỏ hàng
-</button>
-                                </form>
+                                <button type="button" class="btn btn-clear-all btn-lg" onclick="clearCart()">
+                                    Xóa toàn bộ giỏ hàng
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1054,11 +1044,11 @@
                             </h4>
                             <div class="summary-item">
                                 <span>Tổng số sản phẩm:</span>
-                                <span class="cart-counter">${itemCount}</span>
+                                <span class="cart-counter" id="cart-counter">${itemCount}</span>
                             </div>
                             <div class="summary-item">
                                 <span>Tổng tiền:</span>
-                                <span class="price-total">
+                                <span class="price-total" id="cart-total">
                                     <fmt:formatNumber value="${cartTotal}" pattern="#,##0"/> ₫
                                 </span>
                             </div>
@@ -1100,8 +1090,6 @@
     </c:if>
 </div>
 
-
-
 <script>
     // Ẩn thông báo sau 5 giây
     setTimeout(function(){
@@ -1136,7 +1124,144 @@
             }
         });
     });
+
+    // Hàm cập nhật sản phẩm
+   function updateCartItem(cartItemId) {
+    var quantity = $("#quantity-" + cartItemId).val();
+    
+    $.ajax({
+        type: "POST",
+        url: "cartClient",
+        data: {
+            action: "update",
+            cartItemId: cartItemId,
+            quantity: quantity
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.success) {
+                // Cập nhật UI
+                $("#item-total-" + cartItemId).text(formatCurrency(response.itemTotal) + " ₫");
+                $("#cart-total").text(formatCurrency(response.cartTotal) + " ₫");
+                $("#cart-counter").text(response.itemCount);
+                
+                // Hiển thị thông báo
+                showMessage("success", response.message);
+            } else {
+                showMessage("danger", response.message);
+            }
+        },
+        error: function() {
+            showMessage("danger", "Có lỗi xảy ra!");
+        }
+    });
+}
+    function removeCartItem(cartItemId) {
+        if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+            return;
+        }
+        
+        $.ajax({
+            type: "POST",
+            url: "cartClient",
+            data: {
+                action: "remove",
+                cartItemId: cartItemId
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // Xóa dòng sản phẩm
+                    $("#cart-item-" + cartItemId).fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Nếu không còn sản phẩm nào, làm mới trang
+                        if (response.itemCount === 0) {
+                            location.reload();
+                        }
+                    });
+                    
+                    // Cập nhật tổng tiền và số lượng
+                    $("#cart-total").text(formatCurrency(response.cartTotal) + " ₫");
+                    $("#cart-counter").text(response.itemCount);
+                    
+                    // Hiển thị thông báo
+                    showMessage("success", response.message);
+                } else {
+                    showMessage("danger", response.message);
+                }
+            },
+            error: function() {
+                showMessage("danger", "Có lỗi xảy ra khi xóa sản phẩm!");
+            }
+        });
+    }
+
+    // Hàm xóa toàn bộ giỏ hàng
+    function clearCart() {
+        if (!confirm("Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?")) {
+            return;
+        }
+        
+        $.ajax({
+            type: "POST",
+            url: "cartClient",
+            data: {
+                action: "clear"
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // Làm mới trang
+                    location.reload();
+                } else {
+                    showMessage("danger", response.message);
+                }
+            },
+            error: function() {
+                showMessage("danger", "Có lỗi xảy ra khi xóa giỏ hàng!");
+            }
+        });
+    }
+
+    // Hàm hiển thị thông báo
+    // Hàm hiển thị thông báo - SỬA LẠI HOÀN TOÀN
+function showMessage(type, message) {
+    console.log("showMessage called with:", type, message);
+    
+    // Tạo thông báo đơn giản trước
+    var alertDiv = '<div class="alert alert-' + type + '" style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; ' +
+        (type === 'success' ? 'background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;' : 'background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;') +
+        '">' + message + 
+        '<button onclick="$(this).parent().remove()" style="float: right; background: none; border: none; font-size: 18px; cursor: pointer;">×</button></div>';
+    
+    // Xóa thông báo cũ
+    $('.alert').remove();
+    
+    // Thêm vào body
+    $('body').append(alertDiv);
+    
+    // Tự động xóa sau 3 giây
+    setTimeout(function() {
+        $('.alert').fadeOut(function() {
+            $(this).remove();
+        });
+    }, 3000);
+}
+    // Hàm định dạng tiền tệ
+    function formatCurrency(value) {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 </script>
+<style>
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 300px;
+}
+</style>
 
 
 
