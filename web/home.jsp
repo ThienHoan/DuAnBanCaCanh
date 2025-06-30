@@ -2981,7 +2981,7 @@
                         <p class="message">All products are carefully selected to ensure quality.</p>
                         <div class="buttons">
                             <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                            <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(${product.productId})">
+                            <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(event, ${product.productId})">
                                 <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart
                             </a>
                             <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
@@ -3787,57 +3787,6 @@
         <script src="assets/js/slick.min.js"></script>
         <script src="assets/js/biolife.framework.js"></script>
         <script src="assets/js/functions.js"></script>
-
-        <!-- Cart functionality -->
-        <script>
-        function addToCart(event, productId) {
-            event.preventDefault();
-            
-            // Get product details
-            var productElement = event.target.closest('.contain-product');
-            var productName = productElement.querySelector('.pr-name').textContent;
-            var priceElement = productElement.querySelector('.price-amount');
-            var price = priceElement ? priceElement.textContent.replace(/[^\d.]/g, '') : '0';
-            
-            console.log('Adding to cart:', {
-                productId: productId,
-                name: productName,
-                price: price
-            });
-            
-            // Send AJAX request to add to cart
-            fetch('cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=add&productId=' + productId + '&quantity=1'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    alert('Product added to cart successfully!');
-                    // Update cart count if you have a cart counter
-                    updateCartCount(data.cartCount);
-                } else {
-                    alert('Error adding product to cart: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error adding product to cart');
-            });
-        }
-
-        function updateCartCount(count) {
-            // Update cart counter if you have one
-            var cartCounter = document.querySelector('.cart-counter');
-            if (cartCounter) {
-                cartCounter.textContent = count;
-            }
-        }
-        </script>
 
     <!--Footer For Mobile-->
     <div class="mobile-footer">
