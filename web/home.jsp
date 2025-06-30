@@ -3999,7 +3999,42 @@ function addToCart(event, productId) {
     });
 }
 
+function addToWishlist(event, productId) {
+    if (event) event.preventDefault();
 
+    var formData = new FormData();
+    formData.append('action', 'toggle');
+    formData.append('productId', productId);
+
+    fetch('wishlist', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage(data.message, 'success');
+            // Update wishlist button state
+            var button = event.target.closest('.wishlist-btn');
+            if (button) {
+                var icon = button.querySelector('i');
+                if (data.added) {
+                    icon.style.color = '#ff6b6b'; // Red color for added
+                    button.setAttribute('title', 'Remove from wishlist');
+                } else {
+                    icon.style.color = ''; // Default color
+                    button.setAttribute('title', 'Add to wishlist');
+                }
+            }
+        } else {
+            showMessage(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Có lỗi xảy ra với wishlist!', 'error');
+    });
+}
 
 function showMessage(message, type) {
     // Create message element
