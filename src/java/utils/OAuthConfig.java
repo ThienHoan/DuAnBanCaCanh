@@ -59,7 +59,7 @@ public class OAuthConfig {
      * Get Google Redirect URI
      */
     public static String getGoogleRedirectUri() {
-        return oauthProperties.getProperty("google.redirect.uri", "http://localhost:8080/DuAnBanCaCanh/google-callback");
+        return oauthProperties.getProperty("google.redirect.uri", "http://localhost:8080/DuAnBanCaCanh/googlecallback");
     }
     
     /**

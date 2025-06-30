@@ -269,6 +269,31 @@
         <servlet-name>TestBlogCategoryServlet</servlet-name>
         <url-pattern>/test-blog-category</url-pattern>
     </servlet-mapping>
+    
+    <!-- Cart servlet -->
+    <servlet>
+        <servlet-name>CartControllerClient</servlet-name>
+        <servlet-class>controller.client.CartControllerClient</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CartControllerClient</servlet-name>
+        <url-pattern>/cartClient</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartControllerClient</servlet-name>
+        <url-pattern>/cart</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Wishlist servlet -->
+    <servlet>
+        <servlet-name>WishlistController</servlet-name>
+        <servlet-class>controller.client.WishlistController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WishlistController</servlet-name>
+        <url-pattern>/wishlist</url-pattern>
+    </servlet-mapping>
+    
       <!-- Trang chủ mặc định -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
