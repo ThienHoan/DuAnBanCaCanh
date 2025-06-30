@@ -259,7 +259,8 @@
                                         <i class="icon-cart-mini biolife-icon"></i>
                                         <span class="qty">8</span>
                                     </span>
-                                    <span class="title">My Cart -</span>
+                                    <a href="cartClient"><span class="title">My Cart -</span></a>
+
                                     <span class="sub-total">$0.00</span>
                                 </a>
                                 <div class="cart-content">
