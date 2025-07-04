@@ -408,7 +408,7 @@
                                         <c:choose>
                                             <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
                                                 <img src="${pageContext.request.contextPath}${mainImage.imageUrl}" 
-                                                     alt="${product.name}" 
+                                                     
                                                      class="product-image"
                                                      onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
                                                 <div class="image-placeholder" style="display: none;">
@@ -473,8 +473,8 @@
                                                     <!-- Group attributes by attributeName -->
                                                     <c:set var="attributeNames" value="" />
                                                     <c:forEach var="attr" items="${attributes}">
-                                                        <c:if test="${!attr.isDeleted() && !fn:contains(attributeNames, attr.attributeName)}">
-                                                            <c:set var="attributeNames" value="${attributeNames}${attr.attributeName}," />
+                                                        <c:if test="${!fn:contains(attributeNames, attributeMap[attr.attributeId].name)}">
+                                                            <c:set var="attributeNames" value="${attributeNames}${attributeMap[attr.attributeId].name}," />
                                                         </c:if>
                                                     </c:forEach>
                                                     <c:forEach var="attrName" items="${fn:split(attributeNames, ',')}">
@@ -482,7 +482,7 @@
                                                             <div class="attribute-group">
                                                                 <label><c:out value="${attrName}"/>:</label>
                                                                 <c:forEach var="attr" items="${attributes}">
-                                                                    <c:if test="${!attr.isDeleted() && attr.attributeName == attrName}">
+                                                                    <c:if test="${attributeMap[attr.attributeId].name == attrName}">
                                                                         <button type="button" 
                                                                                 class="attribute-button" 
                                                                                 data-product-id="${product.productId}" 
@@ -504,12 +504,10 @@
                                                 <input type="hidden" name="categoryId" value="${categoryId}"/>
                                                 <!-- Dynamic attribute value IDs -->
                                                 <c:forEach var="attr" items="${attributes}" varStatus="loop">
-                                                    <c:if test="${!attr.isDeleted()}">
-                                                        <input type="hidden" 
-                                                               name="attributeValueIds" 
-                                                               class="attribute-value-${product.productId}-${attr.attributeId}" 
-                                                               value="${loop.first ? attr.valueId : ''}"/>
-                                                    </c:if>
+                                                    <input type="hidden" 
+                                                           name="attributeValueIds" 
+                                                           class="attribute-value-${product.productId}-${attr.attributeId}" 
+                                                           value="${loop.first ? attr.valueId : ''}"/>
                                                 </c:forEach>
                                                 <input type="number" name="quantity" value="1" min="1" max="${product.quantity}" style="width: 60px; margin-right: 10px;"/>
                                                 <button type="submit" class="add-to-cart-btn">Add to Cart</button>

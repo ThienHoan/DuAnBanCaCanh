@@ -4,11 +4,13 @@ import dao.impl.CategoryDAO;
 import dao.impl.ProductDAO;
 import dao.impl.ProductImageDAO;
 import dao.impl.ProductDetailDAO;
+import dao.impl.pAttribute.ProductAttributeDAO;
 import dao.impl.pAttribute.ProductAttributeValueDAO;
 import model.entity.Category;
 import model.entity.Product;
 import model.entity.ProductImage;
 import model.entity.ProductDetail;
+import model.entity.pAttribute.ProductAttribute;
 import model.entity.pAttribute.ProductAttributeValue;
 
 import jakarta.servlet.ServletException;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @WebServlet("/CategoryServlet")
 public class CategoryServlet extends HttpServlet {
@@ -29,6 +33,7 @@ public class CategoryServlet extends HttpServlet {
     private ProductImageDAO productImageDAO;
     private ProductDetailDAO productDetailDAO;
     private ProductAttributeValueDAO productAttributeValueDAO;
+    private ProductAttributeDAO productAttributeDAO;
 
     @Override
     public void init() throws ServletException {
@@ -37,6 +42,7 @@ public class CategoryServlet extends HttpServlet {
         productImageDAO = new ProductImageDAO();
         productDetailDAO = new ProductDetailDAO();
         productAttributeValueDAO = new ProductAttributeValueDAO();
+        productAttributeDAO = new ProductAttributeDAO();
     }
 
     @Override
@@ -77,11 +83,16 @@ public class CategoryServlet extends HttpServlet {
             ProductDetail productDetail = productDetailDAO.getProductDetailByProductId(productId);
             productDetailsMap.put(productId, productDetail);
 
-            // Fetch attributes with names
+            // Fetch attributes
             List<ProductAttributeValue> attributes = productAttributeValueDAO.getProductAttributeValuesWithNamesByProductId(productId);
             productAttributesMap.put(productId, attributes);
         }
 
+        // Fetch attribute map
+        List<ProductAttribute> listProductAttribute = productAttributeDAO.getAllProductAttributes();
+        Map<Integer, ProductAttribute> attributeMap = listProductAttribute.stream()
+            .collect(Collectors.toMap(ProductAttribute::getAttributeId, Function.identity()));
+        
         // Fetch discounted products (only if not searching)
         List<Product> discountedProducts = null;
         Map<Integer, List<ProductImage>> discountedProductImagesMap = new HashMap<>();
@@ -92,19 +103,16 @@ public class CategoryServlet extends HttpServlet {
                 discountedProductImagesMap.put(product.getProductId(), images);
             }
         }
-        request.setAttribute("discountedProducts", discountedProducts);
-        request.setAttribute("discountedProductImagesMap", discountedProductImagesMap);
-
-        // Calculate pagination
-        int totalProducts = productDAO.getTotalProductsByCategoryId(categoryId, isParent, search);
-        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
 
         // Set request attributes
+        request.setAttribute("discountedProducts", discountedProducts);
+        request.setAttribute("discountedProductImagesMap", discountedProductImagesMap);
         request.setAttribute("products", products);
         request.setAttribute("productImagesMap", productImagesMap);
         request.setAttribute("productDetailsMap", productDetailsMap);
         request.setAttribute("productAttributesMap", productAttributesMap);
-        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("attributeMap", attributeMap);
+        request.setAttribute("totalPages", (int) Math.ceil((double) productDAO.getTotalProductsByCategoryId(categoryId, isParent, search) / pageSize));
         request.setAttribute("currentPage", page);
         request.setAttribute("categoryId", categoryId);
 
