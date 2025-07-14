@@ -21,8 +21,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -93,6 +96,49 @@ public class CategoryServlet extends HttpServlet {
         Map<Integer, ProductAttribute> attributeMap = listProductAttribute.stream()
             .collect(Collectors.toMap(ProductAttribute::getAttributeId, Function.identity()));
         
+        // Group products by name
+        Map<String, List<Product>> groupedProducts = new LinkedHashMap<>();
+        for (Product product : products) {
+            String name = product.getName();
+            if (!groupedProducts.containsKey(name)) {
+                groupedProducts.put(name, new ArrayList<>());
+            }
+            groupedProducts.get(name).add(product);
+        }
+        
+        // Create a map to store attribute values for each product group
+        Map<String, Map<String, Set<String>>> groupAttributesMap = new HashMap<>();
+        
+        // For each product group, collect unique attribute values
+        for (Map.Entry<String, List<Product>> entry : groupedProducts.entrySet()) {
+            String productName = entry.getKey();
+            List<Product> productGroup = entry.getValue();
+            
+            Map<String, Set<String>> attributeValues = new HashMap<>();
+            attributeValues.put("Color", new HashSet<>());
+            attributeValues.put("Size", new HashSet<>());
+            
+            for (Product product : productGroup) {
+                List<ProductAttributeValue> attributes = productAttributesMap.get(product.getProductId());
+                if (attributes != null) {
+                    for (ProductAttributeValue attr : attributes) {
+                        ProductAttribute productAttr = attributeMap.get(attr.getAttributeId());
+                        if (productAttr != null) {
+                            String attrName = productAttr.getName();
+                            if ("Color".equals(attrName) || "Size".equals(attrName)) {
+                                if (!attributeValues.containsKey(attrName)) {
+                                    attributeValues.put(attrName, new HashSet<>());
+                                }
+                                attributeValues.get(attrName).add(attr.getValue());
+                            }
+                        }
+                    }
+                }
+            }
+            
+            groupAttributesMap.put(productName, attributeValues);
+        }
+        
         // Fetch discounted products (only if not searching)
         List<Product> discountedProducts = null;
         Map<Integer, List<ProductImage>> discountedProductImagesMap = new HashMap<>();
@@ -115,6 +161,10 @@ public class CategoryServlet extends HttpServlet {
         request.setAttribute("totalPages", (int) Math.ceil((double) productDAO.getTotalProductsByCategoryId(categoryId, isParent, search) / pageSize));
         request.setAttribute("currentPage", page);
         request.setAttribute("categoryId", categoryId);
+        
+        // Add grouped products and their attributes
+        request.setAttribute("groupedProducts", groupedProducts);
+        request.setAttribute("groupAttributesMap", groupAttributesMap);
 
         // Forward to JSP
         request.getRequestDispatcher("/category1.jsp").forward(request, response);

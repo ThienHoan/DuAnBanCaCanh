@@ -58,10 +58,10 @@
             padding: 10px;
         }
         .discount-slider .product-item img {
-            min-width: 100px;
-            min-height: 100px;
-            width: 100px;
-            height: 100px;
+            min-width: 150px;
+            min-height: 150px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
         }
         .discount-slider .product-item .price {
@@ -70,6 +70,10 @@
         }
         .discount-slider .product-item .sale-price {
             color: #ff0000;
+            text-decoration: none;
+        }
+        .discount-slider .product-item .original-price {
+            color: #999;
             text-decoration: line-through;
             margin-right: 5px;
         }
@@ -85,10 +89,10 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         .product-image {
-            min-width: 100px;
-            min-height: 100px;
-            width: 100px;
-            height: 100px;
+            min-width: 180px;
+            min-height: 180px;
+            width: 180px;
+            height: 180px;
             object-fit: cover;
             margin-right: 15px;
             border: 1px solid #eee;
@@ -106,6 +110,15 @@
             font-weight: bold;
             margin: 5px 0;
         }
+        .original-price, [class^="original-price-"] {
+            text-decoration: line-through;
+            color: #999;
+            margin-left: 5px;
+        }
+        .sale-price, [class^="sale-price-"] {
+            color: #ff0000;
+            text-decoration: none;
+        }
         .attribute-select {
             margin: 10px 0;
         }
@@ -115,6 +128,8 @@
         .attribute-group label {
             font-weight: bold;
             margin-right: 10px;
+            display: block;
+            margin-bottom: 5px;
         }
         .attribute-button {
             background: #f0f0f0;
@@ -124,14 +139,21 @@
             cursor: pointer;
             border-radius: 4px;
             display: inline-block;
+            transition: all 0.2s ease;
         }
         .attribute-button.selected {
             background: #7fad39;
             color: #fff;
             border-color: #7fad39;
         }
-        .attribute-button:hover {
+        .attribute-button:hover:not(.disabled) {
             background: #e0e0e0;
+        }
+        .attribute-button.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            border-color: #ddd;
+            background: #f5f5f5;
         }
         .add-to-cart-btn {
             background: #7fad39;
@@ -144,13 +166,32 @@
             background: #689f38;
         }
         .favorite-btn {
-            background: none;
+            background: rgba(255, 255, 255, 0.7);
             border: none;
-            font-size: 20px;
+            font-size: 30px;
             color: #ff0000;
             cursor: pointer;
-            margin-left: 5px;
-            margin-top: 5px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .favorite-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.1);
+        }
+        .product-image-container {
+            position: relative;
+            min-width: 180px;
+            width: 180px;
+            margin-right: 15px;
         }
         .sort-container {
             margin: 20px 0;
@@ -244,8 +285,8 @@
             width: 48%;
         }
         .image-placeholder {
-            width: 100px;
-            height: 100px;
+            width: 180px;
+            height: 180px;
             background: #f0f0f0;
             border: 2px dashed #ccc;
             display: flex;
@@ -266,9 +307,176 @@
             font-size: 12px;
             color: #cc0000;
         }
+        .discount-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .discount-section h3 {
+            color: #7fad39;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .discount-cart-form {
+            margin-top: 10px;
+        }
+        .discount-cart-inputs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .discount-quantity {
+            width: 45px;
+            padding: 5px;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .discount-add-btn {
+            background: #7fad39;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        .discount-add-btn:hover {
+            background: #689f38;
+        }
+        .product-item {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background: white;
+            transition: all 0.3s;
+            margin: 0 5px;
+        }
+        .product-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-item img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            margin: 0 auto 10px;
+            display: block;
+        }
+        .product-item h4 {
+            font-size: 16px;
+            margin: 0 0 5px;
+            height: 40px;
+            overflow: hidden;
+        }
+        .product-item .price {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .product-item .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .product-item .sale-price {
+            color: #ff0000;
+            text-decoration: none;
+        }
+        .cart-form-inputs {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .product-quantity {
+            width: 60px;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .add-to-cart-btn {
+            background: #7fad39;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .add-to-cart-btn:hover {
+            background: #689f38;
+        }
+        .cart-notification {
+            position: fixed;
+            top: -100px;
+            right: 20px;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            transition: top 0.5s ease;
+            z-index: 9999;
+            width: 300px;
+        }
+        .cart-notification.show {
+            top: 20px;
+        }
+        .cart-notification-content {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .cart-notification i {
+            color: #7fad39;
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .cart-notification span {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .view-cart-btn {
+            background: #7fad39;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        .view-cart-btn:hover {
+            background: #689f38;
+        }
+        .close-notification {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            margin-left: auto;
+        }
     </style>
 </head>
 <body class="biolife-body">
+    <!-- Cart Success Notification -->
+    <div id="cart-notification" class="cart-notification">
+        <div class="cart-notification-content">
+            <i class="fa fa-check-circle"></i>
+            <span>Product added to your cart!</span>
+            <button class="view-cart-btn">View Cart</button>
+            <button class="close-notification">&times;</button>
+        </div>
+    </div>
+
     <!-- Preloader -->
     <div id="biof-loading">
         <div class="biof-loading-center">
@@ -281,21 +489,8 @@
     </div>
 
     <!-- HEADER -->
-    <c:set var="tempUser" value="${sessionScope.user}" scope="request"/>
-    <c:remove var="user" scope="session"/>
-    <jsp:include page="header.jsp"></jsp:include>
-    <c:set var="user" value="${requestScope.tempUser}" scope="session"/>
-
-    <!-- Navigation Section -->
-    <div class="container">
-        <nav class="biolife-nav nav-86px">
-            <ul>
-                <li class="nav-item"><a href="index-2.html" class="permal-link">Home</a></li>
-                <li class="nav-item"><span class="current-page">Contact</span></li>
-            </ul>
-        </nav>
-    </div>
-
+    <jsp:include page="header.jsp"/>
+    
     <!-- Hero Section -->
     <div class="hero-section hero-background">
         <h1 class="page-title">
@@ -335,39 +530,51 @@
 
                 <!-- Products Section -->
                 <div class="col-md-9">
-                    <!-- Discounted Products Slider -->
-                    <c:if test="${empty param.search}">
-                        <h3>Discounted Products</h3>
+                    <!-- Discount Products Slider (only show if not searching) -->
+                    <c:if test="${empty param.search and not empty discountedProducts}">
+                        <div class="discount-section">
+                            <h3>Special Offers</h3>
                         <div class="discount-slider">
-                            <c:choose>
-                                <c:when test="${empty discountedProducts}">
-                                    <p>No discounted products available.</p>
-                                </c:when>
-                                <c:otherwise>
                                     <c:forEach var="product" items="${discountedProducts}">
                                         <div class="product-item">
                                             <c:set var="mainImage" value="${discountedProductImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
                                             <c:choose>
                                                 <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
-                                                    <img src="${pageContext.request.contextPath}${mainImage.imageUrl}" 
+                                                <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
                                                          alt="${product.name}" 
                                                          onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.png';" />
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/assets/images/no-image.png" 
-                                                         alt="No image available" />
+                                                <div class="image-placeholder">
+                                                    No Image<br>Available
+                                                </div>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <h4 class="product-title"><c:out value="${product.name}" /></h4>
-                                            <p class="short-description"><c:out value="${product.shortDescription}" default="No description" /></p>
-                                            <p class="price">
-                                                <span class="sale-price"><fmt:formatNumber value="${product.price}" type="currency" currencySymbol="£"/></span>
-                                                <fmt:formatNumber value="${product.salePrice}" type="currency" currencySymbol="£"/>
+                                        <h4>${product.name}</h4>
+                                                                                        <p class="price">
+                                                <c:choose>
+                                                    <c:when test="${not empty product.salePrice}">
+                                                        <span class="original-price" style="text-decoration: line-through; color: #999; margin-right: 5px;">£<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
+                                                        <span class="sale-price" style="color: #ff0000; text-decoration: none;">£<fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        £<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </p>
+                                        <form action="cartClient" method="post" class="discount-cart-form">
+                                            <input type="hidden" name="action" value="add"/>
+                                            <input type="hidden" name="productId" value="${product.productId}"/>
+                                            <input type="hidden" name="categoryId" value="${categoryId}"/>
+                                            <input type="hidden" name="redirectToCart" value="false"/>
+                                            <div class="discount-cart-inputs">
+                                                <input type="number" name="quantity" value="1" min="1" class="discount-quantity"/>
+                                                <button type="submit" class="discount-add-btn">Add to Cart</button>
+                                            </div>
+                                        </form>
                                         </div>
                                     </c:forEach>
-                                </c:otherwise>
-                            </c:choose>
+                            </div>
                         </div>
                     </c:if>
 
@@ -402,55 +609,52 @@
                         </c:when>
                         <c:otherwise>
                             <div class="product-list">
-                                <c:forEach var="product" items="${products}">
+                                <c:forEach var="entry" items="${groupedProducts}">
+                                    <c:set var="productName" value="${entry.key}"/>
+                                    <c:set var="productGroup" value="${entry.value}"/>
+                                    <c:set var="firstProduct" value="${productGroup[0]}"/>
+                                    
                                     <div class="product-row">
-                                        <c:set var="mainImage" value="${productImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
-                                        <c:choose>
-                                            <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
-                                                <img src="${pageContext.request.contextPath}${mainImage.imageUrl}" 
-                                                     
-                                                     class="product-image"
-                                                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                                                <div class="image-placeholder" style="display: none;">
-                                                    No Image<br>Available
-                                                </div>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <div class="image-placeholder">
-                                                    No Image<br>Available
-                                                </div>
-                                                <c:if test="${param.debug == 'true'}">
-                                                    <div class="debug-info">
-                                                        Debug: No main image found for "${product.name}"<br>
-                                                        Images count: ${fn:length(productImagesMap[product.productId])}<br>
-                                                        Main image: ${mainImage}<br>
-                                                        Image URL: ${mainImage != null ? mainImage.imageUrl : 'null'}
+                                        <c:set var="mainImage" value="${productImagesMap[firstProduct.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+                                        <div class="product-image-container">
+                                            <c:choose>
+                                                <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
+                                                    <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
+                                                         class="product-image product-image-${fn:replace(productName, ' ', '-')}"
+                                                         onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                                    <div class="image-placeholder" style="display: none;">
+                                                        No Image<br>Available
                                                     </div>
-                                                </c:if>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <button class="favorite-btn" onclick="window.location.href='FavoriteServlet?productId=${product.productId}'">♥</button>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="image-placeholder">
+                                                        No Image<br>Available
+                                                    </div>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <button class="favorite-btn" onclick="window.location.href='FavoriteServlet?productId=${firstProduct.productId}'">♥</button>
+                                        </div>
                                         <div class="product-info">
-                                            <h3 class="product-title"><c:out value="${product.name}"/></h3>
-                                            <p class="short-description"><c:out value="${product.shortDescription}" default="No description available"/></p>
-                                            <c:set var="productDetail" value="${productDetailsMap[product.productId]}"/>
+                                            <h3 class="product-title"><c:out value="${productName}"/></h3>
+                                            <p class="short-description product-short-desc-${fn:replace(productName, ' ', '-')}"><c:out value="${firstProduct.shortDescription}" default="No description available"/></p>
+                                            <c:set var="productDetail" value="${productDetailsMap[firstProduct.productId]}"/>
                                             <c:if test="${not empty productDetail}">
-                                                <div class="product-details">
+                                                <div class="product-details product-details-${fn:replace(productName, ' ', '-')}">
                                                     <div class="product-details-column">
-                                                        <p><strong>Scientific Name:</strong> <c:out value="${productDetail.scientificName}" default="N/A"/></p>
-                                                        <p><strong>Common Name:</strong> <c:out value="${productDetail.commonName}" default="N/A"/></p>
-                                                        <p><strong>Origin:</strong> <c:out value="${productDetail.origin}" default="N/A"/></p>
-                                                        <p><strong>Size:</strong> <c:out value="${productDetail.size}" default="N/A"/></p>
-                                                        <p><strong>Lifespan:</strong> <c:out value="${productDetail.lifespan}" default="N/A"/></p>
-                                                        <p><strong>Water Type:</strong> <c:out value="${productDetail.waterType}" default="N/A"/></p>
-                                                        <p><strong>Water Temperature:</strong> <c:out value="${productDetail.waterTemperature}" default="N/A"/></p>
+                                                        <p><strong>Scientific Name:</strong> <span class="scientific-name-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.scientificName}" escapeXml="true"/></span></p>
+                                                        <p><strong>Common Name:</strong> <span class="common-name-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.commonName}" escapeXml="true"/></span></p>
+                                                        <p><strong>Origin:</strong> <span class="origin-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.origin}" escapeXml="true"/></span></p>
+                                                        <p><strong>Size:</strong> <span class="detail-size-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.size}" escapeXml="true"/></span></p>
+                                                        <p><strong>Lifespan:</strong> <span class="lifespan-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.lifespan}" escapeXml="true"/></span></p>
+                                                        <p><strong>Water Type:</strong> <span class="water-type-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.waterType}" escapeXml="true"/></span></p>
+                                                        <p><strong>Water Temperature:</strong> <span class="water-temp-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.waterTemperature}" escapeXml="true"/></span></p>
                                                     </div>
                                                     <div class="product-details-column">
-                                                        <p><strong>Water pH:</strong> <c:out value="${productDetail.waterPh}" default="N/A"/></p>
-                                                        <p><strong>Diet:</strong> <c:out value="${productDetail.diet}" default="N/A"/></p>
-                                                        <p><strong>Breeding Difficulty:</strong> <c:out value="${productDetail.breedingDifficulty}" default="N/A"/></p>
-                                                        <p><strong>Care Level:</strong> <c:out value="${productDetail.careLevel}" default="N/A"/></p>
-                                                        <p><strong>Compatibility:</strong> <c:out value="${productDetail.compatibility}" default="N/A"/></p>
+                                                        <p><strong>Water pH:</strong> <span class="water-ph-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.waterPh}" escapeXml="true"/></span></p>
+                                                        <p><strong>Diet:</strong> <span class="diet-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.diet}" escapeXml="true"/></span></p>
+                                                        <p><strong>Breeding Difficulty:</strong> <span class="breeding-difficulty-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.breedingDifficulty}" escapeXml="true"/></span></p>
+                                                        <p><strong>Care Level:</strong> <span class="care-level-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.careLevel}" escapeXml="true"/></span></p>
+                                                        <p><strong>Compatibility:</strong> <span class="compatibility-${fn:replace(productName, ' ', '-')}"><c:out value="${productDetail.compatibility}" escapeXml="true"/></span></p>
                                                         <p></p>
                                                         <p></p>
                                                     </div>
@@ -458,59 +662,57 @@
                                             </c:if>
                                             <p class="product-price">
                                                 <c:choose>
-                                                    <c:when test="${not empty product.salePrice}">
-                                                        <del><fmt:formatNumber value="${product.price}" type="currency" currencySymbol="£"/></del>
-                                                        <fmt:formatNumber value="${product.salePrice}" type="currency" currencySymbol="£"/>
+                                                    <c:when test="${not empty firstProduct.salePrice}">
+                                                        <del class="original-price-${fn:replace(productName, ' ', '-')}" style="text-decoration: line-through; color: #999; margin-right: 5px;"><fmt:formatNumber value="${firstProduct.price}" type="currency" currencySymbol="£"/></del>
+                                                        <span class="sale-price-${fn:replace(productName, ' ', '-')}" style="color: #ff0000; text-decoration: none;"><fmt:formatNumber value="${firstProduct.salePrice}" type="currency" currencySymbol="£"/></span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="£"/>
+                                                        <span class="regular-price-${fn:replace(productName, ' ', '-')}"><fmt:formatNumber value="${firstProduct.price}" type="currency" currencySymbol="£"/></span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </p>
-                                            <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
-                                            <c:if test="${not empty attributes}">
-                                                <div class="attribute-select">
-                                                    <!-- Group attributes by attributeName -->
-                                                    <c:set var="attributeNames" value="" />
-                                                    <c:forEach var="attr" items="${attributes}">
-                                                        <c:if test="${!fn:contains(attributeNames, attributeMap[attr.attributeId].name)}">
-                                                            <c:set var="attributeNames" value="${attributeNames}${attributeMap[attr.attributeId].name}," />
-                                                        </c:if>
-                                                    </c:forEach>
-                                                    <c:forEach var="attrName" items="${fn:split(attributeNames, ',')}">
-                                                        <c:if test="${not empty attrName}">
+                                            
+                                            <!-- Display grouped attribute options -->
+                                            <c:set var="groupAttributes" value="${groupAttributesMap[productName]}"/>
+                                            
+                                            <c:if test="${not empty groupAttributes['Color']}">
                                                             <div class="attribute-group">
-                                                                <label><c:out value="${attrName}"/>:</label>
-                                                                <c:forEach var="attr" items="${attributes}">
-                                                                    <c:if test="${attributeMap[attr.attributeId].name == attrName}">
+                                                    <label>Color:</label>
+                                                    <c:forEach var="colorValue" items="${groupAttributes['Color']}">
                                                                         <button type="button" 
                                                                                 class="attribute-button" 
-                                                                                data-product-id="${product.productId}" 
-                                                                                data-attribute-id="${attr.attributeId}" 
-                                                                                data-value-id="${attr.valueId}">
-                                                                            <c:out value="${attr.value}"/>
+                                                                data-attribute="Color" 
+                                                                data-value="${colorValue}">
+                                                            <c:out value="${colorValue}"/>
                                                                         </button>
-                                                                    </c:if>
                                                                 </c:forEach>
                                                             </div>
                                                         </c:if>
+                                            
+                                            <c:if test="${not empty groupAttributes['Size']}">
+                                                <div class="attribute-group">
+                                                    <label>Size:</label>
+                                                    <c:forEach var="sizeValue" items="${groupAttributes['Size']}">
+                                                        <button type="button" 
+                                                                class="attribute-button" 
+                                                                data-attribute="Size" 
+                                                                data-value="${sizeValue}">
+                                                            <c:out value="${sizeValue}"/>
+                                                        </button>
                                                     </c:forEach>
                                                 </div>
                                             </c:if>
                                         </div>
                                         <div style="display: flex; align-items: center;">
-                                            <form action="AddToCartServlet" method="post" id="cart-form-${product.productId}">
-                                                <input type="hidden" name="productId" value="${product.productId}"/>
+                                            <form action="cartClient" method="post" id="cart-form-group-${firstProduct.productId}">
+                                                <input type="hidden" name="action" value="add"/>
+                                                <input type="hidden" name="productId" value="${firstProduct.productId}" id="selected-product-id-${fn:replace(productName, ' ', '-')}"/>
                                                 <input type="hidden" name="categoryId" value="${categoryId}"/>
-                                                <!-- Dynamic attribute value IDs -->
-                                                <c:forEach var="attr" items="${attributes}" varStatus="loop">
-                                                    <input type="hidden" 
-                                                           name="attributeValueIds" 
-                                                           class="attribute-value-${product.productId}-${attr.attributeId}" 
-                                                           value="${loop.first ? attr.valueId : ''}"/>
-                                                </c:forEach>
-                                                <input type="number" name="quantity" value="1" min="1" max="${product.quantity}" style="width: 60px; margin-right: 10px;"/>
+                                                <input type="hidden" name="redirectToCart" value="false"/>
+                                                <div class="cart-form-inputs">
+                                                    <input type="number" name="quantity" value="1" min="1" class="product-quantity"/>
                                                 <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
@@ -535,6 +737,213 @@
             </div>
         </div>
     </div>
+                            
+     
+                            
+     <!-- FOOTER -->
+    <footer id="footer" class="footer layout-03">
+        <div class="footer-content background-footer-03">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-9">
+                        <section class="footer-item">
+                            <a href="home-04.html" class="logo footer-logo"><img src="assets/images/organic-4.png" alt="biolife logo" width="135" height="36"></a>
+                            <div class="footer-phone-info">
+                                <i class="biolife-icon icon-head-phone"></i>
+                                <p class="r-info">
+                                    <span>Got Questions ?</span>
+                                    <span>(700)ï¿½ 9001-1909  (900) 689 -66</span>
+                                </p>
+                            </div>
+                            <div class="newsletter-block layout-01">
+                                <h4 class="title">Newsletter Signup</h4>
+                                <div class="form-content">
+                                    <form action="#" name="new-letter-foter">
+                                        <input type="email" class="input-text email" value="" placeholder="Your email here...">
+                                        <button type="submit" class="bnt-submit" name="ok">Sign up</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 md-margin-top-5px sm-margin-top-50px xs-margin-top-40px">
+                        <section class="footer-item">
+                            <h3 class="section-title">Useful Links</h3>
+                            <div class="row">
+                                <div class="col-lg-6 col-sm-6 col-xs-6">
+                                    <div class="wrap-custom-menu vertical-menu-2">
+                                        <ul class="menu">
+                                            <li><a href="#">About Us</a></li>
+                                            <li><a href="#">About Our Shop</a></li>
+                                            <li><a href="#">Secure Shopping</a></li>
+                                            <li><a href="#">Delivery infomation</a></li>
+                                            <li><a href="#">Privacy Policy</a></li>
+                                            <li><a href="#">Our Sitemap</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 col-xs-6">
+                                    <div class="wrap-custom-menu vertical-menu-2">
+                                        <ul class="menu">
+                                            <li><a href="#">Who We Are</a></li>
+                                            <li><a href="#">Our Services</a></li>
+                                            <li><a href="#">Projects</a></li>
+                                            <li><a href="#">Contacts Us</a></li>
+                                            <li><a href="#">Innovation</a></li>
+                                            <li><a href="#">Testimonials</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 md-margin-top-5px sm-margin-top-50px xs-margin-top-40px">
+                        <section class="footer-item">
+                            <h3 class="section-title">Transport Offices</h3>
+                            <div class="contact-info-block footer-layout xs-padding-top-10px">
+                                <ul class="contact-lines">
+                                    <li>
+                                        <p class="info-item">
+                                            <i class="biolife-icon icon-location"></i>
+                                            <b class="desc">7563 St. Vicent Place, Glasgow, Greater Newyork NH7689, UK </b>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p class="info-item">
+                                            <i class="biolife-icon icon-phone"></i>
+                                            <b class="desc">Phone: (+067) 234 789  (+068) 222 888</b>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p class="info-item">
+                                            <i class="biolife-icon icon-letter"></i>
+                                            <b class="desc">Email:  contact@company.com</b>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <p class="info-item">
+                                            <i class="biolife-icon icon-clock"></i>
+                                            <b class="desc">Hours: 7 Days a week from 10:00 am</b>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="biolife-social inline">
+                                <ul class="socials">
+                                    <li><a href="#" title="twitter" class="socail-btn"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+                                    <li><a href="#" title="facebook" class="socail-btn"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+                                    <li><a href="#" title="pinterest" class="socail-btn"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+                                    <li><a href="#" title="youtube" class="socail-btn"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
+                                    <li><a href="#" title="instagram" class="socail-btn"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="separator sm-margin-top-62px xs-margin-top-40px"></div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-xs-12">
+                        <div class="copy-right-text"><p><a href="templateshub.net">Templates Hub</a></p></div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-xs-12">
+                        <div class="payment-methods">
+                            <ul>
+                                <li><a href="#" class="payment-link"><img src="assets/images/card1.jpg" width="51" height="36" alt=""></a></li>
+                                <li><a href="#" class="payment-link"><img src="assets/images/card2.jpg" width="51" height="36" alt=""></a></li>
+                                <li><a href="#" class="payment-link"><img src="assets/images/card3.jpg" width="51" height="36" alt=""></a></li>
+                                <li><a href="#" class="payment-link"><img src="assets/images/card4.jpg" width="51" height="36" alt=""></a></li>
+                                <li><a href="#" class="payment-link"><img src="assets/images/card5.jpg" width="51" height="36" alt=""></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--Footer For Mobile-->
+    <div class="mobile-footer">
+        <div class="mobile-footer-inner">
+            <div class="mobile-block block-menu-main">
+                <a class="menu-bar menu-toggle btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
+                    <span class="fa fa-bars"></span>
+                    <span class="text">Menu</span>
+                </a>
+            </div>
+            <div class="mobile-block block-sidebar">
+                <a class="menu-bar filter-toggle btn-toggle" data-object="open-mobile-filter" href="javascript:void(0)">
+                    <i class="fa fa-sliders" aria-hidden="true"></i>
+                    <span class="text">Sidebar</span>
+                </a>
+            </div>
+            <div class="mobile-block block-minicart">
+                <a class="link-to-cart" href="#">
+                    <span class="fa fa-shopping-bag" aria-hidden="true"></span>
+                    <span class="text">Cart</span>
+                </a>
+            </div>
+            <div class="mobile-block block-global">
+                <a class="menu-bar myaccount-toggle btn-toggle" data-object="global-panel-opened" href="javascript:void(0)">
+                    <span class="fa fa-globe"></span>
+                    <span class="text">Global</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-block-global">
+        <div class="biolife-mobile-panels">
+            <span class="biolife-current-panel-title">Global</span>
+            <a class="biolife-close-btn" data-object="global-panel-opened" href="#">&times;</a>
+        </div>
+        <div class="block-global-contain">
+            <div class="glb-item my-account">
+                <b class="title">My Account</b>
+                <c:choose>
+                    <c:when test="${not empty sessionScope.user}">
+                        <div class="user-mobile-info" style="margin-bottom: 10px; padding: 8px; background-color: #f8f9fa; border-radius: 4px;">
+                            <span style="font-weight: 600; color: #333;">
+                                <i class="fa fa-user" style="margin-right: 5px;"></i>
+                                ${sessionScope.user.fullName}
+                            </span>
+                        </div>
+                        <ul class="list">
+                            <li class="list-item"><a href="logout">ÄÄng xuáº¥t</a></li>
+                            <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
+                            <li class="list-item"><a href="#">Checkout</a></li>
+                        </ul>
+                    </c:when>
+                    <c:otherwise>
+                <ul class="list">
+                    <li class="list-item"><a href="login">Login/register</a></li>
+                    <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
+                    <li class="list-item"><a href="#">Checkout</a></li>
+                </ul>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <div class="glb-item currency">
+                <b class="title">Currency</b>
+                <ul class="list">
+                    <li class="list-item"><a href="#">? EUR (Euro)</a></li>
+                    <li class="list-item"><a href="#">$ USD (Dollar)</a></li>
+                    <li class="list-item"><a href="#">ï¿½ GBP (Pound)</a></li>
+                    <li class="list-item"><a href="#">ï¿½ JPY (Yen)</a></li>
+                </ul>
+            </div>
+            <div class="glb-item languages">
+                <b class="title">Language</b>
+                <ul class="list inline">
+                    <li class="list-item"><a href="#"><img src="assets/images/languages/us.jpg" alt="flag" width="24" height="18"></a></li>
+                    <li class="list-item"><a href="#"><img src="assets/images/languages/fr.jpg" alt="flag" width="24" height="18"></a></li>
+                    <li class="list-item"><a href="#"><img src="assets/images/languages/ger.jpg" alt="flag" width="24" height="18"></a></li>
+                    <li class="list-item"><a href="#"><img src="assets/images/languages/jap.jpg" alt="flag" width="24" height="18"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <!-- Scroll Top Button -->
     <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
@@ -549,6 +958,41 @@
     <script src="${pageContext.request.contextPath}/assets/js/functions.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize global attributes object
+            window.selectedAttributes = {};
+            
+            // Initialize attribute filters on page load
+            $('.product-row').each(function() {
+                var productName = $(this).find('.product-title').text().trim();
+                var productNameId = productName.replace(/ /g, '-');
+                
+                // Initialize attributes object for this product
+                window.selectedAttributes[productNameId] = {
+                    Color: '',
+                    Size: ''
+                };
+                
+                // Check if there are any pre-selected attributes (e.g., from URL parameters)
+                var preSelectedColor = new URLSearchParams(window.location.search).get('color_' + productNameId);
+                var preSelectedSize = new URLSearchParams(window.location.search).get('size_' + productNameId);
+                
+                if (preSelectedColor) {
+                    $(this).find('.attribute-button[data-attribute="Color"][data-value="' + preSelectedColor + '"]').addClass('selected');
+                    window.selectedAttributes[productNameId].Color = preSelectedColor;
+                    updateAvailableAttributes(productNameId, 'Color', preSelectedColor);
+                }
+                
+                if (preSelectedSize) {
+                    $(this).find('.attribute-button[data-attribute="Size"][data-value="' + preSelectedSize + '"]').addClass('selected');
+                    window.selectedAttributes[productNameId].Size = preSelectedSize;
+                    updateAvailableAttributes(productNameId, 'Size', preSelectedSize);
+                }
+                
+                // Update product if attributes are pre-selected
+                if (preSelectedColor || preSelectedSize) {
+                    updateSelectedProduct(productNameId);
+                }
+            });
             // Initialize discount slider only if visible
             <c:if test="${empty param.search}">
             $('.discount-slider').slick({
@@ -576,19 +1020,389 @@
                 }, 100);
             });
 
-            // Handle attribute button clicks
+            // Handle attribute button clicks for grouped products
             $('.attribute-button').click(function() {
-                var productId = $(this).data('product-id');
-                var attributeId = $(this).data('attribute-id');
-                var valueId = $(this).data('value-id');
-
+                // Skip if button is disabled
+                if ($(this).hasClass('disabled')) {
+                    return;
+                }
+                
+                // Get attribute type and value
+                var attribute = $(this).data('attribute');
+                var value = $(this).data('value');
+                
+                // Find the closest product group
+                var productRow = $(this).closest('.product-row');
+                var productName = productRow.find('.product-title').text().trim();
+                var productNameId = productName.replace(/ /g, '-');
+                
+                // Check if this button is already selected (toggle functionality)
+                var isAlreadySelected = $(this).hasClass('selected');
+                
                 // Deselect other buttons in the same attribute group
-                $(this).siblings('.attribute-button').removeClass('selected');
-                // Select the clicked button
-                $(this).addClass('selected');
+                productRow.find('.attribute-button[data-attribute="' + attribute + '"]').removeClass('selected');
+                
+                // Initialize selected attribute variables if they don't exist
+                window.selectedAttributes = window.selectedAttributes || {};
+                window.selectedAttributes[productNameId] = window.selectedAttributes[productNameId] || {
+                    Color: '',
+                    Size: ''
+                };
+                
+                // If it was already selected, just deselect it and clear the value
+                if (isAlreadySelected) {
+                    // Clear the selected attribute value
+                    window.selectedAttributes[productNameId][attribute] = '';
+                    
+                    // Reset all attribute buttons to enabled state if we're deselecting
+                    productRow.find('.attribute-button').removeClass('disabled').css('opacity', '1').prop('disabled', false);
+                } else {
+                    // Select the clicked button
+                    $(this).addClass('selected');
+                    
+                    // Store the selected attribute value
+                    window.selectedAttributes[productNameId][attribute] = value;
+                    
+                    // Update available attribute options based on the selection
+                    updateAvailableAttributes(productNameId, attribute, value);
+                }
+                
+                // Find product that matches selected attributes and update details
+                updateSelectedProduct(productNameId);
+            });
+            
+            // Function to update available attribute options
+            function updateAvailableAttributes(productNameId, selectedAttributeType, selectedAttributeValue) {
+                var productRow = $('.product-title:contains("' + productNameId.replace(/-/g, ' ') + '")').closest('.product-row');
+                
+                // Store all compatible combinations for this product
+                var compatibleCombinations = [];
+                
+                <c:forEach var="entry" items="${groupedProducts}">
+                    <c:set var="productNameId" value="${fn:replace(entry.key, ' ', '-')}"/>
+                    if ('${productNameId}' === productNameId) {
+                        <c:forEach var="product" items="${entry.value}">
+                            var combination = {
+                                productId: ${product.productId},
+                                attributes: {}
+                            };
+                            
+                            <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
+                            <c:forEach var="attr" items="${attributes}">
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Color' || attributeMap[attr.attributeId].name == 'Size'}">
+                                    combination.attributes['${attributeMap[attr.attributeId].name}'] = '${attr.value}';
+                                </c:if>
+                            </c:forEach>
+                            
+                            compatibleCombinations.push(combination);
+                        </c:forEach>
+                    }
+                </c:forEach>
+                
+                // Filter combinations that match the selected attribute
+                var filteredCombinations = compatibleCombinations.filter(function(combo) {
+                    return combo.attributes[selectedAttributeType] === selectedAttributeValue;
+                });
+                
+                // For each attribute type (except the selected one), update available options
+                var attributeTypes = ['Color', 'Size'];
+                attributeTypes.forEach(function(attrType) {
+                    if (attrType !== selectedAttributeType) {
+                        // Get all available values for this attribute type after filtering
+                        var availableValues = filteredCombinations.map(function(combo) {
+                            return combo.attributes[attrType];
+                        }).filter(function(value, index, self) {
+                            return value && self.indexOf(value) === index; // Remove duplicates and nulls
+                        });
+                        
+                        // Update UI for this attribute type
+                        productRow.find('.attribute-button[data-attribute="' + attrType + '"]').each(function() {
+                            var btnValue = $(this).data('value');
+                            if (availableValues.includes(btnValue)) {
+                                // This value is compatible with the selected attribute
+                                $(this).removeClass('disabled').css('opacity', '1').prop('disabled', false);
+                            } else {
+                                // This value is not compatible
+                                $(this).addClass('disabled').css('opacity', '0.5').prop('disabled', true);
+                                
+                                // If this was selected, deselect it
+                                if ($(this).hasClass('selected')) {
+                                    $(this).removeClass('selected');
+                                    window.selectedAttributes[productNameId][attrType] = '';
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Function to update the selected product based on attributes
+            function updateSelectedProduct(productNameId) {
+                // Get selected attributes from our global object
+                var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { Color: '', Size: '' };
+                var selectedColor = selectedAttributes.Color || '';
+                var selectedSize = selectedAttributes.Size || '';
+                var found = false;
+                
+                // If both attributes are empty, reset to default product
+                if (selectedColor === '' && selectedSize === '') {
+                    // Reset to first product in group
+                    <c:forEach var="entry" items="${groupedProducts}">
+                        <c:set var="productNameId" value="${fn:replace(entry.key, ' ', '-')}"/>
+                        if ('${productNameId}' === productNameId) {
+                            <c:set var="firstProduct" value="${entry.value[0]}"/>
+                            // Update product ID in form
+                            $('#selected-product-id-' + productNameId).val(${firstProduct.productId});
+                            
+                            // Get product details
+                            <c:set var="productDetail" value="${productDetailsMap[firstProduct.productId]}"/>
+                            <c:set var="mainImage" value="${productImagesMap[firstProduct.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+                            
+                            // Update image
+                            <c:if test="${not empty mainImage and not empty mainImage.imageUrl}">
+                                $('.product-image-' + productNameId).attr('src', '${pageContext.request.contextPath}/${mainImage.imageUrl}');
+                            </c:if>
+                            
+                            // Update short description
+                            $('.product-short-desc-' + productNameId).text('<c:out value="${firstProduct.shortDescription}" escapeXml="true"/>');
+                            
+                            // Update prices
+                            <c:choose>
+                                <c:when test="${not empty firstProduct.salePrice}">
+                                    $('.original-price-' + productNameId).html('£<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                    $('.sale-price-' + productNameId).html('£<fmt:formatNumber value="${firstProduct.salePrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                </c:when>
+                                <c:otherwise>
+                                    $('.regular-price-' + productNameId).html('£<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                </c:otherwise>
+                            </c:choose>
+                            
+                            // Update product details
+                            <c:if test="${not empty productDetail}">
+                                $('.scientific-name-' + productNameId).text('<c:out value="${productDetail.scientificName}" escapeXml="true"/>');
+                                $('.common-name-' + productNameId).text('<c:out value="${productDetail.commonName}" escapeXml="true"/>');
+                                $('.origin-' + productNameId).text('<c:out value="${productDetail.origin}" escapeXml="true"/>');
+                                $('.detail-size-' + productNameId).text('<c:out value="${productDetail.size}" escapeXml="true"/>');
+                                $('.lifespan-' + productNameId).text('<c:out value="${productDetail.lifespan}" escapeXml="true"/>');
+                                $('.water-type-' + productNameId).text('<c:out value="${productDetail.waterType}" escapeXml="true"/>');
+                                $('.water-temp-' + productNameId).text('<c:out value="${productDetail.waterTemperature}" escapeXml="true"/>');
+                                $('.water-ph-' + productNameId).text('<c:out value="${productDetail.waterPh}" escapeXml="true"/>');
+                                $('.diet-' + productNameId).text('<c:out value="${productDetail.diet}" escapeXml="true"/>');
+                                $('.breeding-difficulty-' + productNameId).text('<c:out value="${productDetail.breedingDifficulty}" escapeXml="true"/>');
+                                $('.care-level-' + productNameId).text('<c:out value="${productDetail.careLevel}" escapeXml="true"/>');
+                                $('.compatibility-' + productNameId).text('<c:out value="${productDetail.compatibility}" escapeXml="true"/>');
+                            </c:if>
+                            
+                            return true;
+                        }
+                    </c:forEach>
+                }
+                
+                <c:forEach var="entry" items="${groupedProducts}">
+                    <c:set var="productNameId" value="${fn:replace(entry.key, ' ', '-')}"/>
+                    if ('${productNameId}' === productNameId) {
+                        <c:forEach var="product" items="${entry.value}">
+                            var colorMatch = false;
+                            var sizeMatch = false;
+                            
+                            <c:set var="colorValue" value=""/>
+                            <c:set var="sizeValue" value=""/>
+                            <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
+                            
+                            <c:forEach var="attr" items="${attributes}">
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Color'}">
+                                    <c:set var="colorValue" value="${attr.value}"/>
+                                </c:if>
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Size'}">
+                                    <c:set var="sizeValue" value="${attr.value}"/>
+                                </c:if>
+                            </c:forEach>
+                            
+                            // Check if this product matches the selected attributes
+                            if ((selectedColor === '' || '${colorValue}' === selectedColor) && 
+                                (selectedSize === '' || '${sizeValue}' === selectedSize)) {
+                                colorMatch = (selectedColor === '' || '${colorValue}' === selectedColor);
+                                sizeMatch = (selectedSize === '' || '${sizeValue}' === selectedSize);
+                            }
+                            
+                            // If we have exact matches for all selected attributes
+                            if ((selectedColor === '' || colorMatch) && (selectedSize === '' || sizeMatch)) {
+                                // Update product ID in form
+                                $('#selected-product-id-' + productNameId).val(${product.productId});
+                                found = true;
+                                
+                                // Update product details and image if we have at least one attribute selected
+                                if (selectedColor !== '' || selectedSize !== '') {
+                                    // Get product details
+                                    <c:set var="productDetail" value="${productDetailsMap[product.productId]}"/>
+                                    <c:set var="mainImage" value="${productImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+                                    
+                                    // Update image
+                                    <c:if test="${not empty mainImage and not empty mainImage.imageUrl}">
+                                        $('.product-image-' + productNameId).attr('src', '${pageContext.request.contextPath}/${mainImage.imageUrl}');
+                                    </c:if>
+                                    
+                                    // Update short description
+                                    $('.product-short-desc-' + productNameId).text('<c:out value="${product.shortDescription}" escapeXml="true"/>');
+                                    
+                                    // Update prices
+                                    <c:choose>
+                                        <c:when test="${not empty product.salePrice}">
+                                            $('.original-price-' + productNameId).html('£<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                            $('.sale-price-' + productNameId).html('£<fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                        </c:when>
+                                        <c:otherwise>
+                                            $('.regular-price-' + productNameId).html('£<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>');
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
+                                    // Update product details
+                                    <c:if test="${not empty productDetail}">
+                                        $('.scientific-name-' + productNameId).text('<c:out value="${productDetail.scientificName}" escapeXml="true"/>');
+                                        $('.common-name-' + productNameId).text('<c:out value="${productDetail.commonName}" escapeXml="true"/>');
+                                        $('.origin-' + productNameId).text('<c:out value="${productDetail.origin}" escapeXml="true"/>');
+                                        $('.detail-size-' + productNameId).text('<c:out value="${productDetail.size}" escapeXml="true"/>');
+                                        $('.lifespan-' + productNameId).text('<c:out value="${productDetail.lifespan}" escapeXml="true"/>');
+                                        $('.water-type-' + productNameId).text('<c:out value="${productDetail.waterType}" escapeXml="true"/>');
+                                        $('.water-temp-' + productNameId).text('<c:out value="${productDetail.waterTemperature}" escapeXml="true"/>');
+                                        $('.water-ph-' + productNameId).text('<c:out value="${productDetail.waterPh}" escapeXml="true"/>');
+                                        $('.diet-' + productNameId).text('<c:out value="${productDetail.diet}" escapeXml="true"/>');
+                                        $('.breeding-difficulty-' + productNameId).text('<c:out value="${productDetail.breedingDifficulty}" escapeXml="true"/>');
+                                        $('.care-level-' + productNameId).text('<c:out value="${productDetail.careLevel}" escapeXml="true"/>');
+                                        $('.compatibility-' + productNameId).text('<c:out value="${productDetail.compatibility}" escapeXml="true"/>');
+                                    </c:if>
+                                }
+                                
+                                // If we have exact matches for all selected attributes, break the loop
+                                if ((selectedColor === '' || '${colorValue}' === selectedColor) && 
+                                    (selectedSize === '' || '${sizeValue}' === selectedSize)) {
+                                    if ((selectedColor !== '' && '${colorValue}' === selectedColor) && 
+                                        (selectedSize !== '' && '${sizeValue}' === selectedSize)) {
+                                        // We found an exact match for both color and size
+                                        return true;
+                                    } else if ((selectedColor !== '' && '${colorValue}' === selectedColor && selectedSize === '') ||
+                                              (selectedSize !== '' && '${sizeValue}' === selectedSize && selectedColor === '')) {
+                                        // We found an exact match for the one attribute that was selected
+                                        return true;
+                                    }
+                                }
+                            }
+                        </c:forEach>
+                    }
+                </c:forEach>
+                
+                return found;
+            }
 
-                // Update the corresponding hidden input
-                $('.attribute-value-' + productId + '-' + attributeId).val(valueId);
+                        // Initialize validation for cart forms
+            $('.discount-cart-form, form[id^="cart-form-group-"]').submit(function(e) {
+                e.preventDefault(); // Prevent default form submission
+                
+                // Get quantity
+                var quantity = parseInt($(this).find('input[name="quantity"]').val());
+                
+                // Check if quantity is valid
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert('Please enter a valid quantity.');
+                    return false;
+                }
+                
+                // For main product forms, validate attribute selection if needed
+                if ($(this).attr('id') && $(this).attr('id').startsWith('cart-form-group-')) {
+                    var productNameId = $(this).closest('.product-row').find('.product-title').text().trim().replace(/ /g, '-');
+                    
+                    // Get selected attributes from our global object
+                    var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { Color: '', Size: '' };
+                    var selectedColor = selectedAttributes.Color || '';
+                    var selectedSize = selectedAttributes.Size || '';
+                    
+                    // If color options exist and none selected
+                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Color"]:not(.disabled)').length > 0 && !selectedColor) {
+                        alert('Please select a color.');
+                        return false;
+                    }
+                    
+                    // If size options exist and none selected
+                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Size"]:not(.disabled)').length > 0 && !selectedSize) {
+                        alert('Please select a size.');
+                        return false;
+                    }
+                    
+                    // Check if we have a valid product with the selected attributes
+                    var validProduct = false;
+                    <c:forEach var="entry" items="${groupedProducts}">
+                        <c:set var="productNameId" value="${fn:replace(entry.key, ' ', '-')}"/>
+                        if ('${productNameId}' === productNameId) {
+                            <c:forEach var="product" items="${entry.value}">
+                                var colorMatch = false;
+                                var sizeMatch = false;
+                                
+                                <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
+                                <c:forEach var="attr" items="${attributes}">
+                                    <c:if test="${attributeMap[attr.attributeId].name == 'Color'}">
+                                        if ('${attr.value}' === selectedColor || !selectedColor) {
+                                            colorMatch = true;
+                                        }
+                                    </c:if>
+                                    <c:if test="${attributeMap[attr.attributeId].name == 'Size'}">
+                                        if ('${attr.value}' === selectedSize || !selectedSize) {
+                                            sizeMatch = true;
+                                        }
+                                    </c:if>
+                                </c:forEach>
+                                
+                                if (colorMatch && sizeMatch) {
+                                    validProduct = true;
+                                }
+                            </c:forEach>
+                        }
+                    </c:forEach>
+                    
+                    if (!validProduct) {
+                        alert('The selected combination of attributes is not available.');
+                        return false;
+                    }
+                }
+                
+                <c:if test="${empty sessionScope.user}">
+                        alert('Please log in to add items to your cart.');
+                        window.location.href = 'login.jsp';
+                        return false;
+                </c:if>
+                
+                // AJAX submission
+                var form = $(this);
+                $.ajax({
+                    type: "POST",
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show notification
+                            $('#cart-notification').addClass('show');
+                            setTimeout(function() {
+                                $('#cart-notification').removeClass('show');
+                            }, 5000);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while adding the product to your cart.');
+                    }
+                });
+                
+                return false;
+            });
+
+            // Handle cart notification
+            $('.close-notification').click(function() {
+                $('#cart-notification').removeClass('show');
+            });
+            
+            $('.view-cart-btn').click(function() {
+                window.location.href = 'cartClient';
             });
         });
     </script>

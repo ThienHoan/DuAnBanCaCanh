@@ -55,6 +55,7 @@
                                     <li><a href="${pageContext.request.contextPath}/profile?action=edit"><i class="fa fa-edit"></i>Chỉnh sửa thông tin</a></li>
                                     <li><a href="${pageContext.request.contextPath}/profile?action=change-password"><i class="fa fa-key"></i>Đổi mật khẩu</a></li>
                                     <li><a href="${pageContext.request.contextPath}/wishlist"><i class="fa fa-heart"></i>Danh sách yêu thích</a></li>
+                                    <li><a href="${pageContext.request.contextPath}/order"><i class="fa fa-shopping-bag"></i>Đơn mua</a></li>
                                     <c:if test="${sessionScope.user.role == 'admin'}">
                                         <li class="divider"></li>
                                         <li><a href="admin-dashboard"><i class="fa fa-cog"></i>Admin Dashboard</a></li>

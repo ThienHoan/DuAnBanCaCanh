@@ -36,7 +36,7 @@ public class ProductAttributeValueDAO {
 
     public List<ProductAttributeValue> getProductAttributeValuesWithNamesByProductId(int productId) {
         List<ProductAttributeValue> attributeValues = new ArrayList<>();
-        String query = "SELECT pav.value_id, pav.product_id, pav.attribute_id, pav.value, pav.is_deleted " +
+        String query = "SELECT pav.value_id, pav.product_id, pav.attribute_id, pa.name as attribute_name, pav.value, pav.is_deleted " +
                       "FROM Product_attribute_values pav " +
                       "JOIN Product_attributes pa ON pav.attribute_id = pa.attribute_id " +
                       "WHERE pav.product_id = ? AND pav.is_deleted = 0";
@@ -52,7 +52,7 @@ public class ProductAttributeValueDAO {
                 attributeValue.setAttributeId(rs.getInt("attribute_id"));
                 attributeValue.setValue(rs.getString("value"));
                 attributeValue.setIsDeleted(rs.getInt("is_deleted"));
-                // Temporarily store attributeName in value field or handle via JSP
+                attributeValue.setAttributeName(rs.getString("attribute_name"));
                 
                 attributeValues.add(attributeValue);
             }

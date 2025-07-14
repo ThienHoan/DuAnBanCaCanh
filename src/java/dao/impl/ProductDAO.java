@@ -1,13 +1,13 @@
 package dao.impl;
 
-import model.entity.Product;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.math.BigDecimal;
+import model.entity.Product;
 import utils.db.DBContext;
 
 public class ProductDAO {
@@ -331,7 +331,7 @@ public class ProductDAO {
         String query = "SELECT TOP (?) p.product_id, p.category_id, p.name, p.description, p.short_description, " +
                       "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted " +
                       "FROM Products p " +
-                      "WHERE p.sale_price IS NOT NULL AND p.sale_price < p.price AND p.is_deleted = 0 " +
+                      "WHERE p.sale_price IS NOT NULL AND p.sale_price < p.price AND p.is_deleted = 0 AND p.featured = 1 " +
                       "ORDER BY p.sale_price ASC";
 
         try (Connection conn = DBContext.getConnection();
@@ -363,5 +363,23 @@ public class ProductDAO {
             e.printStackTrace();
         }
         return products;
+    }
+
+    public int getProductQuantity(int productId) {
+        String query = "SELECT quantity FROM Products WHERE product_id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, productId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("quantity");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

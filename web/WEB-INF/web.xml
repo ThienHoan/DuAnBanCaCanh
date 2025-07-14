@@ -205,6 +205,16 @@
         <url-pattern>/admin/reset-all-identity</url-pattern>
     </servlet-mapping>
     
+    <!-- Order Management servlet -->
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>controller.client.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    
     <!-- Test Blog Category servlet -->
     <servlet>
         <servlet-name>TestBlogCategoryServlet</servlet-name>
