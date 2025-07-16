@@ -30,6 +30,11 @@
                     <i class="bi bi-cart"></i> Orders
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-white ${param.page == 'warehouse' ? 'active' : ''}" href="${pageContext.request.contextPath}/admin/warehouse">
+                   <i class="bi bi-box-seam"></i> Kho Hàng
+                </a>
+            </li>
             
             <!-- Blog Management Menu -->
             <li class="nav-item">

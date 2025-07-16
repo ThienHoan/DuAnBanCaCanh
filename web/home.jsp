@@ -690,7 +690,8 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="tab-content">                            <div id="tab01_1st" class="tab-contain active">
+                        <div class="tab-content">                            
+                            <div id="tab01_1st" class="tab-contain active">
                                 <ul class="products-list biolife-carousel nav-center-02 nav-none-on-mobile eq-height-contain" data-slick='{"rows":1 ,"arrows":true,"dots":false,"infinite":true,"speed":400,"slidesMargin":10,"slidesToShow":4, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 4}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesMargin":20}},{"breakpoint":768, "settings":{ "slidesToShow": 2, "rows":2, "slidesMargin":15}}]}'>
                                     <c:choose>
                                         <c:when test="${not empty homeProducts}">

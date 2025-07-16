@@ -90,7 +90,7 @@
                                 <a href="about-shop.jsp" class="menu-name" data-title="Shop" >About Shop</a>
                             </li>
                             <li class="menu-item menu-item-has-children has-child">
-                                <a href="#" class="menu-name" data-title="Product">Product</a>
+                                <a href="${pageContext.request.contextPath}/category" class="menu-name" data-title="Product">Product</a>
                                 <ul class="sub-menu">
                                     <li class="menu-item"><a href="#">Omelettes</a></li>
                                     <li class="menu-item"><a href="#">Breakfast Scrambles</a></li>

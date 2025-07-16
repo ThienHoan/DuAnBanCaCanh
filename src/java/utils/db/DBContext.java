@@ -7,9 +7,9 @@ import java.util.logging.Logger;
 
 public class DBContext {
     public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static String dbURL = "jdbc:sqlserver://localhost;instanceName=THIENHOANNHAA;databaseName=fishshopp";
+    public static String dbURL = "jdbc:sqlserver://localhost;databaseName=fishshop";
     public static String userDB = "sa";
-    public static String passDB = "123";
+    public static String passDB = "040604";
       public static Connection getConnection() {
         Connection con = null;
         
