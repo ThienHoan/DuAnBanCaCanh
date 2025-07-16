@@ -1,10 +1,13 @@
 <%-- 
-    Document   : produc_detail
-    Created on : May 20, 2025, 11:14:51 PM
+    Document   : product_detail
+    Created on : May 20, 2025, 11:14:51 PM
     Author     : hoan6
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 
@@ -12,7 +15,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Biolife - Organic Food</title>
+    <title>${product.name} - Fish Shop</title>
     <link href="https://fonts.googleapis.com/css?family=Cairo:400,600,700&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:600&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400i,700i" rel="stylesheet">
@@ -25,6 +28,271 @@
     <link rel="stylesheet" href="assets/css/slick.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/main-color.css">
+    <style>
+        .feature-table th {
+            width: 40%;
+            font-weight: 600;
+        }
+        .attribute-list {
+            margin-bottom: 0;
+        }
+        .attribute-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .attribute-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        /* Rating Summary Styles */
+        .rating-summary-wrapper {
+            display: flex;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .rating-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+            transition: box-shadow .25s ease, transform .25s;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rating-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.12);
+        }
+        
+        .rating-info .index {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .rating-info .rating {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .rating-info .options {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        
+        .rating-info .options li {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .detail-for {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+        
+        .option-name {
+            min-width: 80px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .progres {
+            flex: 1;
+            margin: 0 14px;
+        }
+        
+        .line-100percent {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .percent {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg,#ffb400,#ff8c00);
+            transition: width .5s ease;
+            border-radius: 4px;
+        }
+        
+        .number {
+            min-width: 40px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-summary-wrapper {
+                flex-direction: column;
+            }
+            
+            .rating-info {
+                padding: 20px;
+            }
+            
+            .option-name {
+                min-width: 60px;
+            }
+        }
+        
+        .tab-content {
+            padding: 20px;
+        }
+        .specification-item {
+            margin-bottom: 10px;
+        }
+        .spec-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Fixed styles for tabs */
+        .product-tabs .tab-head .tab-element {
+            cursor: pointer;
+        }
+        .product-tabs .tab-content .tab-contain {
+            display: none;
+        }
+        .product-tabs .tab-content .tab-contain.active {
+            display: block;
+        }
+        
+        /* New styles for enhanced product details */
+        .badge {
+            font-size: 90%;
+            font-weight: 500;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .product-meta {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .meta-label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #666;
+        }
+        .meta-value {
+            color: #333;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 12px 15px;
+        }
+        .alert {
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .stock-info-detailed {
+            padding: 5px;
+        }
+        
+        /* Product variant styles */
+        .product-variants {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+               .variant-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .variant-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-right: 10px;
+        }
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .color-option {
+    width: auto;
+    height: auto;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    color: #333;
+    background-color: #f8f9fa !important;
+    border: 1px solid #ddd;
+    display: inline-block;
+    text-align: center;
+}
+         .color-option:hover {
+            transform: scale(1.1);
+            border-color: #7FAF51 !important;
+        }
+        .color-option.active {
+            border: 2px solid #00CAFF !important;
+        }
+        .size-option, .generic-option {
+            padding: 5px 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .size-option:hover, .generic-option:hover {
+            border-color: #e73918 !important;
+            color: #e73918 !important;
+        }
+        .size-option.active, .generic-option.active {
+            border-color: #e73918 !important;
+            color: #e73918 !important;
+            font-weight: bold;
+        }
+        .d-flex {
+            display: flex;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body class="biolife-body">
 
@@ -39,767 +307,23 @@
         </div>
     </div>
 
-    <!-- HEADER -->
-    <header id="header" class="header-area style-01 layout-03">
-        <div class="header-top bg-main hidden-xs">
-            <div class="container">
-                <div class="top-bar left">
-                    <ul class="horizontal-menu">
-                        <li><a href="#"><i class="fa fa-envelope" aria-hidden="true"></i>Organic@company.com</a></li>
-                        <li><a href="#">Free Shipping for all Order of $99</a></li>
-                    </ul>
-                </div>
-                <div class="top-bar right">
-                    <ul class="social-list">
-                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                    </ul>
-                    <ul class="horizontal-menu">
-                        <li class="horz-menu-item currency">
-                            <select name="currency">
-                                <option value="eur">€ EUR (Euro)</option>
-                                <option value="usd" selected>$ USD (Dollar)</option>
-                                <option value="usd">£ GBP (Pound)</option>
-                                <option value="usd">¥ JPY (Yen)</option>
-                            </select>
-                        </li>
-                        <li class="horz-menu-item lang">
-                            <select name="language">
-                                <option value="fr">French (EUR)</option>
-                                <option value="en" selected>English (USD)</option>
-                                <option value="ger">Germany (GBP)</option>
-                                <option value="jp">Japan (JPY)</option>
-                            </select>
-                        </li>
-                        <li><a href="login.html" class="login-link"><i class="biolife-icon icon-login"></i>Login/Register</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="header-middle biolife-sticky-object ">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3 col-md-2 col-md-6 col-xs-6">
-                        <a href="index-2.html" class="biolife-logo"><img src="assets/images/organic-3.png" alt="biolife logo" width="135" height="34"></a>
-                    </div>
-                    <div class="col-lg-6 col-md-7 hidden-sm hidden-xs">
-                        <div class="primary-menu">
-                            <ul class="menu biolife-menu clone-main-menu clone-primary-menu" id="primary-menu" data-menuname="main menu">
-                                <li class="menu-item"><a href="index-2.html">Home</a></li>
-                                <li class="menu-item menu-item-has-children has-megamenu">
-                                    <a href="#" class="menu-name" data-title="Shop" >Shop</a>
-                                    <div class="wrap-megamenu lg-width-900 md-width-750">
-                                        <div class="mega-content">
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Fresh Berries</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Fruit & Nut Gifts</a></li>
-                                                        <li><a href="#">Mixed Fruits</a></li>
-                                                        <li><a href="#">Oranges</a></li>
-                                                        <li><a href="#">Bananas & Plantains</a></li>
-                                                        <li><a href="#">Fresh Gala Apples</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Vegetables</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Berries</a></li>
-                                                        <li><a href="#">Pears</a></li>
-                                                        <li><a href="#">Chili Peppers</a></li>
-                                                        <li><a href="#">Fresh Avocado</a></li>
-                                                        <li><a href="#">Grapes</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu ">
-                                                    <h4 class="menu-title">Fresh Fruits</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Basket of apples</a></li>
-                                                        <li><a href="#">Strawberry</a></li>
-                                                        <li><a href="#">Blueberry</a></li>
-                                                        <li><a href="#">Orange</a></li>
-                                                        <li><a href="#">Pineapple</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Featured Products</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Coffee Creamers</a></li>
-                                                        <li><a href="#">Mayonnaise</a></li>
-                                                        <li><a href="#">Almond Milk</a></li>
-                                                        <li><a href="#">Fruit Jam</a></li>
-                                                        <li><a href="#">Beverages</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="menu-item menu-item-has-children has-child">
-                                    <a href="#" class="menu-name" data-title="Products">Products</a>
-                                    <ul class="sub-menu">
-                                        <li class="menu-item"><a href="#">Omelettes</a></li>
-                                        <li class="menu-item"><a href="#">Breakfast Scrambles</a></li>
-                                        <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Eggs & other considerations">Eggs & other considerations</a>
-                                            <ul class="sub-menu">
-                                                <li class="menu-item"><a href="#">Classic Breakfast</a></li>
-                                                <li class="menu-item"><a href="#">Huevos Rancheros</a></li>
-                                                <li class="menu-item"><a href="#">Everything Egg Sandwich</a></li>
-                                                <li class="menu-item"><a href="#">Egg Sandwich</a></li>
-                                                <li class="menu-item"><a href="#">Vegan Burrito</a></li>
-                                                <li class="menu-item"><a href="#">Biscuits and Gravy</a></li>
-                                                <li class="menu-item"><a href="#">Bacon Avo Egg Sandwich</a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="menu-item"><a href="#">Griddle</a></li>
-                                        <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Sides & Extras">Sides & Extras</a>
-                                            <ul class="sub-menu">
-                                                <li class="menu-item"><a href="#">Breakfast Burrito</a></li>
-                                                <li class="menu-item"><a href="#">Crab Cake Benedict</a></li>
-                                                <li class="menu-item"><a href="#">Corned Beef Hash</a></li>
-                                                <li class="menu-item"><a href="#">Steak & Eggs</a></li>
-                                                <li class="menu-item"><a href="#">Oatmeal</a></li>
-                                                <li class="menu-item"><a href="#">Fruit & Yogurt Parfait</a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="menu-item"><a href="#">Biscuits</a></li>
-                                        <li class="menu-item"><a href="#">Seasonal Fruit Plate</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item menu-item-has-children has-megamenu">
-                                    <a href="#" class="menu-name" data-title="Demo">Demo</a>
-                                    <div class="wrap-megamenu lg-width-800 md-width-750">
-                                        <div class="mega-content">
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Home Page</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="home-01.html">Home 01</a></li>
-                                                        <li><a href="home-02.html">Home 02</a></li>
-                                                        <li><a href="index-2.html">Home 03</a></li>
-                                                        <li><a href="home-03-green.html">Home 03 Green</a></li>
-                                                        <li><a href="home-04.html">Home 04</a></li>
-                                                        <li><a href="home-04-light.html">Home 04 Light</a></li>
-                                                        <li><a href="home-05.html">Home 05</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Inner Pages</h4>
-                                                    <ul class="menu">
-                                                        <li class="menu-item" ><a class="menu-name" href="blog-post.html">Blog Single</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="blog-v01.html">Blog Style 01</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="blog-v02.html">Blog Style 02</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="blog-v03.html">Blog Style 03</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="contact.html">Contact Us</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="about-us.html">About Us</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="checkout.html">Checkout</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="shopping-cart.html">Shopping Cart</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="login.html">Login/Register</a></li>
-                                                        <li class="menu-item" ><a class="menu-name" href="404.html">404</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Category Pages</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="category-grid-3-cols.html">Grid 3 Cols</a></li>
-                                                        <li><a href="category-grid.html">Grid 4 Cols</a></li>
-                                                        <li><a href="category-grid-6-cols.html">Grid 6 Cols</a></li>
-                                                        <li><a href="category-grid-left-sidebar.html">Grid Left Sidebar</a></li>
-                                                        <li><a href="category-grid-right-sidebar.html">Grid Right Sidebar</a></li>
-                                                        <li><a href="category-list.html">List Full</a></li>
-                                                        <li><a href="category-list-left-sidebar.html">List Left Sidebar</a></li>
-                                                        <li><a href="category-list-right-sidebar.html">List Right Sidebar</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-12 md-margin-bottom-0 xs-margin-bottom-25">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Product Types</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="single-product-simple.html">Simple</a></li>
-                                                        <li><a href="single-product-grouped.html">Grouped</a></li>
-                                                        <li><a href="single-product.html">Variable</a></li>
-                                                        <li><a href="single-product-external.html">External/Affiliate</a></li>
-                                                        <li><a href="single-product-onsale.html">Countdown</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="menu-item menu-item-has-children has-megamenu">
-                                    <a href="#" class="menu-name" data-title="Blog">Blog</a>
-                                    <div class="wrap-megamenu lg-width-800 md-width-750">
-                                        <div class="mega-content">
-                                            <div class="col-lg-3 col-md-3 col-xs-6">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Blog Categories</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Beauty (30)</a></li>
-                                                        <li><a href="#">Fashion (50)</a></li>
-                                                        <li><a href="#">Food (10)</a></li>
-                                                        <li><a href="#">Life Style (60)</a></li>
-                                                        <li><a href="#">Travel (10)</a></li>
-                                                        <li><a href="#">Nutrition (35)</a></li>
-                                                        <li><a href="#">Food Decoration (45)</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-xs-6">
-                                                <div class="wrap-custom-menu vertical-menu">
-                                                    <h4 class="menu-title">Featured Posts</h4>
-                                                    <ul class="menu">
-                                                        <li><a href="#">Post example<sup>#1</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#2</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#3</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#4</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#5</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#6</sup></a></li>
-                                                        <li><a href="#">Post example<sup>#7</sup></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6 col-md-6 col-xs-12 md-margin-top-0 xs-margin-top-25px">
-                                                <div class="block-posts">
-                                                    <h4 class="menu-title">Recent Posts</h4>
-                                                    <ul class="posts">
-                                                        <li>
-                                                            <div class="block-post-item">
-                                                                <div class="thumb"><a href="#"><img src="assets/images/megamenu/thumb-05.jpg" width="100" height="73" alt=""></a></div>
-                                                                <div class="left-info">
-                                                                    <h4 class="post-name"><a href="#">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                                                    <span class="p-date">Jan 05, 2019</span>
-                                                                    <span class="p-comment">2 Comments</span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="block-post-item">
-                                                                <div class="thumb"><a href="#"><img src="assets/images/megamenu/thumb-06.jpg" width="100" height="73" alt=""></a></div>
-                                                                <div class="left-info">
-                                                                    <h4 class="post-name"><a href="#">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                                                    <span class="p-date">May 15, 2019</span>
-                                                                    <span class="p-comment">8 Comments</span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="block-post-item">
-                                                                <div class="thumb"><a href="#"><img src="assets/images/megamenu/thumb-07.jpg" width="100" height="73" alt=""></a></div>
-                                                                <div class="left-info">
-                                                                    <h4 class="post-name"><a href="#">Ashwagandha: The #1 Herb in the World for Anxiety?</a></h4>
-                                                                    <span class="p-date">Apr 26, 2019</span>
-                                                                    <span class="p-comment">10 Comments</span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="menu-item"><a href="contact.html">Contact</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-md-6 col-xs-6">
-                        <div class="biolife-cart-info">
-                            <div class="mobile-search">
-                                <a href="javascript:void(0)" class="open-searchbox"><i class="biolife-icon icon-search"></i></a>
-                                <div class="mobile-search-content">
-                                    <form action="#" class="form-search" name="mobile-seacrh" method="get">
-                                        <a href="#" class="btn-close"><span class="biolife-icon icon-close-menu"></span></a>
-                                        <input type="text" name="s" class="input-text" value="" placeholder="Search here...">
-                                        <select name="category">
-                                            <option value="-1" selected>All Categories</option>
-                                            <option value="vegetables">Vegetables</option>
-                                            <option value="fresh_berries">Fresh Berries</option>
-                                            <option value="ocean_foods">Ocean Foods</option>
-                                            <option value="butter_eggs">Butter & Eggs</option>
-                                            <option value="fastfood">Fastfood</option>
-                                            <option value="fresh_meat">Fresh Meat</option>
-                                            <option value="fresh_onion">Fresh Onion</option>
-                                            <option value="papaya_crisps">Papaya & Crisps</option>
-                                            <option value="oatmeal">Oatmeal</option>
-                                        </select>
-                                        <button type="submit" class="btn-submit">go</button>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="wishlist-block hidden-sm hidden-xs">
-                                <a href="#" class="link-to">
-                                    <span class="icon-qty-combine">
-                                        <i class="icon-heart-bold biolife-icon"></i>
-                                        <span class="qty">4</span>
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="minicart-block">
-                                <div class="minicart-contain">
-                                    <a href="javascript:void(0)" class="link-to">
-                                            <span class="icon-qty-combine">
-                                                <i class="icon-cart-mini biolife-icon"></i>
-                                                <span class="qty">8</span>
-                                            </span>
-                                        <span class="title">My Cart -</span>
-                                        <span class="sub-total">$0.00</span>
-                                    </a>
-                                    <div class="cart-content">
-                                        <div class="cart-inner">
-                                            <ul class="products">
-                                                <li>
-                                                    <div class="minicart-item">
-                                                        <div class="thumb">
-                                                            <a href="#"><img src="assets/images/minicart/pr-01.jpg" width="90" height="90" alt="National Fresh"></a>
-                                                        </div>
-                                                        <div class="left-info">
-                                                            <div class="product-title"><a href="#" class="product-name">National Fresh Fruit</a></div>
-                                                            <div class="price">
-                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                            </div>
-                                                            <div class="qty">
-                                                                <label for="cart[id123][qty]">Qty:</label>
-                                                                <input type="number" class="input-qty" name="cart[id123][qty]" id="cart[id123][qty]" value="1" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="action">
-                                                            <a href="#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="minicart-item">
-                                                        <div class="thumb">
-                                                            <a href="#"><img src="assets/images/minicart/pr-02.jpg" width="90" height="90" alt="National Fresh"></a>
-                                                        </div>
-                                                        <div class="left-info">
-                                                            <div class="product-title"><a href="#" class="product-name">National Fresh Fruit</a></div>
-                                                            <div class="price">
-                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                            </div>
-                                                            <div class="qty">
-                                                                <label for="cart[id124][qty]">Qty:</label>
-                                                                <input type="number" class="input-qty" name="cart[id124][qty]" id="cart[id124][qty]" value="1" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="action">
-                                                            <a href="#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="minicart-item">
-                                                        <div class="thumb">
-                                                            <a href="#"><img src="assets/images/minicart/pr-03.jpg" width="90" height="90" alt="National Fresh"></a>
-                                                        </div>
-                                                        <div class="left-info">
-                                                            <div class="product-title"><a href="#" class="product-name">National Fresh Fruit</a></div>
-                                                            <div class="price">
-                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                            </div>
-                                                            <div class="qty">
-                                                                <label for="cart[id125][qty]">Qty:</label>
-                                                                <input type="number" class="input-qty" name="cart[id125][qty]" id="cart[id125][qty]" value="1" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="action">
-                                                            <a href="#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="minicart-item">
-                                                        <div class="thumb">
-                                                            <a href="#"><img src="assets/images/minicart/pr-04.jpg" width="90" height="90" alt="National Fresh"></a>
-                                                        </div>
-                                                        <div class="left-info">
-                                                            <div class="product-title"><a href="#" class="product-name">National Fresh Fruit</a></div>
-                                                            <div class="price">
-                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                            </div>
-                                                            <div class="qty">
-                                                                <label for="cart[id126][qty]">Qty:</label>
-                                                                <input type="number" class="input-qty" name="cart[id126][qty]" id="cart[id126][qty]" value="1" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="action">
-                                                            <a href="#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="minicart-item">
-                                                        <div class="thumb">
-                                                            <a href="#"><img src="assets/images/minicart/pr-05.jpg" width="90" height="90" alt="National Fresh"></a>
-                                                        </div>
-                                                        <div class="left-info">
-                                                            <div class="product-title"><a href="#" class="product-name">National Fresh Fruit</a></div>
-                                                            <div class="price">
-                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                            </div>
-                                                            <div class="qty">
-                                                                <label for="cart[id127][qty]">Qty:</label>
-                                                                <input type="number" class="input-qty" name="cart[id127][qty]" id="cart[id127][qty]" value="1" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="action">
-                                                            <a href="#" class="edit"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" class="remove"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                            <p class="btn-control">
-                                                <a href="#" class="btn view-cart">view cart</a>
-                                                <a href="#" class="btn">checkout</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mobile-menu-toggle">
-                                <a class="btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="header-bottom hidden-sm hidden-xs">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3 col-md-4">
-                        <div class="vertical-menu vertical-category-block">
-                            <div class="block-title">
-                                <span class="menu-icon">
-                                    <span class="line-1"></span>
-                                    <span class="line-2"></span>
-                                    <span class="line-3"></span>
-                                </span>
-                                <span class="menu-title">All departments</span>
-                                <span class="angle" data-tgleclass="fa fa-caret-down"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
-                            </div>
-                            <div class="wrap-menu">
-                                <ul class="menu clone-main-menu">
-                                    <li class="menu-item menu-item-has-children has-megamenu">
-                                        <a href="#" class="menu-name" data-title="Fruit & Nut Gifts"><i class="biolife-icon icon-fruits"></i>Fruit & Nut Gifts</a>
-                                        <div class="wrap-megamenu lg-width-900 md-width-640">
-                                            <div class="mega-content">
-                                                <div class="row">
-                                                    <div class="col-lg-3 col-md-4 col-sm-12 xs-margin-bottom-25 md-margin-bottom-0">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Fresh Fuits</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Fruit & Nut Gifts</a></li>
-                                                                <li><a href="#">Mixed Fruits</a></li>
-                                                                <li><a href="#">Oranges</a></li>
-                                                                <li><a href="#">Bananas & Plantains</a></li>
-                                                                <li><a href="#">Fresh Gala Apples</a></li>
-                                                                <li><a href="#">Berries</a></li>
-                                                                <li><a href="#">Pears</a></li>
-                                                                <li><a href="#">Produce</a></li>
-                                                                <li><a href="#">Snack Foods</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-md-4 col-sm-12 lg-padding-left-23 xs-margin-bottom-25 md-margin-bottom-0">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Nut Gifts</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Non-Dairy Coffee Creamers</a></li>
-                                                                <li><a href="#">Coffee Creamers</a></li>
-                                                                <li><a href="#">Mayonnaise</a></li>
-                                                                <li><a href="#">Almond Milk</a></li>
-                                                                <li><a href="#">Ghee</a></li>
-                                                                <li><a href="#">Beverages</a></li>
-                                                                <li><a href="#">Ranch Salad Dressings</a></li>
-                                                                <li><a href="#">Hemp Milk</a></li>
-                                                                <li><a href="#">Nuts & Seeds</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6 col-md-4 col-sm-12 lg-padding-left-50 xs-margin-bottom-25 md-margin-bottom-0">
-                                                        <div class="biolife-products-block max-width-270">
-                                                            <h4 class="menu-title">Bestseller Products</h4>
-                                                            <ul class="products-list default-product-style biolife-carousel nav-none-after-1k2 nav-center" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":30,"slidesToShow":1, "responsive":[{"breakpoint":767, "settings":{ "arrows": false}}]}' >
-                                                                <li class="product-item">
-                                                                    <div class="contain-product none-overlay">
-                                                                        <div class="product-thumb">
-                                                                            <a href="#" class="link-to-product">
-                                                                                <img src="assets/images/products/p-08.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                                                            </a>
-                                                                        </div>
-                                                                        <div class="info">
-                                                                            <b class="categories">Fresh Fruit</b>
-                                                                            <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                                                            <div class="price">
-                                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                                <li class="product-item">
-                                                                    <div class="contain-product none-overlay">
-                                                                        <div class="product-thumb">
-                                                                            <a href="#" class="link-to-product">
-                                                                                <img src="assets/images/products/p-11.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                                                            </a>
-                                                                        </div>
-                                                                        <div class="info">
-                                                                            <b class="categories">Fresh Fruit</b>
-                                                                            <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                                                            <div class="price">
-                                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                                <li class="product-item">
-                                                                    <div class="contain-product none-overlay">
-                                                                        <div class="product-thumb">
-                                                                            <a href="#" class="link-to-product">
-                                                                                <img src="assets/images/products/p-15.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                                                            </a>
-                                                                        </div>
-                                                                        <div class="info">
-                                                                            <b class="categories">Fresh Fruit</b>
-                                                                            <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                                                            <div class="price">
-                                                                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-lg-12 col-md-12 col-sm-12 md-margin-top-9">
-                                                        <div class="biolife-brand" >
-                                                            <ul class="brands">
-                                                                <li><a href="#"><img src="assets/images/megamenu/brand-organic.png" width="161" height="136" alt="organic"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/brand-explore.png" width="160" height="136" alt="explore"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/brand-organic-2.png" width="99" height="136" alt="organic 2"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/brand-eco-teas.png" width="164"  height="136" alt="eco teas"></a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="menu-item menu-item-has-children has-megamenu">
-                                        <a href="#" class="menu-name" data-title="Vegetables"><i class="biolife-icon icon-broccoli-1"></i>Vegetables</a>
-                                        <div class="wrap-megamenu lg-width-900 md-width-640 background-mega-01">
-                                            <div class="mega-content">
-                                                <div class="row">
-                                                    <div class="col-lg-3 col-md-4 col-sm-12 xs-margin-bottom-25 md-margin-bottom-0">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Vegetables</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Fruit & Nut Gifts</a></li>
-                                                                <li><a href="#">Mixed Fruits</a></li>
-                                                                <li><a href="#">Oranges</a></li>
-                                                                <li><a href="#">Bananas & Plantains</a></li>
-                                                                <li><a href="#">Fresh Gala Apples</a></li>
-                                                                <li><a href="#">Berries</a></li>
-                                                                <li><a href="#">Pears</a></li>
-                                                                <li><a href="#">Produce</a></li>
-                                                                <li><a href="#">Snack Foods</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-12 lg-padding-left-23 xs-margin-bottom-25 md-margin-bottom-0">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Gifts</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Non-Dairy Coffee Creamers</a></li>
-                                                                <li><a href="#">Coffee Creamers</a></li>
-                                                                <li><a href="#">Mayonnaise</a></li>
-                                                                <li><a href="#">Almond Milk</a></li>
-                                                                <li><a href="#">Ghee</a></li>
-                                                                <li><a href="#">Beverages</a></li>
-                                                                <li><a href="#">Ranch Salad Dressings</a></li>
-                                                                <li><a href="#">Hemp Milk</a></li>
-                                                                <li><a href="#">Nuts & Seeds</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-5 col-md-4 col-sm-12 lg-padding-left-57 md-margin-bottom-30">
-                                                        <div class="biolife-brand vertical md-boder-left-30">
-                                                            <h4 class="menu-title">Hot Brand</h4>
-                                                            <ul class="brands">
-                                                                <li><a href="#"><img src="assets/images/megamenu/v-brand-organic.png" width="167" height="74" alt="organic"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/v-brand-explore.png" width="167" height="72" alt="explore"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/v-brand-organic-2.png" width="167" height="99" alt="organic 2"></a></li>
-                                                                <li><a href="#"><img src="assets/images/megamenu/v-brand-eco-teas.png" width="167" height="67" alt="eco teas"></a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="menu-item menu-item-has-children has-megamenu">
-                                        <a href="#" class="menu-name" data-title="Fresh Berries"><i class="biolife-icon icon-grape"></i>Fresh Berries</a>
-                                        <div class="wrap-megamenu lg-width-900 md-width-640 background-mega-02">
-                                            <div class="mega-content">
-                                                <div class="row">
-                                                    <div class="col-lg-3 col-md-4 sm-col-12 md-margin-bottom-83 xs-margin-bottom-25">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Fresh Berries</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Fruit & Nut Gifts</a></li>
-                                                                <li><a href="#">Mixed Fruits</a></li>
-                                                                <li><a href="#">Oranges</a></li>
-                                                                <li><a href="#">Bananas & Plantains</a></li>
-                                                                <li><a href="#">Fresh Gala Apples</a></li>
-                                                                <li><a href="#">Berries</a></li>
-                                                                <li><a href="#">Pears</a></li>
-                                                                <li><a href="#">Produce</a></li>
-                                                                <li><a href="#">Snack Foods</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-3 col-md-4 sm-col-12 lg-padding-left-23 xs-margin-bottom-36px md-margin-bottom-0">
-                                                        <div class="wrap-custom-menu vertical-menu">
-                                                            <h4 class="menu-title">Gifts</h4>
-                                                            <ul class="menu">
-                                                                <li><a href="#">Non-Dairy Coffee Creamers</a></li>
-                                                                <li><a href="#">Coffee Creamers</a></li>
-                                                                <li><a href="#">Mayonnaise</a></li>
-                                                                <li><a href="#">Almond Milk</a></li>
-                                                                <li><a href="#">Ghee</a></li>
-                                                                <li><a href="#">Beverages</a></li>
-                                                                <li><a href="#">Ranch Salad Dressings</a></li>
-                                                                <li><a href="#">Hemp Milk</a></li>
-                                                                <li><a href="#">Nuts & Seeds</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6 col-md-4 sm-col-12 lg-padding-left-25 md-padding-top-55">
-                                                        <div class="biolife-banner layout-01">
-                                                            <h3 class="top-title">Farm Fresh</h3>
-                                                            <p class="content"> All the Lorem Ipsum generators on the Internet tend.</p>
-                                                            <b class="bottomm-title">Berries Series</b>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="menu-item"><a href="#" class="menu-name" data-title="Ocean Foods"><i class="biolife-icon icon-fish"></i>Ocean Foods</a></li>
-                                    <li class="menu-item menu-item-has-children has-child">
-                                        <a href="#" class="menu-name" data-title="Butter & Eggs"><i class="biolife-icon icon-honey"></i>Butter & Eggs</a>
-                                        <ul class="sub-menu">
-                                            <li class="menu-item"><a href="#">Omelettes</a></li>
-                                            <li class="menu-item"><a href="#">Breakfast Scrambles</a></li>
-                                            <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Eggs & other considerations">Eggs & other considerations</a>
-                                                <ul class="sub-menu">
-                                                    <li class="menu-item"><a href="#">Classic Breakfast</a></li>
-                                                    <li class="menu-item"><a href="#">Huevos Rancheros</a></li>
-                                                    <li class="menu-item"><a href="#">Everything Egg Sandwich</a></li>
-                                                    <li class="menu-item"><a href="#">Egg Sandwich</a></li>
-                                                    <li class="menu-item"><a href="#">Vegan Burrito</a></li>
-                                                    <li class="menu-item"><a href="#">Biscuits and Gravy</a></li>
-                                                    <li class="menu-item"><a href="#">Bacon Avo Egg Sandwich</a></li>
-                                                </ul>
-                                            </li>
-                                            <li class="menu-item"><a href="#">Griddle</a></li>
-                                            <li class="menu-item menu-item-has-children has-child"><a href="#" class="menu-name" data-title="Sides & Extras">Sides & Extras</a>
-                                                <ul class="sub-menu">
-                                                    <li class="menu-item"><a href="#">Breakfast Burrito</a></li>
-                                                    <li class="menu-item"><a href="#">Crab Cake Benedict</a></li>
-                                                    <li class="menu-item"><a href="#">Corned Beef Hash</a></li>
-                                                    <li class="menu-item"><a href="#">Steak & Eggs</a></li>
-                                                    <li class="menu-item"><a href="#">Oatmeal</a></li>
-                                                    <li class="menu-item"><a href="#">Fruit & Yogurt Parfait</a></li>
-                                                </ul>
-                                            </li>
-                                            <li class="menu-item"><a href="#">Biscuits</a></li>
-                                            <li class="menu-item"><a href="#">Seasonal Fruit Plate</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-fast-food"></i>Fastfood</a></li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-beef"></i>Fresh Meat</a></li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-onions"></i>Fresh Onion</a></li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-avocado"></i>Papaya & Crisps</a></li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-contain"></i>Oatmeal</a></li>
-                                    <li class="menu-item"><a href="#" class="menu-title"><i class="biolife-icon icon-fresh-juice"></i>Fresh Bananas & Plantains</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-9 col-md-8 padding-top-2px">
-                        <div class="header-search-bar layout-01">
-                            <form action="#" class="form-search" name="desktop-seacrh" method="get">
-                                <input type="text" name="s" class="input-text" value="" placeholder="Search here...">
-                                <select name="category">
-                                    <option value="-1" selected>All Categories</option>
-                                    <option value="vegetables">Vegetables</option>
-                                    <option value="fresh_berries">Fresh Berries</option>
-                                    <option value="ocean_foods">Ocean Foods</option>
-                                    <option value="butter_eggs">Butter & Eggs</option>
-                                    <option value="fastfood">Fastfood</option>
-                                    <option value="fresh_meat">Fresh Meat</option>
-                                    <option value="fresh_onion">Fresh Onion</option>
-                                    <option value="papaya_crisps">Papaya & Crisps</option>
-                                    <option value="oatmeal">Oatmeal</option>
-                                </select>
-                                <button type="submit" class="btn-submit"><i class="biolife-icon icon-search"></i></button>
-                            </form>
-                        </div>
-                        <div class="live-info">
-                            <p class="telephone"><i class="fa fa-phone" aria-hidden="true"></i><b class="phone-number">(+900) 123 456 7891</b></p>
-                            <p class="working-time">Mon-Fri: 8:30am-7:30pm; Sat-Sun: 9:30am-4:30pm</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- HEADER - Replace with your header.jsp include -->
+    <jsp:include page="header.jsp" />
 
     <!--Hero Section-->
     <div class="hero-section hero-background">
-        <h1 class="page-title">Organic Fruits</h1>
+        <h1 class="page-title">${product.name}</h1>
     </div>
 
     <!--Navigation section-->
     <div class="container">
         <nav class="biolife-nav">
             <ul>
-                <li class="nav-item"><a href="index-2.html" class="permal-link">Home</a></li>
-                <li class="nav-item"><a href="#" class="permal-link">Natural Organic</a></li>
-                <li class="nav-item"><span class="current-page">Fresh Fruit</span></li>
+                <li class="nav-item"><a href="home" class="permal-link">Home</a></li>
+                <c:if test="${category != null}">
+                    <li class="nav-item"><a href="category?id=${category.categoryId}" class="permal-link">${category.name}</a></li>
+                </c:if>
+                <li class="nav-item"><span class="current-page">${product.name}</span></li>
             </ul>
         </nav>
     </div>
@@ -813,83 +337,181 @@
                 <!-- summary info -->
                 <div class="sumary-product single-layout">
                     <div class="media">
+                        <!-- Main Images Slider -->
                         <ul class="biolife-carousel slider-for" data-slick='{"arrows":false,"dots":false,"slidesMargin":30,"slidesToShow":1,"slidesToScroll":1,"fade":true,"asNavFor":".slider-nav"}'>
-                            <li><img src="assets/images/details-product/p05.jpg" alt="" width="500" height="500"></li>
-                            <li><img src="assets/images/details-product/p04.jpg" alt="" width="500" height="500"></li>
-                            <li><img src="assets/images/details-product/p06.jpg" alt="" width="500" height="500"></li>
-                            <li><img src="assets/images/details-product/p07.jpg" alt="" width="500" height="500"></li>
-                            <li><img src="assets/images/details-product/p08.jpg" alt="" width="500" height="500"></li>
+                            <c:if test="${not empty productImages}">
+                                <c:forEach var="image" items="${productImages}">
+                                    <li><img src="${image.imageUrl}" alt="${product.name}" width="500" height="500"></li>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${empty productImages}">
+                                <li><img src="assets/images/products/p-05.jpg" alt="Default Product" width="500" height="500"></li>
+                            </c:if>
                         </ul>
+                        <!-- Thumbnail Navigation -->
                         <ul class="biolife-carousel slider-nav" data-slick='{"arrows":false,"dots":false,"centerMode":false,"focusOnSelect":true,"slidesMargin":10,"slidesToShow":4,"slidesToScroll":1,"asNavFor":".slider-for"}'>
-                            <li><img src="assets/images/details-product/thumb_p05.jpg" alt="" width="88" height="88"></li>
-                            <li><img src="assets/images/details-product/thumb_p04.jpg" alt="" width="88" height="88"></li>
-                            <li><img src="assets/images/details-product/thumb_p06.jpg" alt="" width="88" height="88"></li>
-                            <li><img src="assets/images/details-product/thumb_p07.jpg" alt="" width="88" height="88"></li>
-                            <li><img src="assets/images/details-product/thumb_p08.jpg" alt="" width="88" height="88"></li>
+                            <c:if test="${not empty productImages}">
+                                <c:forEach var="image" items="${productImages}">
+                                    <li><img src="${image.imageUrl}" alt="${product.name}" width="88" height="88"></li>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${empty productImages}">
+                                <li><img src="assets/images/products/p-05.jpg" alt="Default Product" width="88" height="88"></li>
+                            </c:if>
                         </ul>
                     </div>
                     <div class="product-attribute">
-                        <h3 class="title">Organic 10 Assorted Flavors Jelly Beans, 5.5 Oz</h3>
+                        <h3 class="title">${product.name}</h3>
                         <div class="rating">
                             <p class="star-rating"><span class="width-80percent"></span></p>
-                            <span class="review-count">(04 Reviews)</span>
-                            <span class="qa-text">Q&A</span>
-                            <b class="category">By: Natural food</b>
+                            <span class="review-count">(4 Đánh giá)</span>
+                            <span class="qa-text">Hỏi & Đáp</span>
+                            <c:if test="${category != null}">
+                                <b class="category">Loại: ${category.name}</b>
+                            </c:if>
                         </div>
-                        <span class="sku">Sku: #76584HH</span>
-                        <p class="excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel maximus lacus. Duis ut mauris eget justo dictum tempus sed vel tellus.</p>
+                        <span class="sku">Mã sản phẩm: ${product.sku}</span>
+                        <p class="excerpt">${product.shortDescription}</p>
                         <div class="price">
-                            <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                            <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
+                            <c:if test="${product.salePrice.doubleValue() > 0}">
+                                <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0"/></span></ins>
+                                <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></del>
+                                <p class="saving-info">Tiết kiệm: <span class="percentage"><fmt:formatNumber value="${((product.price.doubleValue() - product.salePrice.doubleValue()) / product.price.doubleValue()) * 100}" pattern="#.#"/>%</span></p>
+                            </c:if>
+                            <c:if test="${product.salePrice.doubleValue() <= 0}">
+                                <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></ins>
+                            </c:if>
                         </div>
-                        <div class="biolife-countdown" data-datetime="2020/02/18 00:00:00"></div>
                         <div class="shipping-info">
-                            <p class="shipping-day">3-Day Shipping</p>
-                            <p class="for-today">Pree Pickup Today</p>
+                            <p class="shipping-day">Giao hàng trong 3 ngày</p>
+                            <p class="for-today">Nhận hàng miễn phí tại cửa hàng</p>
+                        </div>
+                        
+                        <!-- Product Variants Selection -->
+<%-- Xác định màu sắc hiện tại của sản phẩm --%>
+
+<c:set var="currentColor" value="" />
+<c:forEach var="attr" items="${productAttributeValues}">
+    <c:if test="${attr.attributeId == 1}">
+        <c:set var="currentColor" value="${attr.value}" />
+    </c:if>
+</c:forEach>
+
+<div class="product-variants">
+    <!-- Color Selection -->
+    <div class="variant-group">
+        <h5 class="variant-title">Màu sắc:</h5>
+        <div class="variant-options">
+            <div class="d-flex flex-wrap">
+                <c:forEach var="color" items="${colorToProductId.keySet()}">
+                    <c:set var="isCurrentColor" value="${color == currentColor}" />
+                    <a href="product-detail?id=${colorToProductId[color]}"
+                       class="color-option${isCurrentColor ? ' active' : ''}"
+                       data-color="${color}"
+                       title="${color}">
+                        ${color}
+                    </a>
+                </c:forEach>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Size Selection -->
+<div class="variant-group">
+    <h5 class="variant-title">Kích thước:</h5>
+    <div class="variant-options">
+        <div class="d-flex flex-wrap">
+            <c:forEach var="size" items="${productAttributeValueSizes}">
+                <c:set var="isSizeSelected" value="false" />
+                <c:forEach var="attr" items="${productAttributeValues}">
+                    <c:if test="${attr.attributeId == 2 && attr.value == size.value}">
+                        <c:set var="isSizeSelected" value="true" />
+                    </c:if>
+                </c:forEach>
+                                <a href="product-detail?id=${size.productId}" 
+                   class="color-option${isSizeSelected ? ' active' : ''}"
+                   data-size="${size.value}"
+                   title="${size.value}">
+                    ${size.value}
+                </a>
+            </c:forEach>
+        </div>
+    </div>
+</div>
+                        
+                        <!-- Enhanced stock status display -->
+                        <div class="stock-info">
+                            <c:choose>
+                                <c:when test="${product.quantity > 10}">
+                                    <p class="stock-status in-stock">
+                                        <span class="badge badge-success p-2">
+                                            <i class="fa fa-check-circle" aria-hidden="true"></i> Còn hàng
+                                        </span>
+                                        <span class="text-success ml-2">(${product.quantity} sản phẩm)</span>
+                                    </p>
+                                </c:when>
+                                <c:when test="${product.quantity > 0}">
+                                    <p class="stock-status in-stock">
+                                        <span class="badge badge-warning p-2">
+                                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i> Sắp hết hàng
+                                        </span>
+                                        <span class="text-warning ml-2">(Chỉ còn ${product.quantity} sản phẩm)</span>
+                                    </p>
+                                </c:when>
+                                <c:otherwise>
+                                    <p class="stock-status out-stock">
+                                        <span class="badge badge-danger p-2">
+                                            <i class="fa fa-times-circle" aria-hidden="true"></i> Hết hàng
+                                        </span>
+                                    </p>
+                                </c:otherwise>
+                            </c:choose>
+                            
+                            <!-- Display product SKU and status -->
+                            <div class="product-meta mt-3">
+                                <div class="product-sku mb-2">
+                                    <span class="meta-label">Mã sản phẩm:</span>
+                                    <span class="meta-value">${product.sku}</span>
+                                </div>
+                                <div class="product-status">
+                                    <span class="meta-label">Trạng thái:</span>
+                                    <span class="meta-value">
+                                        <c:choose>
+                                            <c:when test="${product.status == 'active'}">
+                                                <span class="text-success">Đang kinh doanh</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-secondary">${product.status}</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="action-form">
                         <div class="quantity-box">
-                            <span class="title">Quantity:</span>
+                            <span class="title">Số lượng:</span>
                             <div class="qty-input">
-                                <input type="text" name="qty12554" value="1" data-max_value="20" data-min_value="1" data-step="1">
+                                <input type="text" name="qty" value="1" data-max_value="${product.quantity > 0 ? product.quantity : 0}" data-min_value="1" data-step="1">
                                 <a href="#" class="qty-btn btn-up"><i class="fa fa-caret-up" aria-hidden="true"></i></a>
                                 <a href="#" class="qty-btn btn-down"><i class="fa fa-caret-down" aria-hidden="true"></i></a>
                             </div>
                         </div>
                         <div class="buttons">
-                            <a href="#" class="btn add-to-cart-btn">add to cart</a>
+                            <a href="javascript:void(0);" 
+                               class="btn add-to-cart-btn" 
+                               data-product-id="${product.productId}"
+                               onclick="addToCart(event, ${product.productId})"
+                               ${product.quantity <= 0 ? 'disabled' : ''}>
+                                <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>
+                                thêm vào giỏ hàng
+                            </a>
                             <p class="pull-row">
-                                <a href="#" class="btn wishlist-btn">wishlist</a>
-                                <a href="#" class="btn compare-btn">compare</a>
+                                <a href="#" class="btn wishlist-btn">yêu thích</a>
+                                <a href="#" class="btn compare-btn">so sánh</a>
                             </p>
-                        </div>
-                        <div class="location-shipping-to">
-                            <span class="title">Ship to:</span>
-                            <select name="shipping_to" class="country">
-                                <option value="-1">Select Country</option>
-                                <option value="america">America</option>
-                                <option value="france">France</option>
-                                <option value="germany">Germany</option>
-                                <option value="japan">Japan</option>
-                            </select>
-                        </div>
-                        <div class="social-media">
-                            <ul class="social-list">
-                                <li><a href="#" class="social-link"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                <li><a href="#" class="social-link"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                <li><a href="#" class="social-link"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-                                <li><a href="#" class="social-link"><i class="fa fa-share-alt" aria-hidden="true"></i></a></li>
-                                <li><a href="#" class="social-link"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                            </ul>
-                        </div>
-                        <div class="acepted-payment-methods">
-                            <ul class="payment-methods">
-                                <li><img src="assets/images/card1.jpg" alt="" width="51" height="36"></li>
-                                <li><img src="assets/images/card2.jpg" alt="" width="51" height="36"></li>
-                                <li><img src="assets/images/card3.jpg" alt="" width="51" height="36"></li>
-                                <li><img src="assets/images/card4.jpg" alt="" width="51" height="36"></li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -898,249 +520,788 @@
                 <div class="product-tabs single-layout biolife-tab-contain">
                     <div class="tab-head">
                         <ul class="tabs">
-                            <li class="tab-element active"><a href="#tab_1st" class="tab-link">Products Descriptions</a></li>
-                            <li class="tab-element" ><a href="#tab_2nd" class="tab-link">Addtional information</a></li>
-                            <li class="tab-element" ><a href="#tab_3rd" class="tab-link">Shipping & Delivery</a></li>
-                            <li class="tab-element" ><a href="#tab_4th" class="tab-link">Customer Reviews <sup>(3)</sup></a></li>
+                            <li class="tab-element active"><a href="#tab_1st" class="tab-link">Mô tả sản phẩm</a></li>
+                            <li class="tab-element"><a href="#tab_2nd" class="tab-link">Thông tin cơ bản</a></li>
+                            <li class="tab-element"><a href="#tab_3rd" class="tab-link">Chi tiết cá cảnh</a></li>
+                            <li class="tab-element"><a href="#tab_4th" class="tab-link">Hướng dẫn chăm sóc</a></li>
+                            <li class="tab-element"><a href="#tab_5th" class="tab-link">Đánh giá <sup>(3)</sup></a></li>
+                            <li class="tab-element"><a href="#tab_6th" class="tab-link">Vận chuyển & Kho hàng</a></li>
                         </ul>
                     </div>
                     <div class="tab-content">
                         <div id="tab_1st" class="tab-contain desc-tab active">
-                            <p class="desc">Quisque quis ipsum venenatis, fermentum ante volutpat, ornare enim. Phasellus molestie risus non aliquet cursus. Integer vestibulum mi lorem, id hendrerit ante lobortis non. Nunc ante ante, lobortis non pretium non, vulputate vel nisi. Maecenas dolor elit, fringilla nec turpis ac, auctor vulputate nulla. Phasellus sed laoreet velit.
-                                Proin fringilla urna vel mattis euismod. Etiam sodales, massa non tincidunt iaculis, mauris libero scelerisque justo, ut rutrum lectus urna sit amet quam. Nulla maximus vestibulum mi vitae accumsan. Donec sit amet ligula et enim semper viverra a in arcu. Vestibulum enim ligula, varius sed enim vitae, posuere molestie velit. Morbi risus orci, congue in nulla at, sodales fermentum magna.</p>
-                            <div class="desc-expand">
-                                <span class="title">Organic Fresh Fruit</span>
-                                <ul class="list">
-                                    <li>100% real fruit ingredients</li>
-                                    <li>100 fresh fruit bags individually wrapped</li>
-                                    <li>Blending Eastern & Western traditions, naturally</li>
-                                </ul>
+                            <p class="desc">${product.description}</p>
+                        </div>
+                        
+                        <!-- Thông tin cơ bản -->
+                        <div id="tab_2nd" class="tab-contain basic-info-tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h4 class="mb-3"><i class="fa fa-info-circle"></i> Thông tin cơ bản</h4>
+                                    <table class="tbl_attributes table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 30%;">Danh mục:</th>
+                                                <td>${category != null ? category.name : 'Chưa phân loại'}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Mã sản phẩm:</th>
+                                                <td>${product.sku}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Trạng thái:</th>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${product.status == 'active'}">
+                                                            <span class="text-success">Đang kinh doanh</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-secondary">${product.status}</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Số lượng trong kho:</th>
+                                                <td>${product.quantity} sản phẩm</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Ngày tạo:</th>
+                                                <td>${product.createdAt != null ? product.createdAt : 'N/A'}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Cập nhật lần cuối:</th>
+                                                <td>${product.updatedAt != null ? product.updatedAt : 'N/A'}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div id="tab_2nd" class="tab-contain addtional-info-tab">
-                            <table class="tbl_attributes">
-                                <tbody>
-                                <tr>
-                                    <th>Color</th>
-                                    <td><p>Black, Blue, Purple, Red, Yellow</p></td>
-                                </tr>
-                                <tr>
-                                    <th>Size</th>
-                                    <td><p>S, M, L</p></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="tab_3rd" class="tab-contain shipping-delivery-tab">
-                            <div class="accodition-tab biolife-accodition">
-                                <ul class="tabs">
-                                    <li class="tab-item">
-                                        <span class="title btn-expand">How long will it take to receive my order?</span>
-                                        <div class="content">
-                                            <p>Orders placed before 3pm eastern time will normally be processed and shipped by the following business day. For orders received after 3pm, they will generally be processed and shipped on the second business day. For example if you place your order after 3pm on Monday the order will ship on Wednesday. Business days do not include Saturday and Sunday and all Holidays. Please allow additional processing time if you order is placed on a weekend or holiday. Once an order is processed, speed of delivery will be determined as follows based on the shipping mode selected:</p>
-                                            <div class="desc-expand">
-                                                <span class="title">Shipping mode</span>
-                                                <ul class="list">
-                                                    <li>Standard (in transit 3-5 business days)</li>
-                                                    <li>Priority (in transit 2-3 business days)</li>
-                                                    <li>Express (in transit 1-2 business days)</li>
-                                                    <li>Gift Card Orders are shipped via USPS First Class Mail. First Class mail will be delivered within 8 business days</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="tab-item">
-                                        <span class="title btn-expand">How is the shipping cost calculated?</span>
-                                        <div class="content">
-                                            <p>You will pay a shipping rate based on the weight and size of the order. Large or heavy items may include an oversized handling fee. Total shipping fees are shown in your shopping cart. Please refer to the following shipping table:</p>
-                                            <p>Note: Shipping weight calculated in cart may differ from weights listed on product pages due to size and actual weight of the item.</p>
-                                        </div>
-                                    </li>
-                                    <li class="tab-item">
-                                        <span class="title btn-expand">Why Didn’t My Order Qualify for FREE shipping?</span>
-                                        <div class="content">
-                                            <p>We do not deliver to P.O. boxes or military (APO, FPO, PSC) boxes. We deliver to all 50 states plus Puerto Rico. Certain items may be excluded for delivery to Puerto Rico. This will be indicated on the product page.</p>
-                                        </div>
-                                    </li>
-                                    <li class="tab-item">
-                                        <span class="title btn-expand">Shipping Restrictions?</span>
-                                        <div class="content">
-                                            <p>We do not deliver to P.O. boxes or military (APO, FPO, PSC) boxes. We deliver to all 50 states plus Puerto Rico. Certain items may be excluded for delivery to Puerto Rico. This will be indicated on the product page.</p>
-                                        </div>
-                                    </li>
-                                    <li class="tab-item">
-                                        <span class="title btn-expand">Undeliverable Packages?</span>
-                                        <div class="content">
-                                            <p>Occasionally packages are returned to us as undeliverable by the carrier. When the carrier returns an undeliverable package to us, we will cancel the order and refund the purchase price less the shipping charges. Here are a few reasons packages may be returned to us as undeliverable:</p>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div id="tab_4th" class="tab-contain review-tab">
-                            <div class="container">
+                        
+                        <!-- Chi tiết cá cảnh -->
+                        <div id="tab_3rd" class="tab-contain fish-details-tab">
+    <c:if test="${productDetail != null}">
+        <div class="row">
+            <div class="col-md-12">
+                <h4 class="mb-3"><i class="fa fa-fish"></i> Chi tiết cá cảnh</h4>
+                <table class="tbl_attributes table table-bordered">
+                    <tbody>
+
+                        <tr>
+                            <th>Tên khoa học:</th>
+                            <td>${not empty productDetail.scientificName ? productDetail.scientificName : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Tên thông dụng:</th>
+                            <td>${not empty productDetail.commonName ? productDetail.commonName : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Nguồn gốc:</th>
+                            <td>${not empty productDetail.origin ? productDetail.origin : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Kích thước:</th>
+                            <td>${not empty productDetail.size ? productDetail.size : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Tuổi thọ:</th>
+                            <td>${not empty productDetail.lifespan ? productDetail.lifespan : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Loại nước:</th>
+                            <td>${not empty productDetail.waterType ? productDetail.waterType : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Nhiệt độ nước:</th>
+                            <td>${not empty productDetail.waterTemperature ? productDetail.waterTemperature : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Độ pH:</th>
+                            <td>${not empty productDetail.waterPh ? productDetail.waterPh : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Chế độ ăn:</th>
+                            <td>${not empty productDetail.diet ? productDetail.diet : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Độ khó sinh sản:</th>
+                            <td>${not empty productDetail.breedingDifficulty ? productDetail.breedingDifficulty : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Mức độ chăm sóc:</th>
+                            <td>${not empty productDetail.careLevel ? productDetail.careLevel : 'N/A'}</td>
+                        </tr>
+                        <tr>
+                            <th>Tương thích:</th>
+                            <td>${not empty productDetail.compatibility ? productDetail.compatibility : 'N/A'}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </c:if>
+    <c:if test="${productDetail == null}">
+        <p>Không có thông tin chi tiết cho sản phẩm này.</p>
+    </c:if>
+</div>
+                        
+                        <!-- Hướng dẫn chăm sóc -->
+                        <div id="tab_4th" class="tab-contain care-instructions-tab">
+                            <c:if test="${productDetail != null}">
                                 <div class="row">
-                                    <div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
-                                        <div class="rating-info">
-                                            <p class="index"><strong class="rating">4.4</strong>out of 5</p>
-                                            <div class="rating"><p class="star-rating"><span class="width-80percent"></span></p></div>
-                                            <p class="see-all">See all 68 reviews</p>
-                                            <ul class="options">
+                                    <div class="col-md-6">
+                                        <h4 class="mb-3"><i class="fa fa-heart"></i> Yêu cầu chăm sóc</h4>
+                                        <ul class="attribute-list">
+                                            <li>
+                                                <span class="feature-label">Chế độ ăn:</span>
+                                                <span class="feature-value">${not empty productDetail.diet ? productDetail.diet : 'Không có thông tin'}</span>
+                                            </li>
+                                            <li>
+                                                <span class="feature-label">Độ khó khi sinh sản:</span>
+                                                <span class="feature-value">${not empty productDetail.breedingDifficulty ? productDetail.breedingDifficulty : 'Không có thông tin'}</span>
+                                            </li>
+                                            <li>
+                                                <span class="feature-label">Mức độ chăm sóc:</span>
+                                                <span class="feature-value">${not empty productDetail.careLevel ? productDetail.careLevel : 'Không có thông tin'}</span>
+                                            </li>
+                                            <li>
+                                                <span class="feature-label">Khả năng tương thích:</span>
+                                                <span class="feature-value">${not empty productDetail.compatibility ? productDetail.compatibility : 'Không có thông tin'}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h4 class="mb-3"><i class="fa fa-heart"></i> Yêu cầu về nước</h4>
+                                        <ul class="attribute-list">
+                                            <li>
+                                                <span class="feature-label">Loại nước:</span>
+                                                <span class="feature-value">${not empty productDetail.waterType ? productDetail.waterType : 'Không có thông tin'}</span>
+                                            </li>
+                                            <li>
+                                                <span class="feature-label">Nhiệt độ nước:</span>
+                                                <span class="feature-value">${not empty productDetail.waterTemperature ? productDetail.waterTemperature : 'Không có thông tin'}</span>
+                                            </li>
+                                            <li>
+                                                <span class="feature-label">Độ pH nước:</span>
+                                                <span class="feature-value">${not empty productDetail.waterPh ? productDetail.waterPh : 'Không có thông tin'}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <c:if test="${productDetail == null}">
+                                <p>Không có hướng dẫn chăm sóc cho sản phẩm này.</p>
+                            </c:if>
+                        </div>
+                        
+                        <!-- Đánh giá -->
+
+<!-- ====== REVIEW TAB ====== -->
+<div id="tab_5th" class="tab-contain review-tab">
+
+    
+      <!-- Cột bên trái cho rating summary và danh sách đánh giá -->
+      <div class="col-md-5">
+        <!-- ====== TỔNG HỢP ĐÁNH GIÁ ====== -->
+        <div class="rating-summary-block">
+          <div class="rating-info">
+        <%-- Tính toán số lượng đánh giá cho mỗi mức sao --%>
+        <c:set var="star1" value="0"/>
+        <c:set var="star2" value="0"/>
+        <c:set var="star3" value="0"/>
+        <c:set var="star4" value="0"/>
+        <c:set var="star5" value="0"/>
+        <c:set var="totalRating" value="0"/>
+        
+        <c:forEach var="reviewData" items="${processedReviews}">
+            <c:set var="rating" value="${reviewData.review.rating}"/>
+            <c:choose>
+                <c:when test="${rating == 1}"><c:set var="star1" value="${star1 + 1}"/></c:when>
+                <c:when test="${rating == 2}"><c:set var="star2" value="${star2 + 1}"/></c:when>
+                <c:when test="${rating == 3}"><c:set var="star3" value="${star3 + 1}"/></c:when>
+                <c:when test="${rating == 4}"><c:set var="star4" value="${star4 + 1}"/></c:when>
+                <c:when test="${rating == 5}"><c:set var="star5" value="${star5 + 1}"/></c:when>
+            </c:choose>
+            <c:set var="totalRating" value="${totalRating + rating}"/>
+        </c:forEach>
+
+        <%-- Tính số đánh giá và điểm trung bình --%>
+        <c:set var="totalReviews" value="${fn:length(processedReviews)}"/>
+        <c:set var="averageRating" value="${totalReviews > 0 ? totalRating / totalReviews : 0}"/>
+        <c:set var="averagePercent" value="${(averageRating / 5) * 100}"/>
+
+        <%-- Tính phần trăm cho mỗi mức sao --%>
+        <c:set var="star1Percent" value="${totalReviews > 0 ? (star1 * 100) / totalReviews : 0}"/>
+        <c:set var="star2Percent" value="${totalReviews > 0 ? (star2 * 100) / totalReviews : 0}"/>
+        <c:set var="star3Percent" value="${totalReviews > 0 ? (star3 * 100) / totalReviews : 0}"/>
+        <c:set var="star4Percent" value="${totalReviews > 0 ? (star4 * 100) / totalReviews : 0}"/>
+        <c:set var="star5Percent" value="${totalReviews > 0 ? (star5 * 100) / totalReviews : 0}"/>
+
+        <p class="index">
+          <strong class="rating">
+            <fmt:formatNumber value="${averageRating}" maxFractionDigits="1" minFractionDigits="1"/>
+          </strong> out of 5
+        </p>
+
+        <div class="rating">
+          <div class="star-rating">
+            <div class="stars-outer">
+              <div class="stars-inner" style="width: ${averagePercent}%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <style>
+            
+        .star-rating {
+            position: relative;
+            display: inline-block;
+            font-size: 24px;
+            line-height: 1;
+            width: 120px;
+        }
+        .star-rating::before {
+  content: none !important;
+  display: none !important;
+}
+        
+        .stars-outer {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .stars-outer::before {
+            content: "★★★★★";
+            color: #d8d8d8;
+        }
+        
+        .stars-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+        }
+        
+        .stars-inner::before {
+            content: "★★★★★";
+            color: #ffc107;
+        }
+        </style>
+
+        <ul class="options">
+          <li>
+            <div class="detail-for">
+              <span class="option-name">5 stars</span>
+              <span class="progres">
+                <span class="line-100percent">
+                  <span class="percent" style="width:${star5Percent}%;"></span>
+                </span>
+              </span>
+              <span class="number">${star5}</span>
+            </div>
+          </li>
+          <li>
+            <div class="detail-for">
+              <span class="option-name">4 stars</span>
+              <span class="progres">
+                <span class="line-100percent">
+                  <span class="percent" style="width:${star4Percent}%;"></span>
+                </span>
+              </span>
+              <span class="number">${star4}</span>
+            </div>
+          </li>
+          <li>
+            <div class="detail-for">
+              <span class="option-name">3 stars</span>
+              <span class="progres">
+                <span class="line-100percent">
+                  <span class="percent" style="width:${star3Percent}%;"></span>
+                </span>
+              </span>
+              <span class="number">${star3}</span>
+            </div>
+          </li>
+          <li>
+            <div class="detail-for">
+              <span class="option-name">2 stars</span>
+              <span class="progres">
+                <span class="line-100percent">
+                  <span class="percent" style="width:${star2Percent}%;"></span>
+                </span>
+              </span>
+              <span class="number">${star2}</span>
+            </div>
+          </li>
+          <li>
+            <div class="detail-for">
+              <span class="option-name">1 star</span>
+              <span class="progres">
+                <span class="line-100percent">
+                  <span class="percent" style="width:${star1Percent}%;"></span>
+                </span>
+              </span>
+              <span class="number">${star1}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+        </div>
+ 
+      <!-- Cột bên phải cho form đánh giá -->
+      <div class="col-md-7">
+        <div class="user-review-section">
+          <h4>Xem các đánh giá</h4>
+
+          <c:choose>
+            <c:when test="${empty processedReviews}">
+              <div class="no-reviews text-center py-4">
+                <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+              </div>
+            </c:when>
+            <c:otherwise>
+              <!-- KHUNG CUỘN -->
+              <div class="reviews-scroll">
+                <div class="reviews-list">
+                  <c:forEach var="reviewData" items="${processedReviews}">
+                    <div class="review-item mb-4">
+                      <div class="review-header d-flex justify-content-between align-items-start">
+                        <div class="reviewer-info">
+                          <h5 class="reviewer-name mb-1">${reviewData.username}</h5>
+                          <div class="rating mb-2">
+                            <c:forEach begin="1" end="5" var="i">
+                              <i class="fa ${i <= reviewData.review.rating ? 'fa-star text-warning' : 'fa-star-o text-muted'}"></i>
+                            </c:forEach>
+                            <span class="rating-text">(${reviewData.review.rating}/5 sao)</span>
+                          </div>
+                        </div>
+                        <div class="review-date">
+                          <small class="text-muted">${reviewData.review.reviewDate}</small>
+                        </div>
+                      </div>
+
+                      <div class="review-content mt-3">
+                        <p class="mb-0">${reviewData.review.comment}</p>
+                      </div>
+
+                      <c:if test="${not empty reviewData.images}">
+                        <div class="review-images mt-3 d-flex flex-wrap">
+                          <c:forEach var="image" items="${reviewData.images}">
+                            <img src="${image.imageUrl}" alt="Review Image"
+                                 class="img-thumbnail cursor-pointer"
+                                 loading="lazy"
+                                 style="max-width:100px;max-height:100px;object-fit:cover;"
+                                 onclick="showImageModal('${image.imageUrl}')">
+                          </c:forEach>
+                        </div>
+                      </c:if>
+
+                      <c:if test="${reviewData.review.isVerifiedPurchase == 1}">
+                        <div class="mt-2">
+                          <span class="badge bg-success">
+                            <i class="fa fa-check-circle"></i> Đã mua hàng
+                          </span>
+                        </div>
+                      </c:if>
+                    </div>
+                  </c:forEach>
+                </div>
+              </div>
+              <!-- /reviews-scroll -->
+
+              <div class="reviews-summary mt-3 text-center">
+                <p class="text-muted"><i class="fa fa-comment"></i> Hiển thị ${totalReviews} đánh giá</p>
+              </div>
+            </c:otherwise>
+          </c:choose>
+        </div>
+      </div>
+
+      <!-- BÊN PHẢI: FORM ĐÁNH GIÁ / REVIEW CỦA TÔI -->
+      <div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
+        <div class="user-review-section mt-0">
+          <h4>Đánh giá của bạn</h4>
+          <c:choose>
+            <c:when test="${hasUserReview}">
+              <!-- REVIEW ĐÃ ĐĂNG -->
+              <div class="review-item mb-4">
+                <div class="review-header d-flex justify-content-between align-items-start">
+                  <div class="reviewer-info">
+                    <h5 class="reviewer-name mb-1">${userReview.username}</h5>
+                    <div class="rating mb-2">
+                      <c:forEach begin="1" end="5" var="i">
+                        <i class="fa ${i <= userReview.rating ? 'fa-star text-warning' : 'fa-star-o text-muted'}"></i>
+                      </c:forEach>
+                      <span class="rating-text">(${userReview.rating}/5 sao)</span>
+                    </div>
+                  </div>
+                  <div class="review-date">
+                    <small class="text-muted">${userReview.reviewDate}</small>
+                  </div>
+                </div>
+
+                <div class="review-content mt-3">
+                  <p class="mb-0">${userReview.comment}</p>
+                </div>
+
+                <c:if test="${not empty userReview.images}">
+                  <div class="review-images mt-3 d-flex flex-wrap">
+                    <c:forEach var="image" items="${userReview.images}">
+                      <img src="${image.imageUrl}" alt="Review Image"
+                           class="img-thumbnail cursor-pointer"
+                           loading="lazy"
+                           style="max-width:100px;max-height:100px;object-fit:cover;"
+                           onclick="showImageModal('${image.imageUrl}')">
+                    </c:forEach>
+                  </div>
+                </c:if>
+
+                <c:if test="${userReview.isVerifiedPurchase == 1}">
+                  <div class="mt-2">
+                    <span class="badge bg-success">
+                      <i class="fa fa-check-circle"></i> Đã mua hàng
+                    </span>
+                  </div>
+                </c:if>
+              </div>
+            </c:when>
+            <c:otherwise>
+              <!-- FORM ĐĂNG REVIEW MỚI -->
+              <form action="/submit-review" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="rating" class="form-label">Chọn số sao:</label>
+                  <select id="rating" name="rating" class="form-select" required>
+                    <option value="5">5 sao</option>
+                    <option value="4">4 sao</option>
+                    <option value="3">3 sao</option>
+                    <option value="2">2 sao</option>
+                    <option value="1">1 sao</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="comment" class="form-label">Nhận xét:</label>
+                  <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label for="images" class="form-label">Tải lên ảnh (tùy chọn):</label>
+                  <input type="file" id="images" name="images" class="form-control" multiple>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+              </form>
+            </c:otherwise>
+          </c:choose>
+        </div>
+      </div>
+ 
+  </div>
+
+  <!-- ====== MODAL ẢNH PHÓNG TO ====== -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Ảnh đánh giá</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modalImage" src="" alt="Review Image" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== STYLE ====== -->
+<style>
+
+/* ===== VARIABLES ===== */
+:root{
+  --primary:#0060df;
+  --primary-dark:#0046a2;
+  --secondary:#ffb400;
+  --gray-100:#f8f9fa;
+  --gray-200:#e9ecef;
+  --gray-300:#dee2e6;
+  --gray-600:#6c757d;
+  --text-dark:#343a40;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --shadow-sm:0 4px 12px rgba(0,0,0,.08);
+  --shadow-md:0 6px 16px rgba(0,0,0,.12);
+}
+
+/* ===== WRAPPER BLOCKS ===== */
+.rating-summary-block {
+  margin-bottom: 30px;
+}
+
+.rating-info,
+.reviews-section,
+.user-review-section{
+  background:#fff;
+  border-radius:var(--radius-md);
+  padding:26px 28px;
+  margin-bottom:30px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow .25s ease,transform .25s;
+  height: 100%;
+}
+
+.rating-info:hover,
+.reviews-section:hover,
+.user-review-section:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-md);
+}
+
+/* ===== HORIZONTAL RATING SUMMARY ===== */
+.review-tab .container {
+  max-width: 100%;
+  padding: 0;
+}
+
+.review-tab .row {
+  margin: 0 -15px;
+  display: flex;
+  align-items: stretch;
+}
+
+.review-tab .col-md-5,
+.review-tab .col-md-7 {
+  padding: 0 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== FULL-WIDTH RATING ===== */
+.rating-info{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  width:100%;
+}
+.rating-info .index{font-size:28px;font-weight:700;color:var(--text-dark);margin-bottom:6px;margin-right:40px;}
+.rating-info .index .rating{color:var(--secondary);font-size:34px;}
+
+/* ===== HIDE "XEM TẤT CẢ" TEXT ===== */
+.rating-info .see-all {
+  display: none;
+}
+
+.rating-info .options{display:flex;flex-wrap:wrap;gap:18px 28px;list-style:none;padding:0;margin:22px 0 0;}
+.rating-info .options li{margin:0;}
+
+/* Detail for each star line */
+.detail-for{display:flex;align-items:center;font-size:15px;color:var(--gray-600);}
+.option-name{min-width:72px;font-weight:500;}
+.progres{flex:1;margin:0 14px;}
+.line-100percent{width:100%;height:8px;background:var(--gray-200);border-radius:4px;overflow:hidden;}
+.percent{display:block;height:100%;background:linear-gradient(90deg,var(--secondary),#ff8c00);transition:width .5s ease;border-radius:4px;}
+.number{min-width:26px;text-align:right;font-weight:600;}
+
+/* ===== REVIEW ITEM ===== */
+.review-item{background:#fff;border-radius:var(--radius-sm);padding:22px;box-shadow:var(--shadow-sm);transition:box-shadow .25s,transform .25s;}
+.review-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.reviewer-name{font-size:18px;font-weight:700;color:var(--primary);}
+.rating-text{font-size:14px;color:var(--gray-600);margin-left:6px;}
+.review-content{font-size:16px;color:var(--text-dark);line-height:1.55;margin-top:6px;}
+.review-date small{color:var(--gray-600);}
+
+.fa-star,.fa-star-o{font-size:18px;margin-right:2px;}
+.text-warning{color:var(--secondary)!important;}
+
+/* Images */
+.review-images img{border-radius:var(--radius-sm);border:1px solid var(--gray-300);max-width:110px;max-height:110px;object-fit:cover;margin-right:8px;margin-bottom:8px;transition:transform .25s,box-shadow .25s;}
+.review-images img:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(0,0,0,.15);}
+
+/* Scrollable list */
+.reviews-scroll{max-height:550px;overflow-y:auto;padding-right:6px;}
+.reviews-scroll::-webkit-scrollbar{width:6px;}
+.reviews-scroll::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:4px;}
+
+/* Badge */
+.badge.bg-success{background:#28a745;padding:6px 12px;font-size:13px;border-radius:50rem;}
+
+/* Form */
+.user-review-section h4{font-size:22px;font-weight:700;color:var(--primary);margin-bottom:22px;}
+.form-label{font-weight:500;color:var(--text-dark);margin-bottom:6px;}
+.form-control,.form-select{border-radius:var(--radius-sm);border:1px solid var(--gray-300);padding:10px 12px;transition:border-color .25s,box-shadow .25s;}
+.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,96,223,.15);}
+.btn-primary{background:var(--primary);border:none;border-radius:var(--radius-sm);padding:12px 24px;font-weight:600;transition:background .25s;}
+.btn-primary:hover{background:var(--primary-dark);}
+
+/* Modal image */
+#modalImage{max-height:80vh;border-radius:var(--radius-sm);}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px){
+  .rating-info .index{margin-bottom:12px;}
+  .rating-info{justify-content:flex-start;}
+  .rating-info,.reviews-section,.user-review-section{padding:22px;}
+  .review-images img{max-width:90px;max-height:90px;}
+  
+  /* Responsive cho horizontal layout */
+  .rating-summary-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+</style>
+
+<!-- ====== SCRIPT ====== -->
+<script>
+function showImageModal(imageUrl){
+  document.getElementById('modalImage').src = imageUrl;
+  const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+  imageModal.show();
+}
+
+/* Script for Cart Functions */
+function addToCart(event, productId) {
+    if (event) event.preventDefault();
+    
+    // Lấy số lượng từ input
+    var quantityInput = document.querySelector('.qty-input input[name="qty"]');
+    var quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+
+    var formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('productId', productId);
+    formData.append('quantity', quantity);
+
+    fetch('cartClient', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage(data.message, 'success');
+            updateCartCount(data.itemCount);
+        } else {
+            showMessage(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
+    });
+}
+
+function showMessage(message, type) {
+    // Create message element
+    var messageDiv = document.createElement('div');
+    messageDiv.className = 'alert alert-' + type;
+    messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
+    
+    if (type === 'success') {
+        messageDiv.style.backgroundColor = '#28a745';
+    } else {
+        messageDiv.style.backgroundColor = '#dc3545';
+    }
+    
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    
+    // Remove message after 3 seconds
+    setTimeout(function() {
+        document.body.removeChild(messageDiv);
+    }, 3000);
+}
+
+function updateCartCount(count) {
+    // Update cart counter if you have one
+    var cartCounter = document.querySelector('.cart-counter');
+    if (cartCounter) {
+        cartCounter.textContent = count;
+    }
+}
+</script>
+
+
+
+
+
+
+                        
+                        <!-- New Shipping & Stock Tab -->
+                        <div id="tab_6th" class="tab-contain shipping-stock-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-4">
+                                        <div class="card-header bg-light">
+                                            <h4 class="mb-0"><i class="fa fa-truck"></i> Thông tin vận chuyển</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="attribute-list">
                                                 <li>
-                                                    <div class="detail-for">
-                                                        <span class="option-name">5stars</span>
-                                                        <span class="progres">
-                                                            <span class="line-100percent"><span class="percent width-90percent"></span></span>
-                                                        </span>
-                                                        <span class="number">90</span>
-                                                    </div>
+                                                    <span class="feature-label">Thời gian giao hàng:</span>
+                                                    <span class="feature-value">3-5 ngày làm việc</span>
                                                 </li>
                                                 <li>
-                                                    <div class="detail-for">
-                                                        <span class="option-name">4stars</span>
-                                                        <span class="progres">
-                                                            <span class="line-100percent"><span class="percent width-30percent"></span></span>
-                                                        </span>
-                                                        <span class="number">30</span>
-                                                    </div>
+                                                    <span class="feature-label">Phương thức vận chuyển:</span>
+                                                    <span class="feature-value">Giao hàng tiêu chuẩn</span>
                                                 </li>
                                                 <li>
-                                                    <div class="detail-for">
-                                                        <span class="option-name">3stars</span>
-                                                        <span class="progres">
-                                                            <span class="line-100percent"><span class="percent width-40percent"></span></span>
-                                                        </span>
-                                                        <span class="number">40</span>
-                                                    </div>
+                                                    <span class="feature-label">Đóng gói:</span>
+                                                    <span class="feature-value">Đóng gói đặc biệt cho cá cảnh</span>
                                                 </li>
                                                 <li>
-                                                    <div class="detail-for">
-                                                        <span class="option-name">2stars</span>
-                                                        <span class="progres">
-                                                            <span class="line-100percent"><span class="percent width-20percent"></span></span>
-                                                        </span>
-                                                        <span class="number">20</span>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="detail-for">
-                                                        <span class="option-name">1star</span>
-                                                        <span class="progres">
-                                                            <span class="line-100percent"><span class="percent width-10percent"></span></span>
-                                                        </span>
-                                                        <span class="number">10</span>
-                                                    </div>
+                                                    <span class="feature-label">Quốc tế:</span>
+                                                    <span class="feature-value">Áp dụng cho một số quốc gia</span>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
-                                        <div class="review-form-wrapper">
-                                            <span class="title">Submit your review</span>
-                                            <form action="#" name="frm-review" method="post">
-                                                <div class="comment-form-rating">
-                                                    <label>1. Your rating of this products:</label>
-                                                    <p class="stars">
-                                                        <span>
-                                                            <a class="btn-rating" data-value="star-1" href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
-                                                            <a class="btn-rating" data-value="star-2" href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
-                                                            <a class="btn-rating" data-value="star-3" href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
-                                                            <a class="btn-rating" data-value="star-4" href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
-                                                            <a class="btn-rating" data-value="star-5" href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                                <p class="form-row wide-half">
-                                                    <input type="text" name="name" value="" placeholder="Your name">
-                                                </p>
-                                                <p class="form-row wide-half">
-                                                    <input type="email" name="email" value="" placeholder="Email address">
-                                                </p>
-                                                <p class="form-row">
-                                                    <textarea name="comment" id="txt-comment" cols="30" rows="10" placeholder="Write your review here..."></textarea>
-                                                </p>
-                                                <p class="form-row">
-                                                    <button type="submit" name="submit">submit review</button>
-                                                </p>
-                                            </form>
-                                        </div>
-                                    </div>
                                 </div>
-                                <div id="comments">
-                                    <ol class="commentlist">
-                                        <li class="review">
-                                            <div class="comment-container">
-                                                <div class="row">
-                                                    <div class="comment-content col-lg-8 col-md-9 col-sm-8 col-xs-12">
-                                                        <p class="comment-in"><span class="post-name">Quality is our way of life</span><span class="post-date">01/04/2018</span></p>
-                                                        <div class="rating"><p class="star-rating"><span class="width-80percent"></span></p></div>
-                                                        <p class="author">by: <b>Shop organic</b></p>
-                                                        <p class="comment-text">There are few things in life that please people more than the succulence of quality fresh fruit and vegetables.  At Fresh Fruits we work to deliver the world’s freshest, choicest, and juiciest produce to discerning customers across the UAE and GCC.</p>
-                                                    </div>
-                                                    <div class="comment-review-form col-lg-3 col-lg-offset-1 col-md-3 col-sm-4 col-xs-12">
-                                                        <span class="title">Was this review helpful?</span>
-                                                        <ul class="actions">
-                                                            <li><a href="#" class="btn-act like" data-type="like"><i class="fa fa-thumbs-up" aria-hidden="true"></i>Yes (100)</a></li>
-                                                            <li><a href="#" class="btn-act hate" data-type="dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i>No (20)</a></li>
-                                                            <li><a href="#" class="btn-act report" data-type="dislike"><i class="fa fa-flag" aria-hidden="true"></i>Report</a></li>
-                                                        </ul>
-                                                    </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card mb-4">
+                                        <div class="card-header bg-light">
+                                            <h4 class="mb-0"><i class="fa fa-warehouse"></i> Thông tin kho hàng</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="stock-info-detailed">
+                                                <c:choose>
+                                                    <c:when test="${product.quantity > 10}">
+                                                        <div class="alert alert-success" role="alert">
+                                                            <i class="fa fa-check-circle"></i> <strong>Còn hàng</strong>
+                                                            <p class="mb-0">Hiện có ${product.quantity} sản phẩm sẵn sàng để giao hàng ngay.</p>
+                                                        </div>
+                                                    </c:when>
+                                                    <c:when test="${product.quantity > 0}">
+                                                        <div class="alert alert-warning" role="alert">
+                                                            <i class="fa fa-exclamation-circle"></i> <strong>Sắp hết hàng</strong>
+                                                            <p class="mb-0">Chỉ còn ${product.quantity} sản phẩm! Hãy đặt hàng sớm.</p>
+                                                        </div>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="alert alert-danger" role="alert">
+                                                            <i class="fa fa-times-circle"></i> <strong>Hết hàng</strong>
+                                                            <p class="mb-0">Sản phẩm này hiện không có sẵn. Vui lòng quay lại sau.</p>
+                                                        </div>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                
+                                                <div class="stock-details mt-3">
+                                                    <h5>Thông tin nhập hàng</h5>
+                                                    <p>Chúng tôi thường xuyên nhập các loại cá cảnh phổ biến. Nếu sản phẩm này đang hết hàng, vui lòng quay lại sau khoảng 7-10 ngày hoặc đăng ký nhận thông báo khi có hàng.</p>
+                                                    
+                                                    <h5 class="mt-3">Tình trạng</h5>
+                                                    <p>Sản phẩm này ${product.status == 'active' ? 'đang được kinh doanh và có sẵn để mua' : 'hiện không hoạt động'}.</p>
                                                 </div>
                                             </div>
-                                        </li>
-                                        <li class="review">
-                                            <div class="comment-container">
-                                                <div class="row">
-                                                    <div class="comment-content col-lg-8 col-md-9 col-sm-8 col-xs-12">
-                                                        <p class="comment-in"><span class="post-name">Quality is our way of life</span><span class="post-date">01/04/2018</span></p>
-                                                        <div class="rating"><p class="star-rating"><span class="width-80percent"></span></p></div>
-                                                        <p class="author">by: <b>Shop organic</b></p>
-                                                        <p class="comment-text">There are few things in life that please people more than the succulence of quality fresh fruit and vegetables.  At Fresh Fruits we work to deliver the world’s freshest, choicest, and juiciest produce to discerning customers across the UAE and GCC.</p>
-                                                    </div>
-                                                    <div class="comment-review-form col-lg-3 col-lg-offset-1 col-md-3 col-sm-4 col-xs-12">
-                                                        <span class="title">Was this review helpful?</span>
-                                                        <ul class="actions">
-                                                            <li><a href="#" class="btn-act like" data-type="like"><i class="fa fa-thumbs-up" aria-hidden="true"></i>Yes (100)</a></li>
-                                                            <li><a href="#" class="btn-act hate" data-type="dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i>No (20)</a></li>
-                                                            <li><a href="#" class="btn-act report" data-type="dislike"><i class="fa fa-flag" aria-hidden="true"></i>Report</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="review">
-                                            <div class="comment-container">
-                                                <div class="row">
-                                                    <div class="comment-content col-lg-8 col-md-9 col-sm-8 col-xs-12">
-                                                        <p class="comment-in"><span class="post-name">Quality is our way of life</span><span class="post-date">01/04/2018</span></p>
-                                                        <div class="rating"><p class="star-rating"><span class="width-80percent"></span></p></div>
-                                                        <p class="author">by: <b>Shop organic</b></p>
-                                                        <p class="comment-text">There are few things in life that please people more than the succulence of quality fresh fruit and vegetables.  At Fresh Fruits we work to deliver the world’s freshest, choicest, and juiciest produce to discerning customers across the UAE and GCC.</p>
-                                                    </div>
-                                                    <div class="comment-review-form col-lg-3 col-lg-offset-1 col-md-3 col-sm-4 col-xs-12">
-                                                        <span class="title">Was this review helpful?</span>
-                                                        <ul class="actions">
-                                                            <li><a href="#" class="btn-act like" data-type="like"><i class="fa fa-thumbs-up" aria-hidden="true"></i>Yes (100)</a></li>
-                                                            <li><a href="#" class="btn-act hate" data-type="dislike"><i class="fa fa-thumbs-down" aria-hidden="true"></i>No (20)</a></li>
-                                                            <li><a href="#" class="btn-act report" data-type="dislike"><i class="fa fa-flag" aria-hidden="true"></i>Report</a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ol>
-                                    <div class="biolife-panigations-block version-2">
-                                        <ul class="panigation-contain">
-                                            <li><span class="current-page">1</span></li>
-                                            <li><a href="#" class="link-page">2</a></li>
-                                            <li><a href="#" class="link-page">3</a></li>
-                                            <li><span class="sep">....</span></li>
-                                            <li><a href="#" class="link-page">20</a></li>
-                                            <li><a href="#" class="link-page next"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
-                                        </ul>
-                                        <div class="result-count">
-                                            <p class="txt-count"><b>1-5</b> of <b>126</b> reviews</p>
-                                            <a href="#" class="link-to">See all<i class="fa fa-caret-right" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -1149,211 +1310,85 @@
                     </div>
                 </div>
 
+
+
                 <!-- related products -->
-                <div class="product-related-box single-layout">
-                    <div class="biolife-title-box lg-margin-bottom-26px-im">
-                        <span class="biolife-icon icon-organic"></span>
-                        <span class="subtitle">All the best item for You</span>
-                        <h3 class="main-title">Related Products</h3>
-                    </div>
-                    <ul class="products-list biolife-carousel nav-center-02 nav-none-on-mobile" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":0,"slidesToShow":5, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 4}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesMargin":20 }},{"breakpoint":768, "settings":{ "slidesToShow": 2, "slidesMargin":10}}]}'>
-
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-13.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
+<div class="product-related-box single-layout">
+    <div class="biolife-title-box lg-margin-bottom-26px-im">
+        <span class="biolife-icon icon-organic"></span>
+        <span class="subtitle">Những sản phẩm tốt nhất dành cho bạn</span>
+        <h3 class="main-title">Sản phẩm liên quan</h3>
+    </div>
+    <ul class="products-list biolife-carousel nav-center-02 nav-none-on-mobile" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":0,"slidesToShow":5, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 4}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesMargin":20 }},{"breakpoint":768, "settings":{ "slidesToShow": 2, "slidesMargin":10}}]}'>
+        <c:if test="${not empty uniqueNameProductSameCategory}">
+            <c:forEach var="relatedProduct" items="${uniqueNameProductSameCategory}">
+                <c:if test="${relatedProduct.productId != product.productId}">
+                    <li class="product-item">
+                        <div class="contain-product layout-default">
+                            <div class="product-thumb">
+    <a href="product-detail?id=${relatedProduct.productId}" class="link-to-product">
+        <c:choose>
+            <c:when test="${not empty uniqueNameProductSameCategoryImages[relatedProduct.productId]}">
+                <img src="${uniqueNameProductSameCategoryImages[relatedProduct.productId]}" alt="${relatedProduct.name}" width="270" height="270" class="product-thumnail">
+            </c:when>
+            <c:otherwise>
+                <img src="assets/images/products/p-13.jpg" alt="${relatedProduct.name}" width="270" height="270" class="product-thumnail">
+            </c:otherwise>
+        </c:choose>
+    </a>
+</div>
+<div class="info">
+    <b class="categories">${category.name}</b>
+    <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
+    <!-- Phần giá và nút vẫn giữ nguyên -->
+</div>
+                            <div class="info">
+                                <b class="categories">${category.name}</b>
+                                <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
+                                <div class="price">
+                                    <c:if test="${relatedProduct.salePrice.doubleValue() > 0}">
+                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${relatedProduct.salePrice}" pattern="#,##0"/></span></ins>
+                                        <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${relatedProduct.price}" pattern="#,##0"/></span></del>
+                                    </c:if>
+                                    <c:if test="${relatedProduct.salePrice.doubleValue() <= 0}">
+                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${relatedProduct.price}" pattern="#,##0"/></span></ins>
+                                    </c:if>
                                 </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-14.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
+                                <div class="slide-down-box">
+                                    <p class="message">${relatedProduct.shortDescription}</p>
+                                    <div class="buttons">
+                                        <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
+                                        <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>thêm vào giỏ hàng</a>
+                                        <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
                                     </div>
                                 </div>
                             </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-15.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-10.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-08.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-21.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="product-item">
-                            <div class="contain-product layout-default">
-                                <div class="product-thumb">
-                                    <a href="#" class="link-to-product">
-                                        <img src="assets/images/products/p-18.jpg" alt="dd" width="270" height="270" class="product-thumnail">
-                                    </a>
-                                </div>
-                                <div class="info">
-                                    <b class="categories">Fresh Fruit</b>
-                                    <h4 class="product-title"><a href="#" class="pr-name">National Fresh Fruit</a></h4>
-                                    <div class="price">
-                                        <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                        <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
-                                    </div>
-                                    <div class="slide-down-box">
-                                        <p class="message">All products are carefully selected to ensure food safety.</p>
-                                        <div class="buttons">
-                                            <a href="#" class="btn wishlist-btn"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                            <a href="#" class="btn add-to-cart-btn"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>add to cart</a>
-                                            <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-                
+                        </div>
+                    </li>
+                </c:if>
+            </c:forEach>
+        </c:if>
+    </ul>
+</div>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER - Include your footer.jsp -->
+    <!-- Footer content -->
+<!-- FOOTER -->
     <footer id="footer" class="footer layout-03">
         <div class="footer-content background-footer-03">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 col-md-4 col-sm-9">
                         <section class="footer-item">
-                            <a href="#" class="logo footer-logo"><img src="assets/images/organic-3.png" alt="biolife logo" width="135" height="34"></a>
+                            <a href="home-04.html" class="logo footer-logo"><img src="assets/images/organic-4.png" alt="biolife logo" width="135" height="36"></a>
                             <div class="footer-phone-info">
                                 <i class="biolife-icon icon-head-phone"></i>
                                 <p class="r-info">
                                     <span>Got Questions ?</span>
-                                    <span>(700)  9001-1909  (900) 689 -66</span>
+                                    <span>(700)ï¿½ 9001-1909  (900) 689 -66</span>
                                 </p>
                             </div>
                             <div class="newsletter-block layout-01">
@@ -1443,7 +1478,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="separator sm-margin-top-70px xs-margin-top-40px"></div>
+                        <div class="separator sm-margin-top-62px xs-margin-top-40px"></div>
                     </div>
                     <div class="col-lg-6 col-sm-6 col-xs-12">
                         <div class="copy-right-text"><p><a href="templateshub.net">Templates Hub</a></p></div>
@@ -1463,72 +1498,6 @@
             </div>
         </div>
     </footer>
-
-    <!--Footer For Mobile-->
-    <div class="mobile-footer">
-        <div class="mobile-footer-inner">
-            <div class="mobile-block block-menu-main">
-                <a class="menu-bar menu-toggle btn-toggle" data-object="open-mobile-menu" href="javascript:void(0)">
-                    <span class="fa fa-bars"></span>
-                    <span class="text">Menu</span>
-                </a>
-            </div>
-            <div class="mobile-block block-sidebar">
-                <a class="menu-bar filter-toggle btn-toggle" data-object="open-mobile-filter" href="javascript:void(0)">
-                    <i class="fa fa-sliders" aria-hidden="true"></i>
-                    <span class="text">Sidebar</span>
-                </a>
-            </div>
-            <div class="mobile-block block-minicart">
-                <a class="link-to-cart" href="#">
-                    <span class="fa fa-shopping-bag" aria-hidden="true"></span>
-                    <span class="text">Cart</span>
-                </a>
-            </div>
-            <div class="mobile-block block-global">
-                <a class="menu-bar myaccount-toggle btn-toggle" data-object="global-panel-opened" href="javascript:void(0)">
-                    <span class="fa fa-globe"></span>
-                    <span class="text">Global</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="mobile-block-global">
-        <div class="biolife-mobile-panels">
-            <span class="biolife-current-panel-title">Global</span>
-            <a class="biolife-close-btn" data-object="global-panel-opened" href="#">&times;</a>
-        </div>
-        <div class="block-global-contain">
-            <div class="glb-item my-account">
-                <b class="title">My Account</b>
-                <ul class="list">
-                    <li class="list-item"><a href="#">Login/register</a></li>
-                    <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
-                    <li class="list-item"><a href="#">Checkout</a></li>
-                </ul>
-            </div>
-            <div class="glb-item currency">
-                <b class="title">Currency</b>
-                <ul class="list">
-                    <li class="list-item"><a href="#">€ EUR (Euro)</a></li>
-                    <li class="list-item"><a href="#">$ USD (Dollar)</a></li>
-                    <li class="list-item"><a href="#">£ GBP (Pound)</a></li>
-                    <li class="list-item"><a href="#">¥ JPY (Yen)</a></li>
-                </ul>
-            </div>
-            <div class="glb-item languages">
-                <b class="title">Language</b>
-                <ul class="list inline">
-                    <li class="list-item"><a href="#"><img src="assets/images/languages/us.jpg" alt="flag" width="24" height="18"></a></li>
-                    <li class="list-item"><a href="#"><img src="assets/images/languages/fr.jpg" alt="flag" width="24" height="18"></a></li>
-                    <li class="list-item"><a href="#"><img src="assets/images/languages/ger.jpg" alt="flag" width="24" height="18"></a></li>
-                    <li class="list-item"><a href="#"><img src="assets/images/languages/jap.jpg" alt="flag" width="24" height="18"></a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
     <!-- Scroll Top Button -->
     <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
 
@@ -1540,6 +1509,109 @@
     <script src="assets/js/slick.min.js"></script>
     <script src="assets/js/biolife.framework.js"></script>
     <script src="assets/js/functions.js"></script>
+    
+    <!-- Additional script to ensure tabs work properly -->
+    <script>
+        $(document).ready(function() {
+            // Manually initialize tabs
+            $('.biolife-tab-contain').biolife_tab();
+            
+            // Fix for tab navigation - add click handlers
+            $('.tab-element a').on('click', function(e) {
+                e.preventDefault();
+                let tabId = $(this).attr('href');
+                
+                // Remove active class from all tabs
+                $('.tab-element').removeClass('active');
+                $('.tab-contain').removeClass('active');
+                
+                // Add active class to current tab
+                $(this).parent().addClass('active');
+                $(tabId).addClass('active');
+            });
+            
+            // Product variant selection - set colors
+            $('.color-option').each(function() {
+                // Get color from data attribute
+                const color = $(this).data('color');
+                console.log("Setting color for button:", color);
+                
+                // Map Vietnamese color names to CSS colors if needed
+                let cssColor = color;
+                if (color === 'Đỏ' || color.toLowerCase() === 'red') cssColor = 'red';
+                if (color === 'Xanh dương' || color.toLowerCase() === 'blue') cssColor = 'blue';
+                if (color === 'Xanh lá' || color.toLowerCase() === 'green') cssColor = 'green';
+                if (color === 'Vàng' || color.toLowerCase() === 'yellow') cssColor = 'yellow';
+                if (color === 'Đen' || color.toLowerCase() === 'black') cssColor = 'black';
+                if (color === 'Trắng' || color.toLowerCase() === 'white') cssColor = 'white';
+                if (color === 'Cam' || color.toLowerCase() === 'orange') cssColor = 'orange';
+                if (color === 'Tím' || color.toLowerCase() === 'purple') cssColor = 'purple';
+                if (color === 'Hồng' || color.toLowerCase() === 'pink') cssColor = 'pink';
+                
+                // Set background color
+                $(this).css('background-color', cssColor);
+                
+                // Set border color based on active state
+                if ($(this).hasClass('active')) {
+                    $(this).css('border', '2px solid #e73918');
+                } else {
+                    $(this).css('border', '2px solid #ddd');
+                }
+                
+                // Add hover effect
+                $(this).hover(
+                    function() {
+                        if (!$(this).hasClass('active')) {
+                            $(this).css('border-color', '#e73918');
+                        }
+                    },
+                    function() {
+                        if (!$(this).hasClass('active')) {
+                            $(this).css('border-color', '#ddd');
+                        }
+                    }
+                );
+            });
+            
+            // Size options
+            $('.size-option').each(function() {
+                // Set border and text color based on active state
+                if ($(this).hasClass('active')) {
+                    $(this).css({
+                        'border-color': '#e73918',
+                        'color': '#e73918',
+                        'font-weight': 'bold'
+                    });
+                } else {
+                    $(this).css({
+                        'border': '1px solid #ddd',
+                        'color': '#333',
+                        'font-weight': 'normal'
+                    });
+                }
+                
+                // Add hover effect
+                $(this).hover(
+                    function() {
+                        if (!$(this).hasClass('active')) {
+                            $(this).css({
+                                'border-color': '#e73918',
+                                'color': '#e73918'
+                            });
+                        }
+                    },
+                    function() {
+                        if (!$(this).hasClass('active')) {
+                            $(this).css({
+                                'border-color': '#ddd',
+                                'color': '#333'
+                            });
+                        }
+                    }
+                );
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.entity.Product;
 import utils.db.DBContext;
 
 public class ProductAttributeValueDAO {
@@ -184,8 +185,77 @@ public boolean deleteProductAttributeValue(int productId, int attributeId) {
         return false;
     }
 
+    /**
+ * Lấy danh sách attribute values dựa trên danh sách products
+ * @param products danh sách sản phẩm
+ * @return danh sách attribute values của tất cả sản phẩm
+ */
+public List<ProductAttributeValue> getProductAttributeValuesByProductList(List<Product> products) {
+    List<ProductAttributeValue> attributeValues = new ArrayList<>();
     
+    if (products == null || products.isEmpty()) {
+        return attributeValues;
+    }
+    
+    // Tạo danh sách product IDs từ danh sách products
+    List<Integer> productIds = new ArrayList<>();
+    for (Product product : products) {
+        productIds.add(product.getProductId());
+    }
+    
+    // Tạo placeholders cho IN clause (?, ?, ?, ...)
+    StringBuilder placeholders = new StringBuilder();
+    for (int i = 0; i < productIds.size(); i++) {
+        if (i > 0) {
+            placeholders.append(", ");
+        }
+        placeholders.append("?");
+    }
+    
+    String query = "SELECT * FROM Product_attribute_values WHERE product_id IN (" + 
+                   placeholders.toString() + ") AND is_deleted = 0 ORDER BY product_id, attribute_id";
+    
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        
+        // Set parameters cho IN clause
+        for (int i = 0; i < productIds.size(); i++) {
+            ps.setInt(i + 1, productIds.get(i));
+        }
+        
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ProductAttributeValue attributeValue = createProductAttributeValueFromResultSet(rs);
+            attributeValues.add(attributeValue);
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return attributeValues;
+}
 
+
+public String getCurrentColorByProductId(int productId) {
+    String color = null;
+    String query = "SELECT value FROM Product_attribute_values WHERE product_id = ? AND attribute_id = 1 AND is_deleted = 0";
+    try {
+        conn = DBContext.getConnection();
+        ps = conn.prepareStatement(query);
+        ps.setInt(1, productId);
+        rs = ps.executeQuery();
+        if (rs.next()) {
+            color = rs.getString("value");
+        }
+    } catch (SQLException e) {
+        // Log the error
+        e.printStackTrace();
+    } finally {
+        closeResources();
+    }
+    return color;
+}
     
 
     // Helper method to create ProductAttributeValue object from ResultSet
