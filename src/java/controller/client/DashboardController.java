@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Controller xử lý dashboard người dùng
  */
-@WebServlet(name = "DashboardController", urlPatterns = {"/dashboard"})
+
 public class DashboardController extends HttpServlet {
     
     private UserDAO userDAO;

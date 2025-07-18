@@ -27,7 +27,7 @@ import model.entity.pAttribute.ProductAttribute;
 import model.entity.pAttribute.ProductAttributeValue;
 import service.impl.ProductsImageService;
 
-@WebServlet("/products")
+
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 1024 * 1024 * 10,  // 10 MB

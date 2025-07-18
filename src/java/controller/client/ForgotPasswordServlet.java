@@ -13,7 +13,7 @@ import utils.EmailUtil;
 /**
  * Servlet xử lý quên mật khẩu
  */
-@WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/forgot-password"})
+// @WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/forgot-password"})
 public class ForgotPasswordServlet extends HttpServlet {
 
     /**

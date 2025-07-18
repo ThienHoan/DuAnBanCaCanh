@@ -16,7 +16,7 @@ import java.util.Base64;
 /**
  * Servlet xử lý đăng nhập
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
+// @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
     /**

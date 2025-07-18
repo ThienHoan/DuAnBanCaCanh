@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 /**
  * Filter để thêm blog categories vào header cho tất cả các trang
  */
-@WebFilter("/*")
+// @WebFilter("/*") // Commented out - using web.xml mapping instead
 public class HeaderDataFilter implements Filter {
     private static final Logger LOGGER = Logger.getLogger(HeaderDataFilter.class.getName());
     private BlogService blogService;

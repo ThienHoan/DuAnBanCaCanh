@@ -7,13 +7,11 @@ import model.entity.pCart.CartItem;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/cartClient")
 @MultipartConfig
 public class CartControllerClient extends HttpServlet {
     private final CartDAO cartDAO = new CartDAO();
@@ -99,7 +97,8 @@ public class CartControllerClient extends HttpServlet {
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             System.out.println("product id :"+ productId+"quantity :" +quantity +"user ID :" +userId );
             Cart cart = cartDAO.getOrCreateCartByUserId(userId);
-            boolean success = cartDAO.addItemToCart(userId, productId, quantity);
+            System.out.println("Cart created/retrieved with ID: " + cart.getCartId());
+            boolean success = cartDAO.addItemToCart(cart.getCartId(), productId, quantity);
 
             if (success) {
                 int itemCount = cartDAO.getCartItemCount(cart.getCartId());

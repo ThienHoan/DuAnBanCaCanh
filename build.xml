@@ -68,4 +68,43 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    <!-- Custom targets for better build process -->
+    <target name="-pre-compile" description="Setup before compilation">
+        <echo message="Preparing compilation for DuAnCaCanh project..."/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.web.dir}/WEB-INF/lib"/>
+    </target>
+    
+    <target name="-post-compile" description="Post compilation tasks">
+        <echo message="Compilation completed successfully!"/>
+    </target>
+    
+    <target name="compile-modules" depends="compile" description="Compile all modules">
+        <echo message="All 4 modules compiled successfully:"/>
+        <echo message="- Module 1: com.juleswhite.module1"/>
+        <echo message="- Module 2: com.juleswhite.module2"/> 
+        <echo message="- Module 3: com.juleswhite.module3"/>
+        <echo message="- Module 4: com.juleswhite.module4"/>
+    </target>
+    
+    <target name="run-agent" depends="compile" description="Run AI Agent">
+        <echo message="Starting AI Agent..."/>
+        <java classname="com.juleswhite.module1.AgentRunner" 
+              classpath="${build.classes.dir}:${javac.classpath}"
+              fork="true">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
+    <target name="test-agent" depends="compile" description="Test AI Agent with sample request">
+        <echo message="Testing AI Agent with sample request..."/>
+        <java classname="com.juleswhite.module1.AgentRunner" 
+              classpath="${build.classes.dir}:${javac.classpath}"
+              fork="true"
+              input="List all files in current directory">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
 </project>

@@ -3,7 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
          version="5.0"
-         metadata-complete="false">
+         metadata-complete="true">
+    <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>filter.CharacterEncodingFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
     
     <!-- Servlet cho đăng nhập -->
     <servlet>
@@ -144,6 +152,26 @@
         <url-pattern>/admin-dashboard</url-pattern>
     </servlet-mapping>
     
+    <!-- Client Dashboard servlet -->
+    <servlet>
+        <servlet-name>DashboardController</servlet-name>
+        <servlet-class>controller.client.DashboardController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardController</servlet-name>
+        <url-pattern>/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <!-- Client Dashboard servlet -->
+    <servlet>
+        <servlet-name>ProductServlet</servlet-name>
+        <servlet-class>controller.admin.ProductServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductServlet</servlet-name>
+        <url-pattern>/products</url-pattern>
+    </servlet-mapping>
+    
     <!-- Forgot Password servlet -->
     <servlet>
         <servlet-name>ForgotPasswordServlet</servlet-name>
@@ -209,6 +237,16 @@
         <servlet-name>AdminCategoryController</servlet-name>
         <url-pattern>/admin-category-action</url-pattern>
     </servlet-mapping>
+    
+    <!-- Header Data Filter - Load blog data for header on all pages -->
+    <filter>
+        <filter-name>HeaderDataFilter</filter-name>
+        <filter-class>filter.HeaderDataFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HeaderDataFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     
     <!-- Authentication Filter -->
     <filter>
@@ -294,6 +332,48 @@
         <url-pattern>/wishlist</url-pattern>
     </servlet-mapping>
     
+    <!-- Blog servlet -->
+    <servlet>
+        <servlet-name>BlogController</servlet-name>
+        <servlet-class>controller.client.BlogController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BlogController</servlet-name>
+        <url-pattern>/blog</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BlogController</servlet-name>
+        <url-pattern>/blog-detail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BlogController</servlet-name>
+        <url-pattern>/blog-category</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BlogController</servlet-name>
+        <url-pattern>/blog-search</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Profile servlet -->
+    <servlet>
+        <servlet-name>ProfileController</servlet-name>
+        <servlet-class>controller.client.ProfileController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfileController</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    
+    <!-- File upload servlet -->
+    <servlet>
+        <servlet-name>FileServlet</servlet-name>
+        <servlet-class>controller.common.FileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileServlet</servlet-name>
+        <url-pattern>/uploads/*</url-pattern>
+    </servlet-mapping>
+    
       <!-- Trang chủ mặc định -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
@@ -356,5 +436,16 @@
         <error-code>500</error-code>
         <location>/error.jsp</location>
     </error-page>
+    
+    <!-- AI Agent servlet - ĐÃ SỬA LỖI -->
+    <servlet>
+        <servlet-name>AIAgentServlet</servlet-name>
+        <!-- THAY ĐỔI DUY NHẤT Ở ĐÂY -->
+        <servlet-class>controller.AIAgentServlet</servlet-class> 
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AIAgentServlet</servlet-name>
+        <url-pattern>/ai-agent</url-pattern>
+    </servlet-mapping>
     
 </web-app>

@@ -13,7 +13,7 @@ import utils.SessionUtils;
 /**
  * Servlet xử lý đăng xuất
  */
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
+// @WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
     /**

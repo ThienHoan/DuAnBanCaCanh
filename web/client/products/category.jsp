@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="assets/css/slick.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/main-color.css">
+    <link rel="stylesheet" href="assets/css/product-grid.css">
 </head>
 <body class="biolife-body">
 

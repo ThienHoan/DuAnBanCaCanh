@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 /**
  * Controller xử lý các thao tác với Wishlist
  */
-@WebServlet("/wishlist")
 public class WishlistController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(WishlistController.class.getName());
     private WishlistService wishlistService;

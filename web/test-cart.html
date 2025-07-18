@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Cart</title>
+</head>
+<body>
+    <h1>Test Add to Cart</h1>
+    <button onclick="testAddToCart()">Test Add to Cart</button>
+    
+    <script>
+    function testAddToCart() {
+        console.log('Testing add to cart...');
+        
+        var formData = new FormData();
+        formData.append('action', 'add');
+        formData.append('productId', '1');
+        formData.append('quantity', '1');
+
+        fetch('cartClient', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            try {
+                const jsonData = JSON.parse(data);
+                console.log('Parsed JSON:', jsonData);
+            } catch (e) {
+                console.log('Not JSON response');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    </script>
+</body>
+</html>

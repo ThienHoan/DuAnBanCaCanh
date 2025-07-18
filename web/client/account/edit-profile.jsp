@@ -442,7 +442,16 @@
                     <div class="current-avatar" id="currentAvatar">
                         <c:choose>
                             <c:when test="${not empty user.avatar}">
-                                <img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                <c:choose>
+                                    <c:when test="${fn:startsWith(user.avatar, 'http')}">
+                                        <!-- Google avatar URL -->
+                                        <img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- Local avatar file -->
+                                        <img src="${pageContext.request.contextPath}/uploads/avatars/${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                    </c:otherwise>
+                                </c:choose>
                             </c:when>
                             <c:otherwise>
                                 <i class="fas fa-user"></i>

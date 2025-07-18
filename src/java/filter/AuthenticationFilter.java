@@ -26,7 +26,11 @@ public class AuthenticationFilter implements Filter {
         "/assets/",
         "/product_detail",
         "/contact_us",
-        "/blog"
+        "/blog",
+        "/cartClient",
+        "/cart",
+        "/ai-agent.jsp",
+        "/ai-agent-api.jsp"
     );
     
     // Các trang chỉ dành cho admin

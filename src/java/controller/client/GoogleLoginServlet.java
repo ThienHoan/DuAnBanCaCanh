@@ -9,7 +9,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -283,9 +282,9 @@ public class GoogleLoginServlet extends HttpServlet {
         
         // Chuyển hướng theo role
         if ("admin".equals(user.getRole())) {
-            response.sendRedirect("home.jsp");
+            response.sendRedirect("home");
         } else {
-            response.sendRedirect("home.jsp");
+            response.sendRedirect("home");
         }
     }
     

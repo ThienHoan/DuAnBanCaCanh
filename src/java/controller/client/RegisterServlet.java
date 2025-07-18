@@ -12,7 +12,7 @@ import model.entity.User;
 /**
  * Servlet xử lý đăng ký người dùng
  */
-@WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
+// @WebServlet(name = "RegisterServlet", urlPatterns = {"/register"})
 public class RegisterServlet extends HttpServlet {
 
     /**

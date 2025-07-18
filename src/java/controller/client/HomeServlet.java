@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -72,63 +73,249 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("headerCategories", new ArrayList<BlogCategory>());
             request.setAttribute("headerLatestPosts", new ArrayList<BlogPost>());
         }
-          // Load products for home page
+          // Load Featured products (products with featured = 1)
         try {
-            LOGGER.info("Loading products for home page");
+            LOGGER.info("Loading Featured products for home page");
             List<Product> allProducts = productDAO.getActiveProducts();
             LOGGER.info("Found " + allProducts.size() + " active products");
             
             List<Product> homeProducts = new ArrayList<>();
             Map<Integer, String> productImages = new HashMap<>();
-            Map<Integer, String> productCategories = new HashMap<>();
+            Map<Integer, Category> productCategories = new HashMap<>();
             
             ProductImageDAO imageDAO = new ProductImageDAO();
             
-            // Limit to 8 products for display
+            // Filter products that are featured and limit to 8
             int productCount = 0;
+            int totalFeaturedFound = 0;
             for (Product product : allProducts) {
-                if (productCount < 8) {
-                    homeProducts.add(product);
+                if (product.getFeatured() != null && product.getFeatured() == 1) {
+                    totalFeaturedFound++;
+                    if (productCount < 8) {
+                        homeProducts.add(product);
+                        LOGGER.info("Added featured product: " + product.getName() + " (ID: " + product.getProductId() + ")");
+                        LOGGER.info("Added featured product to display: " + product.getName() + " (ID: " + product.getProductId() + ")");
+                        
+                        // Get main image
+                        try {
+                            ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
+                            if (mainImage != null) {
+                                productImages.put(product.getProductId(), mainImage.getImageUrl());
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Error loading image for featured product " + product.getProductId(), e);
+                        }
+                        
+                        // Get category name
+                        if (product.getCategoryId() != null) {
+                            try {
+                                Category category = categoryDAO.getCategoryById(product.getCategoryId());
+                                if (category != null) {
+                                    productCategories.put(product.getProductId(), category);
+                                }
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, "Error loading category for featured product " + product.getProductId(), e);
+                            }
+                        }
+                        
+                        productCount++;
+                    }
+                }
+            }
+            
+            LOGGER.info("Found " + totalFeaturedFound + " total featured products, displaying " + productCount);
+            
+            request.setAttribute("homeProducts", homeProducts);
+            request.setAttribute("productImages", productImages);
+            request.setAttribute("productCategories", productCategories);
+            
+            LOGGER.info("Featured products loaded successfully, " + homeProducts.size() + " featured products set for display");
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading Featured products for home page", e);
+            request.setAttribute("homeProducts", new ArrayList<Product>());
+            request.setAttribute("productImages", new HashMap<Integer, String>());
+            request.setAttribute("productCategories", new HashMap<Integer, Category>());
+        }
+        
+        // Load "On Sale" products (products with salePrice > 0)
+        try {
+            LOGGER.info("Loading On Sale products");
+            List<Product> allProducts = productDAO.getActiveProducts();
+            List<Product> onSaleProducts = new ArrayList<>();
+            Map<Integer, String> onSaleProductImages = new HashMap<>();
+            Map<Integer, Category> onSaleProductCategories = new HashMap<>();
+            
+            ProductImageDAO imageDAO = new ProductImageDAO();
+            
+            // Filter products that have sale price and limit to 10
+            int saleProductCount = 0;
+            for (Product product : allProducts) {
+                if (product.getSalePrice() != null && 
+                    product.getSalePrice().compareTo(BigDecimal.ZERO) > 0) {
+                    
+                    LOGGER.info("Found sale product: " + product.getName() + 
+                               " - Price: " + product.getPrice() + 
+                               " - Sale Price: " + product.getSalePrice());
+                    
+                    if (saleProductCount < 10) {
+                        onSaleProducts.add(product);
                     
                     // Get main image
                     try {
                         ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
                         if (mainImage != null) {
-                            productImages.put(product.getProductId(), mainImage.getImageUrl());
+                            onSaleProductImages.put(product.getProductId(), mainImage.getImageUrl());
                         }
                     } catch (Exception e) {
-                        LOGGER.log(Level.WARNING, "Error loading image for product " + product.getProductId(), e);
+                        LOGGER.log(Level.WARNING, "Error loading image for sale product " + product.getProductId(), e);
                     }
                     
-                    // Get category name
+                    // Get category
                     if (product.getCategoryId() != null) {
                         try {
                             Category category = categoryDAO.getCategoryById(product.getCategoryId());
                             if (category != null) {
-                                productCategories.put(product.getProductId(), category.getName());
+                                onSaleProductCategories.put(product.getProductId(), category);
                             }
                         } catch (Exception e) {
-                            LOGGER.log(Level.WARNING, "Error loading category for product " + product.getProductId(), e);
+                            LOGGER.log(Level.WARNING, "Error loading category for sale product " + product.getProductId(), e);
                         }
                     }
                     
-                    productCount++;
+                        saleProductCount++;
+                    }
                 }
             }
             
-            request.setAttribute("homeProducts", homeProducts);
-            request.setAttribute("productImages", productImages);
-            request.setAttribute("productCategoryNames", productCategories);
+            request.setAttribute("onSaleProducts", onSaleProducts);
+            request.setAttribute("onSaleProductImages", onSaleProductImages);
+            request.setAttribute("onSaleProductCategories", onSaleProductCategories);
             
-            LOGGER.info("Products loaded successfully, " + homeProducts.size() + " products set for display");
+            LOGGER.info("On Sale products loaded successfully, " + onSaleProducts.size() + " products found");
             
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error loading products for home page", e);
-            request.setAttribute("homeProducts", new ArrayList<Product>());
-            request.setAttribute("productImages", new HashMap<Integer, String>());
-            request.setAttribute("productCategoryNames", new HashMap<Integer, String>());
+            LOGGER.log(Level.SEVERE, "Error loading On Sale products", e);
+            request.setAttribute("onSaleProducts", new ArrayList<Product>());
+            request.setAttribute("onSaleProductImages", new HashMap<Integer, String>());
+            request.setAttribute("onSaleProductCategories", new HashMap<Integer, Category>());
         }
-          // Load categories for product filtering and count products
+        
+        // Load "Top Rated" products (for now, use newest products as placeholder)
+        try {
+            LOGGER.info("Loading Top Rated products");
+            List<Product> allProducts = productDAO.getActiveProducts();
+            List<Product> topRatedProducts = new ArrayList<>();
+            Map<Integer, String> topRatedProductImages = new HashMap<>();
+            Map<Integer, Category> topRatedProductCategories = new HashMap<>();
+            
+            ProductImageDAO imageDAO = new ProductImageDAO();
+            
+            // For now, sort by product ID (newest first) as placeholder for rating
+//            allProducts.sort((p1, p2) -> p2.getProductId().compareTo(p1.getProductId()));
+            
+            int topRatedCount = 0;
+            for (Product product : allProducts) {
+                if (topRatedCount < 3) {
+                    topRatedProducts.add(product);
+                    
+                    // Get main image
+                    try {
+                        ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
+                        if (mainImage != null) {
+                            topRatedProductImages.put(product.getProductId(), mainImage.getImageUrl());
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Error loading image for top rated product " + product.getProductId(), e);
+                    }
+                    
+                    // Get category
+                    if (product.getCategoryId() != null) {
+                        try {
+                            Category category = categoryDAO.getCategoryById(product.getCategoryId());
+                            if (category != null) {
+                                topRatedProductCategories.put(product.getProductId(), category);
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Error loading category for top rated product " + product.getProductId(), e);
+                        }
+                    }
+                    
+                    topRatedCount++;
+                }
+            }
+            
+            request.setAttribute("topRatedProducts", topRatedProducts);
+            request.setAttribute("topRatedProductImages", topRatedProductImages);
+            request.setAttribute("topRatedProductCategories", topRatedProductCategories);
+            
+            LOGGER.info("Top Rated products loaded successfully, " + topRatedProducts.size() + " products found");
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading Top Rated products", e);
+            request.setAttribute("topRatedProducts", new ArrayList<Product>());
+            request.setAttribute("topRatedProductImages", new HashMap<Integer, String>());
+            request.setAttribute("topRatedProductCategories", new HashMap<Integer, Category>());
+        }
+        
+        // Load "Bestseller" products (products sorted by random for now - can implement sales-based logic later)
+        try {
+            LOGGER.info("Loading Bestseller products");
+            List<Product> allProducts = productDAO.getActiveProducts();
+            List<Product> bestsellerProducts = new ArrayList<>();
+            Map<Integer, String> bestsellerProductImages = new HashMap<>();
+            Map<Integer, Category> bestsellerProductCategories = new HashMap<>();
+            
+            ProductImageDAO imageDAO = new ProductImageDAO();
+            
+            // For now, use a different sorting criteria (e.g., by name) as placeholder for bestseller
+            allProducts.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+            
+            int bestsellerCount = 0;
+            for (Product product : allProducts) {
+                if (bestsellerCount < 6) {
+                    bestsellerProducts.add(product);
+                    
+                    // Get main image
+                    try {
+                        ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
+                        if (mainImage != null) {
+                            bestsellerProductImages.put(product.getProductId(), mainImage.getImageUrl());
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Error loading image for bestseller product " + product.getProductId(), e);
+                    }
+                    
+                    // Get category
+                    if (product.getCategoryId() != null) {
+                        try {
+                            Category category = categoryDAO.getCategoryById(product.getCategoryId());
+                            if (category != null) {
+                                bestsellerProductCategories.put(product.getProductId(), category);
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Error loading category for bestseller product " + product.getProductId(), e);
+                        }
+                    }
+                    
+                    bestsellerCount++;
+                }
+            }
+            
+            request.setAttribute("bestsellerProducts", bestsellerProducts);
+            request.setAttribute("bestsellerProductImages", bestsellerProductImages);
+            request.setAttribute("bestsellerProductCategories", bestsellerProductCategories);
+            
+            LOGGER.info("Bestseller products loaded successfully, " + bestsellerProducts.size() + " products found");
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error loading Bestseller products", e);
+            request.setAttribute("bestsellerProducts", new ArrayList<Product>());
+            request.setAttribute("bestsellerProductImages", new HashMap<Integer, String>());
+            request.setAttribute("bestsellerProductCategories", new HashMap<Integer, Category>());
+        }
+        
+        // Load categories for product filtering and count products
         try {
             LOGGER.info("Loading product categories");
             List<Category> allProductCategories = categoryDAO.getAllCategories();
@@ -171,7 +358,7 @@ public class HomeServlet extends HttpServlet {
         }        HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Set context path for JSP to use in relative paths
+        // Set context path for to use in relative paths
         request.setAttribute("contextPath", request.getContextPath());
         
         LOGGER.info("User in session: " + (user != null ? user.getUsername() : "null"));
@@ -191,7 +378,7 @@ public class HomeServlet extends HttpServlet {
         }
         
         LOGGER.info("User logged in as " + user.getRole() + ", forwarding to home.jsp");
-        // Forward to home.jsp
+        // Forward to home JSP
         request.getRequestDispatcher("home.jsp").forward(request, response);
     }
     

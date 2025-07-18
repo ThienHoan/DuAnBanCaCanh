@@ -74,7 +74,7 @@
             align-items: center;
             gap: 30px;
         }
-          .welcome-avatar {
+        .welcome-avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -94,6 +94,15 @@
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+        
+        .welcome-avatar .avatar-text {
+            position: relative;
+            z-index: 5;
         }
         
         .welcome-info h1 {
@@ -363,24 +372,39 @@
     <div class="dashboard-container">
         <!-- Welcome Section -->
         <div class="welcome-section">
-            <div class="welcome-content">                <div class="welcome-avatar">
-                    <c:choose>
-                        <c:when test="${not empty sessionScope.user.avatar}">
-                            <img src="${sessionScope.user.avatar}?v=${sessionScope.user.userId}" 
-                                 alt="${sessionScope.user.fullName}" 
-                                 style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:choose>
-                                <c:when test="${not empty sessionScope.user.fullName}">
-                                    ${fn:substring(sessionScope.user.fullName, 0, 1).toUpperCase()}
-                                </c:when>
-                                <c:otherwise>
-                                    <i class="fas fa-user"></i>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:otherwise>
-                    </c:choose>
+            <div class="welcome-content">
+                <div class="welcome-avatar">
+                    <!-- Text fallback -->
+                    <div class="avatar-text">
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.user.fullName}">
+                                ${fn:substring(sessionScope.user.fullName, 0, 1).toUpperCase()}
+                            </c:when>
+                            <c:otherwise>
+                                <i class="fas fa-user"></i>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                    
+                    <!-- Image overlay -->
+                    <c:if test="${not empty sessionScope.user.avatar}">
+                        <c:choose>
+                            <c:when test="${fn:startsWith(sessionScope.user.avatar, 'http')}">
+                                <!-- Google avatar URL -->
+                                <img src="${sessionScope.user.avatar}" 
+                                     alt="${sessionScope.user.fullName}" 
+                                     onload="console.log('Google avatar loaded successfully');"
+                                     onerror="console.log('Google avatar failed to load'); this.style.display='none';" />
+                            </c:when>
+                            <c:otherwise>
+                                <!-- Local avatar file -->
+                                <img src="${pageContext.request.contextPath}/uploads/avatars/${sessionScope.user.avatar}?v=${sessionScope.user.userId}" 
+                                     alt="${sessionScope.user.fullName}" 
+                                     onload="console.log('Local avatar loaded successfully');"
+                                     onerror="console.log('Local avatar failed to load - file may not exist'); this.style.display='none';" />
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
                 </div>
                 <div class="welcome-info">
                     <h1>Xin chào, ${sessionScope.user.fullName}!</h1>
@@ -395,6 +419,12 @@
                         <a href="${pageContext.request.contextPath}/profile?action=change-password" class="quick-btn">
                             <i class="fas fa-key"></i> Đổi mật khẩu
                         </a>
+                        <!-- Debug button to reset avatar -->
+                        <c:if test="${not empty sessionScope.user.avatar and not fn:startsWith(sessionScope.user.avatar, 'http')}">
+                            <button onclick="resetAvatar()" class="quick-btn" style="background: rgba(220,53,69,0.2);">
+                                <i class="fas fa-trash"></i> Reset Avatar
+                            </button>
+                        </c:if>
                     </div>
                 </div>
             </div>
@@ -627,7 +657,49 @@
             
             // Animate counters
             animateCounters();
+            
+            // Handle avatar display
+            handleAvatarDisplay();
         });
+        
+        function handleAvatarDisplay() {
+            const avatarContainer = $('.welcome-avatar');
+            const avatarImg = avatarContainer.find('img');
+            const avatarText = avatarContainer.find('.avatar-text');
+            
+            if (avatarImg.length > 0) {
+                // Hide text initially when image exists
+                avatarText.hide();
+                
+                // Show text if image fails to load
+                avatarImg.on('error', function() {
+                    console.log('Avatar image failed to load, showing text fallback');
+                    $(this).hide();
+                    avatarText.show();
+                });
+                
+                // Ensure image is visible when loaded successfully
+                avatarImg.on('load', function() {
+                    console.log('Avatar image loaded successfully');
+                    avatarText.hide();
+                    $(this).show();
+                });
+                
+                // Trigger load event if image is already cached
+                if (avatarImg[0].complete) {
+                    if (avatarImg[0].naturalWidth === 0) {
+                        // Image failed to load
+                        avatarImg.trigger('error');
+                    } else {
+                        // Image loaded successfully
+                        avatarImg.trigger('load');
+                    }
+                }
+            } else {
+                // No image, show text
+                avatarText.show();
+            }
+        }
         
         function refreshAvatarImage() {
             const avatarImg = $('.welcome-avatar img');
@@ -683,6 +755,29 @@
                     });
                 }
             });
+        }
+        
+        function resetAvatar() {
+            if (confirm('Bạn có chắc muốn xóa avatar hiện tại? Avatar sẽ được đặt lại thành chữ cái đầu của tên.')) {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/profile',
+                    type: 'POST',
+                    data: {
+                        action: 'remove-avatar'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Reload page to show updated avatar
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra: ' + (response.message || 'Unknown error'));
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi xóa avatar');
+                    }
+                });
+            }
         }
     </script>
     

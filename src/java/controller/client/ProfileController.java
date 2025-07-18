@@ -346,9 +346,8 @@ public class ProfileController extends HttpServlet {
             
             // Lưu file mới
             String filePath = uploadPath + File.separator + newFileName;
-            filePart.write(filePath);              // Cập nhật đường dẫn avatar trong user (lưu đường dẫn tương đối)
-            String webPath = "/uploads/avatars/" + newFileName;
-            currentUser.setAvatar(webPath);
+            filePart.write(filePath);              // Cập nhật đường dẫn avatar trong user (chỉ lưu tên file, không lưu path)
+            currentUser.setAvatar(newFileName);
             
             // Lưu vào database
             boolean success = userDAO.updateUser(currentUser);

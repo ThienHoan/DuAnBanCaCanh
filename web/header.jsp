@@ -139,12 +139,12 @@
                                                         <c:when test="${not empty headerLatestPosts}">
                                                             <c:forEach var="post" items="${headerLatestPosts}" varStatus="status">
                                                                 <li><a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}">${post.title}</a></li>
-                                                                </c:forEach>
-                                                            </c:when>
-                                                            <c:otherwise>
+                                                            </c:forEach>
+                                                        </c:when>
+                                                        <c:otherwise>
                                                             <li><a href="${pageContext.request.contextPath}/blog">Xem tất cả bài viết</a></li>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </ul>
                                             </div>
                                         </div>

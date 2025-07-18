@@ -239,6 +239,162 @@ public class ProductDAO {
         
         return products;
     }
+    public String getProductContext(String fishName) throws SQLException {
+    String sql = "SELECT p.name, p.description, pd.care_level, pd.compatibility, pd.diet, pd.water_temperature "
+               + "FROM Products p JOIN Product_details pd ON p.product_id=pd.product_id "
+               + "WHERE p.name LIKE ?";
+    try (Connection c = DBContext.getConnection();
+         PreparedStatement ps = c.prepareStatement(sql)) {
+        ps.setString(1, "%" + fishName + "%");
+        ResultSet rs = ps.executeQuery();
+        if (!rs.next()) return null;
+        return String.format(
+          "Tên: %s. Mô tả: %s. Chăm sóc: %s. Tương thích: %s. Chế độ ăn: %s. Nhiệt độ: %s°C.",
+          rs.getString("name"),
+          rs.getString("description"),
+          rs.getString("care_level"),
+          rs.getString("compatibility"),
+          rs.getString("diet"),
+          rs.getString("water_temperature")
+        );
+    }
+}
+    // Dán đoạn mã này vào bên trong lớp public class ProductDAO { ... }
+
+    // Dán đoạn mã này vào bên trong lớp public class ProductDAO { ... }
+
+/**
+ * Tìm kiếm và lấy danh sách sản phẩm theo tên.
+ * Sử dụng LIKE '%...%' để tìm kiếm gần đúng.
+ * @param name Tên hoặc một phần tên của sản phẩm cần tìm.
+ * @return Một danh sách các sản phẩm có tên khớp với từ khóa tìm kiếm.
+ */
+public List<Product> getProductsByName(String name) {
+    List<Product> products = new ArrayList<>();
+    
+    // Câu SQL sử dụng LIKE để tìm kiếm các sản phẩm có tên chứa từ khóa
+    String query = "SELECT * FROM Products WHERE name LIKE ?";
+    
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        
+        // Gán giá trị cho tham số trong câu SQL
+        // Thêm dấu '%' để thực hiện tìm kiếm gần đúng (contains)
+        ps.setString(1, "%" + name + "%");
+        
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                // Tạo đối tượng Product từ dữ liệu trong ResultSet
+                // Logic này được sao chép từ các phương thức khác để đảm bảo tính nhất quán
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity")); // <-- Lấy từ cột 'quantity'
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                // Chuyển đổi từ Timestamp của SQL sang LocalDateTime của Java
+                product.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                products.add(product);
+            }
+        }
+    } catch (Exception e) {
+        System.err.println("Lỗi khi tìm sản phẩm theo tên: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return products;
+}
+// Dán đoạn mã này vào bên trong lớp public class ProductDAO { ... }
+
+/**
+ * Lấy danh sách tên của TẤT CẢ các sản phẩm trong database.
+ * Phương thức này được dùng để AI có thể tự động nhận diện sản phẩm trong câu hỏi.
+ * @return Một danh sách (List) các chuỗi (String) chứa tên sản phẩm.
+ */
+public List<String> getAllProductNames() {
+    List<String> productNames = new ArrayList<>();
+    
+    // Câu SQL này chỉ lấy cột 'name' để tối ưu hiệu suất
+    String query = "SELECT name FROM Products";
+    
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query);
+         ResultSet rs = ps.executeQuery()) {
+        
+        // Lặp qua từng kết quả và thêm tên sản phẩm vào danh sách
+        while (rs.next()) {
+            productNames.add(rs.getString("name"));
+        }
+    } catch (Exception e) {
+        System.err.println("Lỗi khi lấy tất cả tên sản phẩm: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return productNames;
+}
+
+
+
+/**
+ * Lấy danh sách sản phẩm dựa trên mức độ chăm sóc (care level).
+ * Phương thức này thực hiện JOIN giữa bảng Products và Product_details.
+ * @param careLevel Mức độ chăm sóc (ví dụ: "Dễ", "Trung bình", "Khó").
+ * @return Một danh sách các sản phẩm phù hợp.
+ */
+// Đoạn mã này sẽ được thêm vào file ProductDAO.java của bạn
+
+public List<Product> getProductsByCareLevel(String careLevel) {
+    List<Product> products = new ArrayList<>();
+    String query = "SELECT p.* " +
+                   "FROM Products p " +
+                   "JOIN Product_details pd ON p.product_id = pd.product_id " +
+                   "WHERE pd.care_level = ?";
+    
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        
+        ps.setString(1, careLevel);
+        
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                // **TÔI SẼ SAO CHÉP LOGIC TỪ CÁC PHƯƠNG THỨC KHÁC CỦA BẠN VÀO ĐÂY**
+                // Ví dụ:
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity")); // <-- Sửa lại từ 'stock'
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime()); // <-- Sửa lại cách set
+                product.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime()); // <-- Sửa lại cách set
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                products.add(product);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return products;
+}
+
+
+
 
     // Private method để lấy connection
     private Connection getConnection() throws SQLException {
