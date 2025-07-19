@@ -11,7 +11,7 @@ public class TestIdentityReset {
         System.out.println("Current IDENTITY value: " + currentValue);
         
         // 2. Reset giá trị IDENTITY (ví dụ: về 6)
-        boolean success = userDAO.resetIdentity(6);
+        boolean success = userDAO.resetIdentity(20);
         if (success) {
             System.out.println("Successfully reset IDENTITY value");
             // Kiểm tra lại giá trị mới

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * Tool chuyên tư vấn về cá cảnh, thức ăn, và thiết bị thủy sinh.
- * PHIÊN BẢN ĐÃ ĐƯỢC DỌN DẸP: Loại bỏ các thành phần không còn cần thiết của framework Agent cũ.
+ * PHIÊN BẢN ĐÃ ĐƯỢC CẬP NHẬT ĐỂ TƯƠNG THÍCH VỚI GOOGLE GENAI SDK.
  */
 public class AquariumTools {
 
@@ -25,10 +25,10 @@ public class AquariumTools {
     }
 
     /**
-     * Tư vấn chọn cá cảnh phù hợp dựa trên kinh nghiệm người chơi,
-     * dữ liệu được lấy trực tiếp từ database.
+     * Tư vấn chọn cá cảnh phù hợp dựa trên kinh nghiệm người chơi (beginner, intermediate, advanced).
+     * @param experience Kinh nghiệm của người chơi. Các giá trị có thể là: beginner, intermediate, advanced
+     * @return Map chứa lời khuyên và danh sách sản phẩm gợi ý.
      */
-    // XÓA BỎ: Annotation @RegisterTool không còn cần thiết trong kiến trúc mới.
     public Map<String, Object> fishRecommendation(String experience) {
         if (experience == null || experience.trim().isEmpty()) {
             experience = "beginner";
@@ -67,49 +67,47 @@ public class AquariumTools {
         response.put("recommendations", recommendedProducts);
         return response;
     }
-    // Dán đoạn mã này vào bên trong lớp AquariumTools
 
-/**
- * Tra cứu một sản phẩm cụ thể trong database và trả về thông tin.
- * @param productName Tên sản phẩm cần tìm (ví dụ: "cá guppy", "máy lọc nước").
- * @return Map chứa thông tin chi tiết về sản phẩm nếu tìm thấy.
- */
-public Map<String, Object> productInquiry(String productName) {
-    if (productName == null || productName.trim().isEmpty()) {
-        return Map.of("found", false, "response", "Vui lòng cho biết bạn muốn hỏi về sản phẩm nào.");
-    }
-    
-    // Sử dụng phương thức DAO để tìm sản phẩm theo tên
-    List<Product> foundProducts = productDAO.getProductsByName(productName);
-    
-    Map<String, Object> response = new HashMap<>();
-    
-    if (foundProducts.isEmpty()) {
-        response.put("found", false);
-        response.put("response", "Rất tiếc, hiện tại cửa hàng chúng tôi chưa có hoặc đã hết sản phẩm '" + productName + "'.");
-    } else {
-        StringBuilder result = new StringBuilder("✅ Có bạn nhé! Cửa hàng đang có các sản phẩm '" + productName + "' sau:\n\n");
-        for (Product p : foundProducts) {
-            result.append("**").append(p.getName()).append("**\n");
-            result.append("💰 Giá: ").append(String.format("%,.0f", p.getPrice())).append(" VNĐ\n");
-            if (p.getShortDescription() != null && !p.getShortDescription().isEmpty()) {
-                 result.append("📝 Mô tả: ").append(p.getShortDescription()).append("\n");
-            }
-            result.append("\n");
+    /**
+     * Tra cứu một sản phẩm cụ thể trong database và trả về thông tin chi tiết.
+     * @param productName Tên sản phẩm cần tìm, ví dụ: 'cá guppy', 'máy lọc nước', 'thuốc trị nấm'
+     * @return Map chứa kết quả tìm kiếm.
+     */
+    public Map<String, Object> productInquiry(String productName) {
+        if (productName == null || productName.trim().isEmpty()) {
+            return Map.of("found", false, "response", "Vui lòng cho biết bạn muốn hỏi về sản phẩm nào.");
         }
-        response.put("found", true);
-        response.put("response", result.toString());
-        response.put("products", foundProducts);
-    }
     
-    return response;
-}
-
+        List<Product> foundProducts = productDAO.getProductsByName(productName);
+    
+        Map<String, Object> response = new HashMap<>();
+    
+        if (foundProducts.isEmpty()) {
+            response.put("found", false);
+            response.put("response", "Rất tiếc, hiện tại cửa hàng chúng tôi chưa có hoặc đã hết sản phẩm '" + productName + "'.");
+        } else {
+            StringBuilder result = new StringBuilder("✅ Có bạn nhé! Cửa hàng đang có các sản phẩm '" + productName + "' sau:\n\n");
+            for (Product p : foundProducts) {
+                result.append("**").append(p.getName()).append("**\n");
+                result.append("💰 Giá: ").append(String.format("%,.0f", p.getPrice())).append(" VNĐ\n");
+                if (p.getShortDescription() != null && !p.getShortDescription().isEmpty()) {
+                     result.append("📝 Mô tả: ").append(p.getShortDescription()).append("\n");
+                }
+                result.append("\n");
+            }
+            response.put("found", true);
+            response.put("response", result.toString());
+            response.put("products", foundProducts);
+        }
+    
+        return response;
+    }
 
     /**
      * Tư vấn các loại thức ăn phù hợp cho một loại cá cụ thể.
+     * @param fishType Tên loại cá cần tư vấn thức ăn, ví dụ: 'betta', 'guppy', 'cá vàng'
+     * @return Map chứa lời khuyên và danh sách sản phẩm gợi ý.
      */
-    // XÓA BỎ: Annotation @RegisterTool không còn cần thiết.
     public Map<String, Object> feedingAdvice(String fishType) {
         if (fishType == null || fishType.trim().isEmpty()) {
             return Map.of("advice", "Vui lòng cho biết bạn muốn hỏi về thức ăn cho loại cá nào?");
@@ -146,9 +144,10 @@ public Map<String, Object> productInquiry(String productName) {
     }
     
     /**
-     * Chẩn đoán bệnh và gợi ý các sản phẩm điều trị.
+     * Chẩn đoán bệnh dựa trên triệu chứng được mô tả và gợi ý các sản phẩm điều trị từ cửa hàng.
+     * @param symptoms Mô tả chi tiết về triệu chứng của cá, ví dụ: 'cá có đốm trắng', 'cá bị nấm trắng ở vây'
+     * @return Map chứa kết quả chẩn đoán và sản phẩm gợi ý.
      */
-    // XÓA BỎ: Annotation @RegisterTool không còn cần thiết.
     public Map<String, Object> diseaseDiagnosis(String symptoms) {
         if (symptoms == null || symptoms.trim().isEmpty()) {
             return Map.of("advice", "Vui lòng mô tả triệu chứng của cá để tôi có thể chẩn đoán.");
@@ -197,6 +196,4 @@ public Map<String, Object> productInquiry(String productName) {
         response.put("suggested_treatments", treatmentProducts);
         return response;
     }
-
-    // XÓA BỎ: Phương thức terminate() không còn được sử dụng trong hệ thống mới.
 }

@@ -17,18 +17,19 @@ import model.entity.User;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.sql.Timestamp;
-import utils.OAuthConfig;
-
-
+import utils.ConfigUtil;
 
 public class GoogleLoginServlet extends HttpServlet {
     
     // Google OAuth URLs
+    private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
     private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+    private static final String GOOGLE_USER_INFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
     /**
      * Xử lý GET request - chuyển hướng đến Google OAuth hoặc xử lý callback
-     */    @Override
+     */    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
@@ -38,7 +39,7 @@ public class GoogleLoginServlet extends HttpServlet {
         System.out.println("Context Path: " + request.getContextPath());
         
         String path = request.getServletPath();
-          if ("/auth/google".equals(path)) {
+        if ("/auth/google".equals(path)) {
             System.out.println("Redirecting to Google OAuth...");
             // Chuyển hướng đến Google OAuth
             redirectToGoogle(request, response);
@@ -51,24 +52,28 @@ public class GoogleLoginServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
-      /**
+    
+    /**
      * Chuyển hướng người dùng đến Google OAuth
      */
     private void redirectToGoogle(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         
-        String googleAuthURL = OAuthConfig.GOOGLE_AUTH_URL
+        // Sử dụng ConfigUtil thay vì OAuthConfig
+        String redirectUri = ConfigUtil.getProperty("google.oauth.redirect.uri");
+        System.out.println("Google OAuth Redirect URI: " + redirectUri);
+        
+        String googleAuthURL = GOOGLE_AUTH_URL
                 + "?response_type=code"
-                + "&client_id=" + OAuthConfig.getGoogleClientId()
-                + "&redirect_uri=" + OAuthConfig.getGoogleRedirectUri()
-                + "&scope=email%20profile"
+                + "&client_id=" + ConfigUtil.getProperty("google.oauth.client.id")
+                + "&redirect_uri=" + redirectUri
+                + "&scope=" + ConfigUtil.getProperty("google.oauth.scope", "email profile")
                 + "&access_type=offline"
                 + "&prompt=consent";
         
         System.out.println("Redirecting to Google OAuth: " + googleAuthURL);
         response.sendRedirect(googleAuthURL);
     }
-    
     
     private void handleGoogleCallback(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -79,14 +84,14 @@ public class GoogleLoginServlet extends HttpServlet {
         if (error != null) {
             System.out.println("Google OAuth error: " + error);
             request.setAttribute("error", "Đăng nhập Google bị hủy hoặc có lỗi xảy ra!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
         
         if (code == null) {
             System.out.println("No authorization code received from Google");
             request.setAttribute("error", "Không nhận được mã xác thực từ Google!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
         
@@ -112,24 +117,31 @@ public class GoogleLoginServlet extends HttpServlet {
             System.out.println("Google login error: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("error", "Lỗi trong quá trình đăng nhập Google: " + e.getMessage());
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
-      /**
+    
+    /**
      * Lấy access token từ Google bằng authorization code
-     */    private String getAccessToken(String code) throws Exception {
+     */    
+    private String getAccessToken(String code) throws Exception {
+        // Sử dụng ConfigUtil thay vì OAuthConfig
+        String redirectUri = ConfigUtil.getProperty("google.oauth.redirect.uri");
+        System.out.println("Google OAuth Redirect URI in getAccessToken: " + redirectUri);
+        
         String tokenRequestBody = "code=" + URLEncoder.encode(code, StandardCharsets.UTF_8)
-                + "&client_id=" + URLEncoder.encode(OAuthConfig.getGoogleClientId(), StandardCharsets.UTF_8)
-                + "&client_secret=" + URLEncoder.encode(OAuthConfig.getGoogleClientSecret(), StandardCharsets.UTF_8)
-                + "&redirect_uri=" + URLEncoder.encode(OAuthConfig.getGoogleRedirectUri(), StandardCharsets.UTF_8)
-                + "&grant_type=" + URLEncoder.encode(OAuthConfig.getGoogleGrantType(), StandardCharsets.UTF_8);
+                + "&client_id=" + URLEncoder.encode(ConfigUtil.getProperty("google.oauth.client.id"), StandardCharsets.UTF_8)
+                + "&client_secret=" + URLEncoder.encode(ConfigUtil.getProperty("google.oauth.client.secret"), StandardCharsets.UTF_8)
+                + "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
+                + "&grant_type=" + URLEncoder.encode(ConfigUtil.getProperty("google.oauth.grant.type", "authorization_code"), StandardCharsets.UTF_8);
         
         URL url = new URL(GOOGLE_TOKEN_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         conn.setDoOutput(true);
-          // Gửi request
+        
+        // Gửi request
         conn.getOutputStream().write(tokenRequestBody.getBytes(StandardCharsets.UTF_8));
         
         // Đọc response
@@ -145,11 +157,13 @@ public class GoogleLoginServlet extends HttpServlet {
         JsonObject tokenResponse = parser.parse(response.toString()).getAsJsonObject();
         
         return tokenResponse.has("access_token") ? tokenResponse.get("access_token").getAsString() : null;
-    }    /**
+    }    
+    
+    /**
      * Lấy thông tin user từ Google bằng access token
      */
     private JsonObject getUserInfo(String accessToken) throws Exception {
-        URL url = new URL(OAuthConfig.GOOGLE_USER_INFO_URL + "?access_token=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8));
+        URL url = new URL(GOOGLE_USER_INFO_URL + "?access_token=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8));
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         
@@ -167,6 +181,7 @@ public class GoogleLoginServlet extends HttpServlet {
         return userInfo;
     }
     
+    // Các phương thức còn lại giữ nguyên
     /**
      * Xử lý thông tin user từ Google - tạo mới hoặc đăng nhập
      */
@@ -282,9 +297,9 @@ public class GoogleLoginServlet extends HttpServlet {
         
         // Chuyển hướng theo role
         if ("admin".equals(user.getRole())) {
-            response.sendRedirect("home");
+            response.sendRedirect(request.getContextPath() + "/home");
         } else {
-            response.sendRedirect("home");
+            response.sendRedirect(request.getContextPath() + "/home");
         }
     }
     

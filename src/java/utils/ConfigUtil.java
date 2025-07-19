@@ -56,7 +56,7 @@ public class ConfigUtil {
         properties.setProperty("blog.excerpt.length", "150");
         properties.setProperty("google.oauth.client.id", "");
         properties.setProperty("google.oauth.client.secret", "");
-        properties.setProperty("google.oauth.redirect.uri", "http://localhost:8080/DuAnCaCanh/googlecallback");
+        properties.setProperty("google.oauth.redirect.uri", "http://localhost:8080/DuAnBanCaCanh/googlecallback");
         properties.setProperty("google.oauth.grant.type", "authorization_code");
         properties.setProperty("google.oauth.scope", "openid email profile");
     }
@@ -226,7 +226,7 @@ public class ConfigUtil {
      * @return Google OAuth Redirect URI
      */
     public static String getGoogleOAuthRedirectUri() {
-        return getProperty("google.oauth.redirect.uri", "http://localhost:8080/DuAnCaCanh/googlecallback");
+        return getProperty("google.oauth.redirect.uri", "http://localhost:8080/DuAnBanCaCanh/googlecallback");
     }
     
     /**

@@ -10,7 +10,7 @@ public class DBContext {
     // 1. Khai báo các thông tin kết nối
     private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static final String HOST_NAME = "localhost";
-    private static final String INSTANCE_NAME = "THIENHOANNHAA";
+    private static final String INSTANCE_NAME = "MSSQLSERVER01";
     private static final String DB_NAME = "fishshopp";
     private static final String USER = "sa";
     private static final String PASS = "123";
