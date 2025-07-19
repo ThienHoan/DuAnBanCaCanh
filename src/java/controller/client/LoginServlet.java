@@ -123,7 +123,16 @@ public class LoginServlet extends HttpServlet {
                 clearRememberMeCookies(response);
             }
             
-            // Chuyển hướng theo role
+            // Kiểm tra URL redirect đã lưu trong session
+            String redirectURL = (String) session.getAttribute("redirectURL");
+            if (redirectURL != null) {
+                System.out.println("Redirecting to saved URL: " + redirectURL);
+                session.removeAttribute("redirectURL"); // Xóa URL đã lưu
+                response.sendRedirect(redirectURL);
+                return;
+            }
+            
+            // Chuyển hướng theo role nếu không có URL redirect
             if ("admin".equals(user.getRole())) {
                 response.sendRedirect("home");
             } else {

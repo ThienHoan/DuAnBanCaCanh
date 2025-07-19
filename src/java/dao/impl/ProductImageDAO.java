@@ -1,11 +1,10 @@
 package dao.impl;
 
-import model.entity.ProductImage;
-import utils.db.DBContext;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import model.entity.ProductImage;
+import utils.db.DBContext;
 
 public class ProductImageDAO {
     Connection conn = null;
@@ -97,6 +96,28 @@ public class ProductImageDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    // Lấy URL của hình ảnh chính theo product_id
+    public String getMainImageByProductId1(int productId) {
+        String query = "SELECT image_url FROM Product_images WHERE product_id = ? AND is_main = 1 AND is_deleted = 0";
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, productId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("image_url");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
         }
 
         return null;

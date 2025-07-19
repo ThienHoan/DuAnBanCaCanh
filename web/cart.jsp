@@ -1,6 +1,6 @@
 <%-- 
     Document   : cart
-    Created on : May 20, 2025, 3:43:48 PM
+    Created on : May 20, 2025, 3:43:48 PM
     Author     : hoan6
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -140,7 +140,7 @@
     </div>
 
     <!-- HEADER -->
-    <jsp:include page="header.jsp"></jsp:include>
+    <jsp:include page="header.jsp"/>
 
     <!--Hero Section-->
     <div class="hero-section hero-background">
@@ -316,7 +316,7 @@
                             <p class="desc">Tính theo vị trí giao hàng</p>
                         </div>
                         <div class="btn-checkout">
-                            <a href="checkout.jsp" class="btn checkout btn-success">
+                            <a href="checkout" class="btn checkout btn-success">
                                 Thanh toán
                             </a>
                         </div>
@@ -721,7 +721,7 @@ function showMessage(type, message) {
                                 <i class="biolife-icon icon-head-phone"></i>
                                 <p class="r-info">
                                     <span>Got Questions ?</span>
-                                    <span>(700)  9001-1909  (900) 689 -66</span>
+                                    <span>(700) 9001-1909  (900) 689 -66</span>
                                 </p>
                             </div>
                             <div class="newsletter-block layout-01">
@@ -897,6 +897,8 @@ function showMessage(type, message) {
         </div>
     </div>
 
+    
+    
     <!-- Scroll Top Button -->
     <a class="btn-scroll-top"><i class="biolife-icon icon-left-arrow"></i></a>
 

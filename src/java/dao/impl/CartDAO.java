@@ -1,13 +1,12 @@
 package dao.impl;
 
-import model.entity.pCart.Cart;
-import model.entity.pCart.CartItem;
-import utils.db.DBContext;
-
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import model.entity.pCart.Cart;
+import model.entity.pCart.CartItem;
+import utils.db.DBContext;
 
 public class CartDAO {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -219,5 +218,11 @@ public boolean testInsertHardcode() throws SQLException {
             }
             return 0.0;
         }
+    }
+
+    // Add item to cart using userId - THAY ĐỔI: Thêm phương thức mới để hỗ trợ thêm vào giỏ hàng bằng userId
+    public boolean addItemToCartByUserId(int userId, int productId, int quantity) throws SQLException {
+        Cart cart = getOrCreateCartByUserId(userId);
+        return addItemToCart(cart.getCartId(), productId, quantity);
     }
 }

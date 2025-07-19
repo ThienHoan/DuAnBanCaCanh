@@ -6,12 +6,14 @@ public class ProductAttributeValue {
     private int attributeId;
     private String value;
     private Integer isDeleted;
+    private String attributeName; // Added for display purposes
+
 
     // Default constructor
     public ProductAttributeValue() {
     }
 
-    // Constructor with all fields
+    // Constructor with all fields (including new attributeName)
     public ProductAttributeValue(int valueId, int productId, int attributeId, String value, Integer isDeleted) {
         this.valueId = valueId;
         this.productId = productId;
@@ -86,6 +88,15 @@ public class ProductAttributeValue {
         this.isDeleted = isDeleted ? 1 : 0;
     }
 
+    // New getter and setter for attributeName
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
+    }
+
     @Override
     public String toString() {
         return "ProductAttributeValue{" +
@@ -94,6 +105,7 @@ public class ProductAttributeValue {
                 ", attributeId=" + attributeId +
                 ", value='" + value + '\'' +
                 ", isDeleted=" + isDeleted +
+                ", attributeName='" + attributeName + '\'' +
                 '}';
     }
 }

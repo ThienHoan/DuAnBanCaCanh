@@ -301,6 +301,16 @@
         <url-pattern>/admin/reset-all-identity</url-pattern>
     </servlet-mapping>
     
+    <!-- Order Management servlet -->
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>controller.client.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    
     <!-- Test Blog Category servlet -->
     <servlet>
         <servlet-name>TestBlogCategoryServlet</servlet-name>
@@ -323,6 +333,50 @@
     <servlet-mapping>
         <servlet-name>CartControllerClient</servlet-name>
         <url-pattern>/cart</url-pattern>
+    </servlet-mapping>
+    
+    <!-- VNPay Return Controller -->
+    <servlet>
+        <servlet-name>VNPayReturnController</servlet-name>
+        <servlet-class>controller.client.VNPayReturnController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VNPayReturnController</servlet-name>
+        <url-pattern>/vnpay-return</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Checkout Controller -->
+    <servlet>
+        <servlet-name>CheckoutController</servlet-name>
+        <servlet-class>controller.client.CheckoutController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckoutController</servlet-name>
+        <url-pattern>/checkout</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Apply Coupon Controller -->
+    <servlet>
+        <servlet-name>ApplyCouponController</servlet-name>
+        <servlet-class>controller.client.ApplyCouponController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApplyCouponController</servlet-name>
+        <url-pattern>/apply-coupon</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Category Servlet -->
+    <servlet>
+        <servlet-name>CategoryServlet</servlet-name>
+        <servlet-class>controller.client.CategoryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/category</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/CategoryServlet</url-pattern>
     </servlet-mapping>
     
     <!-- Wishlist servlet -->
@@ -409,6 +463,11 @@
         <error-code>500</error-code>
         <location>/error.jsp</location>
     </error-page>
+    
+    <!-- Session Configuration -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
     
     <!-- AI Agent servlet - ĐÃ SỬA LỖI -->
     <servlet>

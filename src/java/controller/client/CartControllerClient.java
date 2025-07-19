@@ -1,3 +1,4 @@
+
 package controller.client;
 
 import dao.impl.CartDAO;
@@ -97,14 +98,36 @@ public class CartControllerClient extends HttpServlet {
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             System.out.println("product id :"+ productId+"quantity :" +quantity +"user ID :" +userId );
             Cart cart = cartDAO.getOrCreateCartByUserId(userId);
-            System.out.println("Cart created/retrieved with ID: " + cart.getCartId());
-            boolean success = cartDAO.addItemToCart(cart.getCartId(), productId, quantity);
+            
+            // THAY ĐỔI: Sử dụng phương thức addItemToCartByUserId thay vì addItemToCart
+            boolean success = cartDAO.addItemToCartByUserId(userId, productId, quantity);
+            // Code ban đầu: boolean success = cartDAO.addItemToCart(userId, productId, quantity);
+
+            // THAY ĐỔI: Thêm xử lý chuyển hướng đến trang giỏ hàng
+            String redirectToCart = request.getParameter("redirectToCart");
+            boolean shouldRedirect = "true".equals(redirectToCart);
 
             if (success) {
                 int itemCount = cartDAO.getCartItemCount(cart.getCartId());
-                response.getWriter().write("{\"success\": true, \"message\": \"Sản phẩm đã được thêm vào giỏ hàng!\", \"itemCount\": " + itemCount + "}");
+                
+                // THAY ĐỔI: Thêm điều kiện chuyển hướng
+                if (shouldRedirect) {
+                    // Chuyển hướng đến trang giỏ hàng
+                    response.sendRedirect("cartClient");
+                } else {
+                    // Trả về JSON như trước
+                    response.getWriter().write("{\"success\": true, \"message\": \"Sản phẩm đã được thêm vào giỏ hàng!\", \"itemCount\": " + itemCount + "}");
+                }
+                // Code ban đầu: response.getWriter().write("{\"success\": true, \"message\": \"Sản phẩm đã được thêm vào giỏ hàng!\", \"itemCount\": " + itemCount + "}");
             } else {
-                response.getWriter().write("{\"success\": false, \"message\": \"Có lỗi xảy ra khi thêm sản phẩm!\"}");
+                // THAY ĐỔI: Thêm điều kiện chuyển hướng khi có lỗi
+                if (shouldRedirect) {
+                    // Chuyển hướng với thông báo lỗi
+                    response.sendRedirect("cartClient?error=true");
+                } else {
+                    response.getWriter().write("{\"success\": false, \"message\": \"Có lỗi xảy ra khi thêm sản phẩm!\"}");
+                }
+                // Code ban đầu: response.getWriter().write("{\"success\": false, \"message\": \"Có lỗi xảy ra khi thêm sản phẩm!\"}");
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -34,7 +34,45 @@ public class ProductAttributeValueDAO {
         return attributeValues;
     }
 
-    
+    public List<ProductAttributeValue> getProductAttributeValuesWithNamesByProductId(int productId) {
+        List<ProductAttributeValue> attributeValues = new ArrayList<>();
+        String query = "SELECT pav.value_id, pav.product_id, pav.attribute_id, pa.name as attribute_name, pav.value, pav.is_deleted " +
+                      "FROM Product_attribute_values pav " +
+                      "JOIN Product_attributes pa ON pav.attribute_id = pa.attribute_id " +
+                      "WHERE pav.product_id = ? AND pav.is_deleted = 0";
+        try {
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, productId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                ProductAttributeValue attributeValue = new ProductAttributeValue();
+                attributeValue.setValueId(rs.getInt("value_id"));
+                attributeValue.setProductId(rs.getInt("product_id"));
+                attributeValue.setAttributeId(rs.getInt("attribute_id"));
+                attributeValue.setValue(rs.getString("value"));
+                attributeValue.setIsDeleted(rs.getInt("is_deleted"));
+                attributeValue.setAttributeName(rs.getString("attribute_name"));
+                
+                attributeValues.add(attributeValue);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return attributeValues;
+    }
+
+    private ProductAttributeValue createProductAttributeValueFromResultSet(ResultSet rs) throws SQLException {
+        ProductAttributeValue attributeValue = new ProductAttributeValue();
+        attributeValue.setValueId(rs.getInt("value_id"));
+        attributeValue.setProductId(rs.getInt("product_id"));
+        attributeValue.setAttributeId(rs.getInt("attribute_id"));
+        attributeValue.setValue(rs.getString("value"));
+        attributeValue.setIsDeleted(rs.getInt("is_deleted"));
+        return attributeValue;
+    }
 
     // Get product attribute values by product ID
     public List<ProductAttributeValue> getProductAttributeValuesByProductId(int productId) {
@@ -185,19 +223,20 @@ public boolean deleteProductAttributeValue(int productId, int attributeId) {
     }
 
     
-
     
 
-    // Helper method to create ProductAttributeValue object from ResultSet
-    private ProductAttributeValue createProductAttributeValueFromResultSet(ResultSet rs) throws SQLException {
-        ProductAttributeValue attributeValue = new ProductAttributeValue();
-        attributeValue.setValueId(rs.getInt("value_id"));
-        attributeValue.setProductId(rs.getInt("product_id"));
-        attributeValue.setAttributeId(rs.getInt("attribute_id"));
-        attributeValue.setValue(rs.getString("value"));
-        attributeValue.setIsDeleted(rs.getInt("is_deleted"));
-        return attributeValue;
-    }
+    
+//
+//    // Helper method to create ProductAttributeValue object from ResultSet
+//    private ProductAttributeValue createProductAttributeValueFromResultSet(ResultSet rs) throws SQLException {
+//        ProductAttributeValue attributeValue = new ProductAttributeValue();
+//        attributeValue.setValueId(rs.getInt("value_id"));
+//        attributeValue.setProductId(rs.getInt("product_id"));
+//        attributeValue.setAttributeId(rs.getInt("attribute_id"));
+//        attributeValue.setValue(rs.getString("value"));
+//        attributeValue.setIsDeleted(rs.getInt("is_deleted"));
+//        return attributeValue;
+//    }
 
     // Helper method to close resources
     private void closeResources() {
