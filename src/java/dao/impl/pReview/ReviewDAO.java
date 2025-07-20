@@ -42,7 +42,39 @@ public List<Review> getAllReviewsByProductIdForCus(int productId) {
 }
     
     
-    
+    public int insertReviewAndGetId(Review review) {
+        String query = "INSERT INTO Reviews (product_id, user_id, order_id, rating, comment, review_date, status, is_verified_purchase, is_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setObject(1, review.getProductId());
+            ps.setObject(2, review.getUserId());
+            ps.setObject(3, review.getOrderId());
+            ps.setObject(4, review.getRating());
+            ps.setString(5, review.getComment());
+            ps.setTimestamp(6, review.getReviewDate() != null ? 
+                Timestamp.valueOf(review.getReviewDate()) : 
+                Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(7, review.getStatus() != null ? review.getStatus() : "pending");
+            ps.setObject(8, review.getIsVerifiedPurchase() != null ? review.getIsVerifiedPurchase() : 0);
+            ps.setObject(9, review.getIsDeleted() != null ? review.getIsDeleted() : 0);
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+            return -1; // Indicate failure
+        } catch (SQLException e) {
+            // Log the error
+            e.printStackTrace();
+            return -1;
+        } finally {
+            closeResources();
+        }
+    }
     
     // Get all reviews
     public List<Review> getAllReviewsForCus() {

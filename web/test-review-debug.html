@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Review Debug</title>
+</head>
+<body>
+    <h1>Test Review Debug</h1>
+    
+    <h2>Test TestReviewServlet:</h2>
+    <a href="test-review">Test GET /test-review</a><br>
+    
+    <form action="test-review" method="post">
+        <input type="hidden" name="action" value="submit">
+        <input type="hidden" name="productId" value="1">
+        <label>Rating: <input type="number" name="rating" value="5" min="1" max="5" required></label><br>
+        <label>Comment: <textarea name="comment" required>Test review from debug form</textarea></label><br>
+        <button type="submit">Test TestReviewServlet</button>
+    </form>
+    
+    <h2>Test ReviewControllerSimple:</h2>
+    <form action="review-simple" method="post">
+        <input type="hidden" name="action" value="submit">
+        <input type="hidden" name="productId" value="1">
+        <label>Rating: <input type="number" name="rating" value="5" min="1" max="5" required></label><br>
+        <label>Comment: <textarea name="comment" required>Test review from debug form</textarea></label><br>
+        <button type="submit">Test ReviewControllerSimple</button>
+    </form>
+    
+    <h2>Test ReviewController directly:</h2>
+    <form action="submit-review" method="post">
+        <input type="hidden" name="action" value="submit">
+        <input type="hidden" name="productId" value="1">
+        <label>Rating: <input type="number" name="rating" value="5" min="1" max="5" required></label><br>
+        <label>Comment: <textarea name="comment" required>Test review from debug form</textarea></label><br>
+        <button type="submit">Submit Test Review</button>
+    </form>
+    
+    <h2>Test with different action:</h2>
+    <form action="submit-review" method="post">
+        <input type="hidden" name="action" value="test">
+        <button type="submit">Test with action=test</button>
+    </form>
+    
+    <h2>Test without action:</h2>
+    <form action="submit-review" method="post">
+        <button type="submit">Test without action</button>
+    </form>
+    
+    <h2>Current URL Info:</h2>
+    <p>Current URL: <span id="currentUrl"></span></p>
+    <p>Context Path: <span id="contextPath"></span></p>
+    
+    <script>
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('contextPath').textContent = window.location.pathname.split('/')[1] || 'No context path';
+    </script>
+</body>
+</html> 
