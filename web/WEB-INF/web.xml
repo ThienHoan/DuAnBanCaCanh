@@ -480,4 +480,68 @@
         <url-pattern>/ai-agent</url-pattern>
     </servlet-mapping>
     
+    <!-- Review Controller servlet -->
+    <servlet>
+        <servlet-name>ReviewController</servlet-name>
+        <servlet-class>controller.client.ReviewController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReviewController</servlet-name>
+        <url-pattern>/review</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReviewController</servlet-name>
+        <url-pattern>/submit-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Product Detail With Review servlet -->
+    <servlet>
+        <servlet-name>ProductDetailWithReviewServlet</servlet-name>
+        <servlet-class>controller.client.ProductDetailWithReviewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductDetailWithReviewServlet</servlet-name>
+        <url-pattern>/product-detail-with-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test Review Servlet -->
+    <servlet>
+        <servlet-name>TestReviewServlet</servlet-name>
+        <servlet-class>controller.client.TestReviewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestReviewServlet</servlet-name>
+        <url-pattern>/test-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Product Detail Servlet (Original) -->
+    <servlet>
+        <servlet-name>ProductDetailServlet</servlet-name>
+        <servlet-class>controller.client.ProductDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductDetailServlet</servlet-name>
+        <url-pattern>/product-detail</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Simple Test Servlet -->
+    <servlet>
+        <servlet-name>SimpleTestServlet</servlet-name>
+        <servlet-class>controller.client.SimpleTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SimpleTestServlet</servlet-name>
+        <url-pattern>/simple-test</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Review Controller Simple -->
+    <servlet>
+        <servlet-name>ReviewControllerSimple</servlet-name>
+        <servlet-class>controller.client.ReviewControllerSimple</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReviewControllerSimple</servlet-name>
+        <url-pattern>/review-simple</url-pattern>
+    </servlet-mapping>
+    
 </web-app>
