@@ -403,6 +403,89 @@ public List<Product> getProductsByCareLevel(String careLevel) {
     private Connection getConnection() throws SQLException {
         return DBContext.getConnection();
     }
+    
+    /**
+     * Get products that have the same name as the specified product
+     * Used for product variants with different attributes (color, size, etc.)
+     */
+    public List<Product> getProductsWithSameName(String productName) {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT * FROM Products WHERE name = ? AND status = 'active' AND is_deleted = 0";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setString(1, productName);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getString("created_at"));
+                product.setUpdatedAt(rs.getString("updated_at"));
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+    
+
+public List<Product> getProductsByCategoryId(Integer categoryId) {
+    List<Product> products = new ArrayList<>();
+    
+    // Handle null categoryId case
+    if (categoryId == null) {
+        return products; // Return empty list if categoryId is null
+    }
+    
+    String query = "SELECT product_id, category_id, name, description, short_description, " +
+                  "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted " +
+                  "FROM Products WHERE category_id = ? AND status = 'active' AND is_deleted = 0";
+    
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        
+        ps.setInt(1, categoryId); // Auto-unboxing from Integer to int
+        ResultSet rs = ps.executeQuery();
+        
+        while (rs.next()) {
+            Product product = new Product();
+            product.setProductId(rs.getInt("product_id"));
+            product.setCategoryId(rs.getInt("category_id"));
+            product.setName(rs.getString("name"));
+            product.setDescription(rs.getString("description"));
+            product.setShortDescription(rs.getString("short_description"));
+            product.setPrice(rs.getBigDecimal("price"));
+            product.setSalePrice(rs.getBigDecimal("sale_price"));
+            product.setQuantity(rs.getInt("quantity"));
+            product.setSku(rs.getString("sku"));
+            product.setStatus(rs.getString("status"));
+            product.setFeatured(rs.getInt("featured"));
+            product.setCreatedAt(rs.getString("created_at"));
+            product.setUpdatedAt(rs.getString("updated_at"));
+            product.setIsDeleted(rs.getInt("is_deleted"));
+            
+            products.add(product);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return products;
+}
 
     // Updated method to get products by category ID with pagination, sorting, and search
     public List<Product> getProductsByCategoryId(int categoryId, boolean isParent, int page, int pageSize, String sort, String search) {
