@@ -363,8 +363,12 @@
                     <div class="product-attribute">
                         <h3 class="title">${product.name}</h3>
                         <div class="rating">
-                            <p class="star-rating"><span class="width-80percent"></span></p>
-                            <span class="review-count">(4 Đánh giá)</span>
+                            <div class="star-display">
+                                <c:forEach begin="1" end="5" var="i">
+                                    <i class="fa ${i <= averageRating ? 'fa-star text-warning' : 'fa-star-o text-muted'}" style="font-size: 18px; margin-right: 2px;"></i>
+                                </c:forEach>
+                            </div>
+                            <span class="review-count">(${totalReviews} Đánh giá)</span>
                             <span class="qa-text">Hỏi & Đáp</span>
                             <c:if test="${category != null}">
                                 <b class="category">Loại: ${category.name}</b>
@@ -524,7 +528,7 @@
                             <li class="tab-element"><a href="#tab_2nd" class="tab-link">Thông tin cơ bản</a></li>
                             <li class="tab-element"><a href="#tab_3rd" class="tab-link">Chi tiết cá cảnh</a></li>
                             <li class="tab-element"><a href="#tab_4th" class="tab-link">Hướng dẫn chăm sóc</a></li>
-                            <li class="tab-element"><a href="#tab_5th" class="tab-link">Đánh giá <sup>(3)</sup></a></li>
+                            <li class="tab-element"><a href="#tab_5th" class="tab-link">Đánh giá <sup>(${totalReviews})</sup></a></li>
                             <li class="tab-element"><a href="#tab_6th" class="tab-link">Vận chuyển & Kho hàng</a></li>
                         </ul>
                     </div>
@@ -716,8 +720,9 @@
         <c:set var="star5" value="0"/>
         <c:set var="totalRating" value="0"/>
         
-        <c:forEach var="reviewData" items="${processedReviews}">
-            <c:set var="rating" value="${reviewData.review.rating}"/>
+        <%-- Sử dụng reviews thay vì processedReviews --%>
+        <c:forEach var="review" items="${reviews}">
+            <c:set var="rating" value="${review.rating}"/>
             <c:choose>
                 <c:when test="${rating == 1}"><c:set var="star1" value="${star1 + 1}"/></c:when>
                 <c:when test="${rating == 2}"><c:set var="star2" value="${star2 + 1}"/></c:when>
@@ -728,9 +733,7 @@
             <c:set var="totalRating" value="${totalRating + rating}"/>
         </c:forEach>
 
-        <%-- Tính số đánh giá và điểm trung bình --%>
-        <c:set var="totalReviews" value="${fn:length(processedReviews)}"/>
-        <c:set var="averageRating" value="${totalReviews > 0 ? totalRating / totalReviews : 0}"/>
+        <%-- Sử dụng giá trị từ servlet --%>
         <c:set var="averagePercent" value="${(averageRating / 5) * 100}"/>
 
         <%-- Tính phần trăm cho mỗi mức sao --%>
@@ -753,6 +756,11 @@
             </div>
           </div>
         </div>
+        
+        <!-- Debug info -->
+        <p>Total Reviews: ${totalReviews}</p>
+        <p>Average Rating: ${averageRating}</p>
+        <p>Rating Counts: ${ratingCounts[0]}, ${ratingCounts[1]}, ${ratingCounts[2]}, ${ratingCounts[3]}, ${ratingCounts[4]}</p>
         
         <style>
             
@@ -860,7 +868,7 @@
           <h4>Xem các đánh giá</h4>
 
           <c:choose>
-            <c:when test="${empty processedReviews}">
+            <c:when test="${empty reviews}">
               <div class="no-reviews text-center py-4">
                 <p class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
               </div>
@@ -869,30 +877,31 @@
               <!-- KHUNG CUỘN -->
               <div class="reviews-scroll">
                 <div class="reviews-list">
-                  <c:forEach var="reviewData" items="${processedReviews}">
+                  <c:forEach var="review" items="${reviews}">
                     <div class="review-item mb-4">
                       <div class="review-header d-flex justify-content-between align-items-start">
                         <div class="reviewer-info">
-                          <h5 class="reviewer-name mb-1">${reviewData.username}</h5>
+                          <h5 class="reviewer-name mb-1">User #${review.userId}</h5>
                           <div class="rating mb-2">
                             <c:forEach begin="1" end="5" var="i">
-                              <i class="fa ${i <= reviewData.review.rating ? 'fa-star text-warning' : 'fa-star-o text-muted'}"></i>
+                              <i class="fa ${i <= review.rating ? 'fa-star text-warning' : 'fa-star-o text-muted'}"></i>
                             </c:forEach>
-                            <span class="rating-text">(${reviewData.review.rating}/5 sao)</span>
+                            <span class="rating-text">(${review.rating}/5 sao)</span>
                           </div>
                         </div>
                         <div class="review-date">
-                          <small class="text-muted">${reviewData.review.reviewDate}</small>
+                          <small class="text-muted">${review.reviewDate}</small>
                         </div>
                       </div>
 
                       <div class="review-content mt-3">
-                        <p class="mb-0">${reviewData.review.comment}</p>
+                        <p class="mb-0">${review.comment}</p>
                       </div>
 
-                      <c:if test="${not empty reviewData.images}">
+                      <c:set var="reviewImagesKey" value="reviewImages_${review.reviewId}" />
+                      <c:if test="${not empty requestScope[reviewImagesKey]}">
                         <div class="review-images mt-3 d-flex flex-wrap">
-                          <c:forEach var="image" items="${reviewData.images}">
+                          <c:forEach var="image" items="${requestScope[reviewImagesKey]}">
                             <img src="${image.imageUrl}" alt="Review Image"
                                  class="img-thumbnail cursor-pointer"
                                  loading="lazy"
@@ -902,7 +911,7 @@
                         </div>
                       </c:if>
 
-                      <c:if test="${reviewData.review.isVerifiedPurchase == 1}">
+                      <c:if test="${review.isVerifiedPurchase == 1}">
                         <div class="mt-2">
                           <span class="badge bg-success">
                             <i class="fa fa-check-circle"></i> Đã mua hàng
@@ -927,7 +936,23 @@
       <div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
         <div class="user-review-section mt-0">
           <h4>Đánh giá của bạn</h4>
+          
           <c:choose>
+            <%-- Người dùng chưa đăng nhập --%>
+            <c:when test="${empty user}">
+              <div class="alert alert-info">
+                <p>Vui lòng <a href="${pageContext.request.contextPath}/login">đăng nhập</a> để đánh giá sản phẩm.</p>
+              </div>
+            </c:when>
+            
+            <%-- Người dùng đã đăng nhập nhưng chưa mua sản phẩm --%>
+            <c:when test="${not canReview}">
+              <div class="alert alert-warning">
+                <p>Bạn cần mua và nhận sản phẩm này trước khi có thể đánh giá.</p>
+              </div>
+            </c:when>
+            
+            <%-- Người dùng đã đăng nhập, đã mua sản phẩm và đã đánh giá --%>
             <c:when test="${hasUserReview}">
               <!-- REVIEW ĐÃ ĐĂNG -->
               <div class="review-item mb-4">
@@ -971,9 +996,14 @@
                 </c:if>
               </div>
             </c:when>
+            
+            <%-- Người dùng đã đăng nhập, đã mua sản phẩm nhưng chưa đánh giá --%>
             <c:otherwise>
               <!-- FORM ĐĂNG REVIEW MỚI -->
-              <form action="/submit-review" method="post" enctype="multipart/form-data">
+              <form action="${pageContext.request.contextPath}/submit-review" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="submit">
+                <input type="hidden" name="productId" value="${product.productId}">
+                
                 <div class="mb-3">
                   <label for="rating" class="form-label">Chọn số sao:</label>
                   <select id="rating" name="rating" class="form-select" required>
@@ -991,8 +1021,8 @@
                 </div>
 
                 <div class="mb-3">
-                  <label for="images" class="form-label">Tải lên ảnh (tùy chọn):</label>
-                  <input type="file" id="images" name="images" class="form-control" multiple>
+                  <label for="reviewImages" class="form-label">Tải lên ảnh (tùy chọn):</label>
+                  <input type="file" id="reviewImages" name="reviewImages" class="form-control" multiple accept="image/*">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
@@ -1342,9 +1372,15 @@ function updateCartCount(count) {
     <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
     <!-- Phần giá và nút vẫn giữ nguyên -->
 </div>
-                            <div class="info">
+                                                            <div class="info">
                                 <b class="categories">${category.name}</b>
                                 <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
+                                <div class="product-rating">
+                                    <c:set var="relatedProductRating" value="${relatedProductRatings[relatedProduct.productId]}" />
+                                    <c:forEach begin="1" end="5" var="i">
+                                        <i class="fa ${i <= relatedProductRating ? 'fa-star text-warning' : 'fa-star-o text-muted'}" style="font-size: 14px;"></i>
+                                    </c:forEach>
+                                </div>
                                 <div class="price">
                                     <c:if test="${relatedProduct.salePrice.doubleValue() > 0}">
                                         <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${relatedProduct.salePrice}" pattern="#,##0"/></span></ins>
