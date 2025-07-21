@@ -675,13 +675,13 @@
                                             <!-- Display grouped attribute options -->
                                             <c:set var="groupAttributes" value="${groupAttributesMap[productName]}"/>
                                             
-                                            <c:if test="${not empty groupAttributes['Color']}">
+                                            <c:if test="${not empty groupAttributes['Màu sắc']}">
                                                             <div class="attribute-group">
-                                                    <label>Color:</label>
-                                                    <c:forEach var="colorValue" items="${groupAttributes['Color']}">
+                                                    <label>Màu sắc:</label>
+                                                    <c:forEach var="colorValue" items="${groupAttributes['Màu sắc']}">
                                                                         <button type="button" 
                                                                                 class="attribute-button" 
-                                                                data-attribute="Color" 
+                                                                data-attribute="Màu sắc" 
                                                                 data-value="${colorValue}">
                                                             <c:out value="${colorValue}"/>
                                                                         </button>
@@ -689,13 +689,13 @@
                                                             </div>
                                                         </c:if>
                                             
-                                            <c:if test="${not empty groupAttributes['Size']}">
+                                            <c:if test="${not empty groupAttributes['Kích thước']}">
                                                 <div class="attribute-group">
-                                                    <label>Size:</label>
-                                                    <c:forEach var="sizeValue" items="${groupAttributes['Size']}">
+                                                    <label>Kích thước:</label>
+                                                    <c:forEach var="sizeValue" items="${groupAttributes['Kích thước']}">
                                                         <button type="button" 
                                                                 class="attribute-button" 
-                                                                data-attribute="Size" 
+                                                                data-attribute="Kích thước" 
                                                                 data-value="${sizeValue}">
                                                             <c:out value="${sizeValue}"/>
                                                         </button>
@@ -703,7 +703,7 @@
                                                 </div>
                                             </c:if>
                                         </div>
-                                        <div style="display: flex; align-items: center;">
+                                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
                                             <form action="cartClient" method="post" id="cart-form-group-${firstProduct.productId}">
                                                 <input type="hidden" name="action" value="add"/>
                                                 <input type="hidden" name="productId" value="${firstProduct.productId}" id="selected-product-id-${fn:replace(productName, ' ', '-')}"/>
@@ -714,6 +714,10 @@
                                                 <button type="submit" class="add-to-cart-btn">Add to Cart</button>
                                                 </div>
                                             </form>
+                                            <!-- Nút Xem chi tiết -->
+                                            <a href="product-detail?id=${firstProduct.productId}" class="btn" style="background-color: #4CAF50; color: white; margin-top: 10px; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; text-align: center; width: 100%;">
+                                                <i class="fa fa-search" style="margin-right: 5px;"></i> Xem chi tiết
+                                            </a>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -968,8 +972,8 @@
                 
                 // Initialize attributes object for this product
                 window.selectedAttributes[productNameId] = {
-                    Color: '',
-                    Size: ''
+                    'Màu sắc': '',
+                    'Kích thước': ''
                 };
                 
                 // Check if there are any pre-selected attributes (e.g., from URL parameters)
@@ -977,15 +981,15 @@
                 var preSelectedSize = new URLSearchParams(window.location.search).get('size_' + productNameId);
                 
                 if (preSelectedColor) {
-                    $(this).find('.attribute-button[data-attribute="Color"][data-value="' + preSelectedColor + '"]').addClass('selected');
-                    window.selectedAttributes[productNameId].Color = preSelectedColor;
-                    updateAvailableAttributes(productNameId, 'Color', preSelectedColor);
+                    $(this).find('.attribute-button[data-attribute="Màu sắc"][data-value="' + preSelectedColor + '"]').addClass('selected');
+                    window.selectedAttributes[productNameId]['Màu sắc'] = preSelectedColor;
+                    updateAvailableAttributes(productNameId, 'Màu sắc', preSelectedColor);
                 }
                 
                 if (preSelectedSize) {
-                    $(this).find('.attribute-button[data-attribute="Size"][data-value="' + preSelectedSize + '"]').addClass('selected');
-                    window.selectedAttributes[productNameId].Size = preSelectedSize;
-                    updateAvailableAttributes(productNameId, 'Size', preSelectedSize);
+                    $(this).find('.attribute-button[data-attribute="Kích thước"][data-value="' + preSelectedSize + '"]').addClass('selected');
+                    window.selectedAttributes[productNameId]['Kích thước'] = preSelectedSize;
+                    updateAvailableAttributes(productNameId, 'Kích thước', preSelectedSize);
                 }
                 
                 // Update product if attributes are pre-selected
@@ -1045,8 +1049,8 @@
                 // Initialize selected attribute variables if they don't exist
                 window.selectedAttributes = window.selectedAttributes || {};
                 window.selectedAttributes[productNameId] = window.selectedAttributes[productNameId] || {
-                    Color: '',
-                    Size: ''
+                    'Màu sắc': '',
+                    'Kích thước': ''
                 };
                 
                 // If it was already selected, just deselect it and clear the value
@@ -1089,7 +1093,7 @@
                             
                             <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
                             <c:forEach var="attr" items="${attributes}">
-                                <c:if test="${attributeMap[attr.attributeId].name == 'Color' || attributeMap[attr.attributeId].name == 'Size'}">
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Màu sắc' || attributeMap[attr.attributeId].name == 'Kích thước'}">
                                     combination.attributes['${attributeMap[attr.attributeId].name}'] = '${attr.value}';
                                 </c:if>
                             </c:forEach>
@@ -1105,7 +1109,7 @@
                 });
                 
                 // For each attribute type (except the selected one), update available options
-                var attributeTypes = ['Color', 'Size'];
+                var attributeTypes = ['Màu sắc', 'Kích thước'];
                 attributeTypes.forEach(function(attrType) {
                     if (attrType !== selectedAttributeType) {
                         // Get all available values for this attribute type after filtering
@@ -1139,9 +1143,9 @@
             // Function to update the selected product based on attributes
             function updateSelectedProduct(productNameId) {
                 // Get selected attributes from our global object
-                var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { Color: '', Size: '' };
-                var selectedColor = selectedAttributes.Color || '';
-                var selectedSize = selectedAttributes.Size || '';
+                var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { 'Màu sắc': '', 'Kích thước': '' };
+                var selectedColor = selectedAttributes['Màu sắc'] || '';
+                var selectedSize = selectedAttributes['Kích thước'] || '';
                 var found = false;
                 
                 // If both attributes are empty, reset to default product
@@ -1210,10 +1214,10 @@
                             <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
                             
                             <c:forEach var="attr" items="${attributes}">
-                                <c:if test="${attributeMap[attr.attributeId].name == 'Color'}">
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Màu sắc'}">
                                     <c:set var="colorValue" value="${attr.value}"/>
                                 </c:if>
-                                <c:if test="${attributeMap[attr.attributeId].name == 'Size'}">
+                                <c:if test="${attributeMap[attr.attributeId].name == 'Kích thước'}">
                                     <c:set var="sizeValue" value="${attr.value}"/>
                                 </c:if>
                             </c:forEach>
@@ -1312,19 +1316,19 @@
                     var productNameId = $(this).closest('.product-row').find('.product-title').text().trim().replace(/ /g, '-');
                     
                     // Get selected attributes from our global object
-                    var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { Color: '', Size: '' };
-                    var selectedColor = selectedAttributes.Color || '';
-                    var selectedSize = selectedAttributes.Size || '';
+                    var selectedAttributes = window.selectedAttributes && window.selectedAttributes[productNameId] || { 'Màu sắc': '', 'Kích thước': '' };
+                    var selectedColor = selectedAttributes['Màu sắc'] || '';
+                    var selectedSize = selectedAttributes['Kích thước'] || '';
                     
                     // If color options exist and none selected
-                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Color"]:not(.disabled)').length > 0 && !selectedColor) {
-                        alert('Please select a color.');
+                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Màu sắc"]:not(.disabled)').length > 0 && !selectedColor) {
+                        alert('Vui lòng chọn màu sắc.');
                         return false;
                     }
                     
                     // If size options exist and none selected
-                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Size"]:not(.disabled)').length > 0 && !selectedSize) {
-                        alert('Please select a size.');
+                    if ($(this).closest('.product-row').find('.attribute-button[data-attribute="Kích thước"]:not(.disabled)').length > 0 && !selectedSize) {
+                        alert('Vui lòng chọn kích thước.');
                         return false;
                     }
                     
@@ -1339,12 +1343,12 @@
                                 
                                 <c:set var="attributes" value="${productAttributesMap[product.productId]}"/>
                                 <c:forEach var="attr" items="${attributes}">
-                                    <c:if test="${attributeMap[attr.attributeId].name == 'Color'}">
+                                    <c:if test="${attributeMap[attr.attributeId].name == 'Màu sắc'}">
                                         if ('${attr.value}' === selectedColor || !selectedColor) {
                                             colorMatch = true;
                                         }
                                     </c:if>
-                                    <c:if test="${attributeMap[attr.attributeId].name == 'Size'}">
+                                    <c:if test="${attributeMap[attr.attributeId].name == 'Kích thước'}">
                                         if ('${attr.value}' === selectedSize || !selectedSize) {
                                             sizeMatch = true;
                                         }

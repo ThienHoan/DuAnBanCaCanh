@@ -93,7 +93,7 @@
                             <li class="menu-item menu-item-has-children has-child">
                                 <a href="#" class="menu-name" data-title="Product">Product</a>
                                 <ul class="sub-menu">
-                                    <li class="menu-item"><a href="#">Omelettes</a></li>
+                                    
                                     <li class="parent"><a href="CategoryServlet?categoryId=0">Show All</a></li>
                                     <li class="menu-item menu-item-has-children has-child">
                                         <a href="CategoryServlet?categoryId=1&isParent=true" class="menu-name" data-title="Cá cảnh">Cá cảnh</a>
@@ -103,7 +103,7 @@
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=5">Cá nước mặn</a></li>
                                         </ul>
                                     </li>
-                                    <li class="menu-item"><a href="#">Griddle</a></li>
+                                    
                                     <li class="menu-item menu-item-has-children has-child">
                                         <a href="CategoryServlet?categoryId=2&isParent=true" class="menu-name" data-title="Thiết bị và thực phẩm">Thiết bị và thực phẩm</a>
                                         <ul class="sub-menu">
@@ -112,8 +112,6 @@
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=8">Thuốc cho cá</a></li>
                                         </ul>
                                     </li>
-                                    <li class="menu-item"><a href="#">Biscuits</a></li>
-                                    <li class="menu-item"><a href="#">Seasonal Fruit Plate</a></li>
                                 </ul>
                             </li>
                             <li class="menu-item menu-item-has-children has-megamenu">
@@ -122,7 +120,8 @@
                                     <div class="mega-content">                                            <div class="col-lg-3 col-md-3 col-xs-6">
                                             <div class="wrap-custom-menu vertical-menu">
                                                 <h4 class="menu-title">Blog Categories</h4>
-                                                <ul class="menu">                                                          <c:forEach var="category" items="${headerCategories}">
+                                                <ul class="menu">                                                          
+                                                    <c:forEach var="category" items="${headerCategories}">
                                                         <li><a href="${pageContext.request.contextPath}/blog-category?categoryId=${category.categoryId}">${category.categoryName}</a></li>
                                                         </c:forEach>
                                                 </ul>

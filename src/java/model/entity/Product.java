@@ -17,7 +17,9 @@ public class Product {
     private String status;
     private Integer featured;  // Changed from boolean to Integer
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;    private Integer isDeleted; // Changed from boolean to Integer
+    private LocalDateTime updatedAt;
+    private Integer isDeleted; // Changed from boolean to Integer
+    private Integer soldQuantity; // Số lượng đã bán
     
     // Date format pattern
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -28,7 +30,7 @@ public class Product {
     public Product(int productId, Integer categoryId, String name, String description, 
                   String shortDescription, BigDecimal price, BigDecimal salePrice, int quantity, 
                   String sku, String status, Integer featured, String createdAt, 
-                  String updatedAt, Integer isDeleted) {
+                  String updatedAt, Integer isDeleted, Integer soldQuantity) {
         this.productId = productId;
         this.categoryId = categoryId;
         this.name = name;
@@ -43,6 +45,7 @@ public class Product {
         setCreatedAt(createdAt);
         setUpdatedAt(updatedAt);
         this.isDeleted = isDeleted;
+        this.soldQuantity = soldQuantity;
     }
 
     // Getters and Setters
@@ -202,6 +205,15 @@ public class Product {
     public void setActive(boolean active) {
         this.status = active ? "active" : "inactive";
     }
+    
+    // Getter and Setter for soldQuantity
+    public Integer getSoldQuantity() {
+        return soldQuantity;
+    }
+    
+    public void setSoldQuantity(Integer soldQuantity) {
+        this.soldQuantity = soldQuantity;
+    }
 
     @Override
     public String toString() {
@@ -214,6 +226,7 @@ public class Product {
                 ", salePrice=" + salePrice +
                 ", quantity=" + quantity +
                 ", status='" + status + '\'' +
+                ", soldQuantity=" + soldQuantity +
                 '}';
     }
 }

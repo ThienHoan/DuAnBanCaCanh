@@ -21,9 +21,11 @@ public class ProductDAO {
 
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT product_id, category_id, name, description, short_description, " +
-                      "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted " +
-                      "FROM Products";
+        String query = "SELECT p.product_id, p.category_id, p.name, p.description, p.short_description, " +
+                      "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted, " +
+                      "ISNULL((SELECT SUM(oi.quantity) FROM Order_items oi JOIN Orders o ON oi.order_id = o.order_id " +
+                      "WHERE oi.product_id = p.product_id AND o.status IN ('completed', 'delivered')), 0) AS sold_quantity " +
+                      "FROM Products p";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query);
@@ -44,7 +46,8 @@ public class ProductDAO {
                     rs.getInt("featured"),
                     rs.getString("created_at"),
                     rs.getString("updated_at"),
-                    rs.getInt("is_deleted")
+                    rs.getInt("is_deleted"),
+                    rs.getInt("sold_quantity")
                 );
                 products.add(product);
             }
@@ -145,7 +148,9 @@ public class ProductDAO {
     }
 
     public Product getProductById(int productId) {
-        String query = "SELECT * FROM Products WHERE product_id = ?";
+        String query = "SELECT p.*, ISNULL((SELECT SUM(oi.quantity) FROM Order_items oi JOIN Orders o ON oi.order_id = o.order_id " +
+                      "WHERE oi.product_id = p.product_id AND o.status IN ('completed', 'delivered')), 0) AS sold_quantity " +
+                      "FROM Products p WHERE p.product_id = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -168,6 +173,7 @@ public class ProductDAO {
                 product.setCreatedAt(rs.getString("created_at"));
                 product.setUpdatedAt(rs.getString("updated_at"));
                 product.setIsDeleted(rs.getInt("is_deleted"));
+                product.setSoldQuantity(rs.getInt("sold_quantity"));
                 
                 return product;
             }
@@ -179,9 +185,11 @@ public class ProductDAO {
 
     public List<Product> getActiveProducts() {
         List<Product> products = new ArrayList<>();
-        String query = "SELECT product_id, category_id, name, description, short_description, " +
-                      "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted " +
-                      "FROM Products WHERE status = 'active' AND is_deleted = 0 ORDER BY created_at DESC";
+        String query = "SELECT p.product_id, p.category_id, p.name, p.description, p.short_description, " +
+                      "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted, " +
+                      "ISNULL((SELECT SUM(oi.quantity) FROM Order_items oi JOIN Orders o ON oi.order_id = o.order_id " +
+                      "WHERE oi.product_id = p.product_id AND o.status IN ('completed', 'delivered')), 0) AS sold_quantity " +
+                      "FROM Products p WHERE p.status = 'active' AND p.is_deleted = 0 ORDER BY p.created_at DESC";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query);
@@ -202,7 +210,8 @@ public class ProductDAO {
                     rs.getInt("featured"),
                     rs.getString("created_at"),
                     rs.getString("updated_at"),
-                    rs.getInt("is_deleted")
+                    rs.getInt("is_deleted"),
+                    rs.getInt("sold_quantity")
                 );
                 products.add(product);
             }
@@ -492,7 +501,9 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         List<Product> products = new ArrayList<>();
         StringBuilder query = new StringBuilder(
             "SELECT p.product_id, p.category_id, p.name, p.description, p.short_description, " +
-            "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted " +
+            "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted, " +
+            "(SELECT ISNULL(SUM(oi.quantity), 0) FROM Order_items oi INNER JOIN Orders o ON oi.order_id = o.order_id " +
+            "WHERE oi.product_id = p.product_id AND o.status IN ('delivered', 'completed')) AS sold_quantity " +
             "FROM Products p "
         );
 
@@ -576,7 +587,8 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
                         rs.getInt("featured"),
                         rs.getString("created_at"),
                         rs.getString("updated_at"),
-                        rs.getInt("is_deleted")
+                        rs.getInt("is_deleted"),
+                        rs.getInt("sold_quantity")
                     );
                     products.add(product);
                 }
@@ -634,7 +646,9 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
     public List<Product> getDiscountedProducts(int limit) {
         List<Product> products = new ArrayList<>();
         String query = "SELECT TOP (?) p.product_id, p.category_id, p.name, p.description, p.short_description, " +
-                      "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted " +
+                      "p.price, p.sale_price, p.quantity, p.sku, p.status, p.featured, p.created_at, p.updated_at, p.is_deleted, " +
+                      "(SELECT ISNULL(SUM(oi.quantity), 0) FROM Order_items oi INNER JOIN Orders o ON oi.order_id = o.order_id " +
+                      "WHERE oi.product_id = p.product_id AND o.status IN ('delivered', 'completed')) AS sold_quantity " +
                       "FROM Products p " +
                       "WHERE p.sale_price IS NOT NULL AND p.sale_price < p.price AND p.is_deleted = 0 AND p.featured = 1 " +
                       "ORDER BY p.sale_price ASC";
@@ -659,7 +673,8 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
                         rs.getInt("featured"),
                         rs.getString("created_at"),
                         rs.getString("updated_at"),
-                        rs.getInt("is_deleted")
+                        rs.getInt("is_deleted"),
+                        rs.getInt("sold_quantity")
                     );
                     products.add(product);
                 }

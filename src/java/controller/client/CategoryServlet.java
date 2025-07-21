@@ -113,8 +113,8 @@ public class CategoryServlet extends HttpServlet {
             List<Product> productGroup = entry.getValue();
             
             Map<String, Set<String>> attributeValues = new HashMap<>();
-            attributeValues.put("Color", new HashSet<>());
-            attributeValues.put("Size", new HashSet<>());
+            attributeValues.put("Màu sắc", new HashSet<>());
+            attributeValues.put("Kích thước", new HashSet<>());
             
             for (Product product : productGroup) {
                 List<ProductAttributeValue> attributes = productAttributesMap.get(product.getProductId());
@@ -123,7 +123,7 @@ public class CategoryServlet extends HttpServlet {
                         ProductAttribute productAttr = attributeMap.get(attr.getAttributeId());
                         if (productAttr != null) {
                             String attrName = productAttr.getName();
-                            if ("Color".equals(attrName) || "Size".equals(attrName)) {
+                            if ("Màu sắc".equals(attrName) || "Kích thước".equals(attrName)) {
                                 if (!attributeValues.containsKey(attrName)) {
                                     attributeValues.put(attrName, new HashSet<>());
                                 }

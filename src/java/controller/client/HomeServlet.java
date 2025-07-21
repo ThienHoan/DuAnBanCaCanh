@@ -258,7 +258,7 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("topRatedProductCategories", new HashMap<Integer, Category>());
         }
         
-        // Load "Bestseller" products (products sorted by random for now - can implement sales-based logic later)
+        // Load "Bestseller" products (products with sold quantity > 5)
         try {
             LOGGER.info("Loading Bestseller products");
             List<Product> allProducts = productDAO.getActiveProducts();
@@ -268,13 +268,19 @@ public class HomeServlet extends HttpServlet {
             
             ProductImageDAO imageDAO = new ProductImageDAO();
             
-            // For now, use a different sorting criteria (e.g., by name) as placeholder for bestseller
-            allProducts.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+            // Sort products by sold quantity (highest first)
+            allProducts.sort((p1, p2) -> {
+                Integer sold1 = p1.getSoldQuantity() != null ? p1.getSoldQuantity() : 0;
+                Integer sold2 = p2.getSoldQuantity() != null ? p2.getSoldQuantity() : 0;
+                return sold2.compareTo(sold1); // Descending order
+            });
             
             int bestsellerCount = 0;
             for (Product product : allProducts) {
-                if (bestsellerCount < 6) {
+                // Only include products that have sold more than 5 units
+                if (product.getSoldQuantity() != null && product.getSoldQuantity() > 5 && bestsellerCount < 10) {
                     bestsellerProducts.add(product);
+                    LOGGER.info("Added bestseller product: " + product.getName() + " (ID: " + product.getProductId() + ") - Sold: " + product.getSoldQuantity());
                     
                     // Get main image
                     try {
