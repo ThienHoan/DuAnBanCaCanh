@@ -1,0 +1,1232 @@
+﻿
+/****** Object:  Table [dbo].[wishlist]    Script Date: 6/23/2025 1:02:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[wishlist](
+	[wishlist_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NOT NULL,
+	[product_id] [int] NOT NULL,
+	[created_at] [datetime2](7) NOT NULL,
+	[updated_at] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_wishlist] PRIMARY KEY CLUSTERED 
+(
+	[wishlist_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ_wishlist_user_product] UNIQUE NONCLUSTERED 
+(
+	[user_id] ASC,
+	[product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Categories]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Categories](
+	[category_id] [int] IDENTITY(1,1) NOT NULL,
+	[parent_id] [int] NULL,
+	[name] [nvarchar](100) NULL,
+	[description] [nvarchar](max) NULL,
+	[image] [nvarchar](255) NULL,
+	[status] [nvarchar](20) NULL,
+	[display_order] [int] NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[category_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Products]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Products](
+	[product_id] [int] IDENTITY(1,1) NOT NULL,
+	[category_id] [int] NULL,
+	[name] [nvarchar](255) NULL,
+	[description] [nvarchar](max) NULL,
+	[short_description] [nvarchar](255) NULL,
+	[price] [decimal](12, 2) NULL,
+	[sale_price] [decimal](12, 2) NULL,
+	[quantity] [int] NULL,
+	[sku] [nvarchar](50) NULL,
+	[status] [nvarchar](20) NULL,
+	[featured] [bit] NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[sku] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[user_id] [int] IDENTITY(1,1) NOT NULL,
+	[username] [nvarchar](50) NULL,
+	[password] [nvarchar](255) NULL,
+	[email] [nvarchar](100) NULL,
+	[phone] [nvarchar](20) NULL,
+	[full_name] [nvarchar](100) NULL,
+	[role] [nvarchar](20) NULL,
+	[status] [nvarchar](20) NULL,
+	[created_at] [datetime2](0) NULL,
+	[last_login] [datetime2](0) NULL,
+	[avatar] [nvarchar](255) NULL,
+	[is_deleted] [bit] NULL,
+	[reset_token] [nvarchar](10) NULL,
+	[reset_token_expiry] [datetime] NULL,
+	[google_id] [nvarchar](100) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[v_wishlist_details]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Tạo view để lấy thông tin wishlist với thông tin sản phẩm
+CREATE VIEW [dbo].[v_wishlist_details] AS
+SELECT 
+    w.wishlist_id,
+    w.user_id,
+    w.product_id,
+    w.created_at,
+    w.updated_at,
+    p.name as product_name,
+    p.description,
+    p.price,
+    p.sale_price,
+    p.quantity as stock_quantity,
+    p.status as product_status,
+    p.featured,
+    c.name as category_name,
+    u.username,
+    u.full_name as user_full_name
+FROM dbo.wishlist w
+LEFT JOIN dbo.Products p ON w.product_id = p.product_id
+LEFT JOIN dbo.Categories c ON p.category_id = c.category_id
+LEFT JOIN dbo.Users u ON w.user_id = u.user_id
+WHERE (p.status = 'active' OR p.status IS NULL) AND (p.is_deleted = 0 OR p.is_deleted IS NULL);
+GO
+/****** Object:  Table [dbo].[blog_posts]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[blog_posts](
+	[post_id] [int] IDENTITY(1,1) NOT NULL,
+	[title] [nvarchar](255) NOT NULL,
+	[content] [nvarchar](max) NOT NULL,
+	[summary] [nvarchar](500) NULL,
+	[featured_image] [nvarchar](255) NULL,
+	[author_id] [int] NULL,
+	[tags] [nvarchar](500) NULL,
+	[status] [nvarchar](20) NULL,
+	[view_count] [int] NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[published_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+	[category_id] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[post_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[v_blog_statistics]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Tạo lại view v_blog_statistics
+CREATE VIEW [dbo].[v_blog_statistics] AS
+SELECT 
+    COUNT(*) as total_posts,
+    COUNT(CASE WHEN status = 'published' THEN 1 END) as published_posts,
+    COUNT(CASE WHEN status = 'draft' THEN 1 END) as draft_posts,
+    SUM(view_count) as total_views,
+    AVG(view_count) as avg_views_per_post
+FROM blog_posts 
+WHERE is_deleted = 0
+GO
+/****** Object:  Table [dbo].[blog_categories]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[blog_categories](
+	[category_id] [int] IDENTITY(1,1) NOT NULL,
+	[category_name] [nvarchar](100) NOT NULL,
+	[description] [nvarchar](max) NULL,
+	[slug] [nvarchar](100) NULL,
+	[created_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+	[is_active] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[category_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[slug] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[category_name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[v_popular_posts]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Tạo lại view v_popular_posts với JOIN đúng
+CREATE VIEW [dbo].[v_popular_posts] AS
+SELECT TOP 10
+    bp.post_id,
+    bp.title,
+    bp.view_count,
+    bp.published_at,
+    ISNULL(bc.category_name, 'Chưa phân loại') as category
+FROM blog_posts bp
+LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
+WHERE bp.status = 'published' AND bp.is_deleted = 0
+ORDER BY bp.view_count DESC
+GO
+/****** Object:  Table [dbo].[Addresses]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Addresses](
+	[address_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NULL,
+	[recipient_name] [nvarchar](100) NULL,
+	[phone] [nvarchar](20) NULL,
+	[province] [nvarchar](50) NULL,
+	[district] [nvarchar](50) NULL,
+	[ward] [nvarchar](50) NULL,
+	[address_detail] [nvarchar](255) NULL,
+	[is_default] [bit] NULL,
+	[address_type] [nvarchar](20) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[address_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Cart_items]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Cart_items](
+	[cart_item_id] [int] IDENTITY(1,1) NOT NULL,
+	[cart_id] [int] NULL,
+	[product_id] [int] NULL,
+	[quantity] [int] NULL,
+	[added_at] [datetime2](0) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[cart_item_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Carts]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Carts](
+	[cart_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[cart_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Coupon_products]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Coupon_products](
+	[coupon_product_id] [int] IDENTITY(1,1) NOT NULL,
+	[coupon_id] [int] NULL,
+	[product_id] [int] NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[coupon_product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Coupon_usage]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Coupon_usage](
+	[usage_id] [int] IDENTITY(1,1) NOT NULL,
+	[coupon_id] [int] NULL,
+	[user_id] [int] NULL,
+	[order_id] [int] NULL,
+	[discount_amount] [decimal](12, 2) NULL,
+	[used_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[usage_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Coupons]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Coupons](
+	[coupon_id] [int] IDENTITY(1,1) NOT NULL,
+	[code] [nvarchar](50) NULL,
+	[description] [nvarchar](max) NULL,
+	[discount_type] [nvarchar](20) NULL,
+	[discount_value] [decimal](12, 2) NULL,
+	[minimum_order] [decimal](12, 2) NULL,
+	[maximum_discount] [decimal](12, 2) NULL,
+	[usage_limit] [int] NULL,
+	[usage_count] [int] NULL,
+	[start_date] [datetime2](0) NULL,
+	[end_date] [datetime2](0) NULL,
+	[status] [nvarchar](20) NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[coupon_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Inventory_logs]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Inventory_logs](
+	[log_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_id] [int] NULL,
+	[quantity_before] [int] NULL,
+	[quantity_after] [int] NULL,
+	[change_type] [nvarchar](20) NULL,
+	[reason] [nvarchar](255) NULL,
+	[reference_id] [int] NULL,
+	[reference_type] [nvarchar](50) NULL,
+	[created_at] [datetime2](0) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[log_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Order_items]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Order_items](
+	[order_item_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_id] [int] NULL,
+	[product_id] [int] NULL,
+	[product_name] [nvarchar](255) NULL,
+	[quantity] [int] NULL,
+	[unit_price] [decimal](12, 2) NULL,
+	[subtotal] [decimal](12, 2) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[order_item_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[order_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_id] [int] NULL,
+	[order_number] [nvarchar](50) NULL,
+	[status] [nvarchar](20) NULL,
+	[total_amount] [decimal](12, 2) NULL,
+	[discount_amount] [decimal](12, 2) NULL,
+	[shipping_fee] [decimal](12, 2) NULL,
+	[tax] [decimal](12, 2) NULL,
+	[final_amount] [decimal](12, 2) NULL,
+	[payment_method] [nvarchar](20) NULL,
+	[payment_status] [nvarchar](20) NULL,
+	[shipping_address_id] [int] NULL,
+	[billing_address_id] [int] NULL,
+	[notes] [nvarchar](max) NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[order_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+	[order_number] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Payments]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Payments](
+	[payment_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_id] [int] NULL,
+	[payment_method] [nvarchar](20) NULL,
+	[transaction_id] [nvarchar](100) NULL,
+	[amount] [decimal](12, 2) NULL,
+	[status] [nvarchar](20) NULL,
+	[payment_date] [datetime2](0) NULL,
+	[payment_details] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[payment_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product_attribute_values]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product_attribute_values](
+	[value_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_id] [int] NULL,
+	[attribute_id] [int] NULL,
+	[value] [nvarchar](255) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[value_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product_attributes]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product_attributes](
+	[attribute_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](100) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[attribute_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product_details]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product_details](
+	[product_detail_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_id] [int] NULL,
+	[scientific_name] [nvarchar](100) NULL,
+	[common_name] [nvarchar](100) NULL,
+	[origin] [nvarchar](100) NULL,
+	[size] [nvarchar](50) NULL,
+	[lifespan] [nvarchar](50) NULL,
+	[water_type] [nvarchar](20) NULL,
+	[water_temperature] [nvarchar](50) NULL,
+	[water_ph] [nvarchar](50) NULL,
+	[diet] [nvarchar](max) NULL,
+	[breeding_difficulty] [nvarchar](20) NULL,
+	[care_level] [nvarchar](20) NULL,
+	[compatibility] [nvarchar](max) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[product_detail_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product_images]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product_images](
+	[image_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_id] [int] NULL,
+	[image_url] [nvarchar](255) NULL,
+	[is_main] [bit] NULL,
+	[display_order] [int] NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[image_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Promotion_products]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Promotion_products](
+	[promotion_product_id] [int] IDENTITY(1,1) NOT NULL,
+	[promotion_id] [int] NULL,
+	[product_id] [int] NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[promotion_product_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Promotions]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Promotions](
+	[promotion_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[description] [nvarchar](max) NULL,
+	[discount_type] [nvarchar](20) NULL,
+	[discount_value] [decimal](12, 2) NULL,
+	[minimum_order] [decimal](12, 2) NULL,
+	[start_date] [datetime2](0) NULL,
+	[end_date] [datetime2](0) NULL,
+	[status] [nvarchar](20) NULL,
+	[created_at] [datetime2](0) NULL,
+	[updated_at] [datetime2](0) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[promotion_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Review_images]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Review_images](
+	[image_id] [int] IDENTITY(1,1) NOT NULL,
+	[review_id] [int] NULL,
+	[image_url] [nvarchar](255) NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[image_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Reviews]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Reviews](
+	[review_id] [int] IDENTITY(1,1) NOT NULL,
+	[product_id] [int] NULL,
+	[user_id] [int] NULL,
+	[order_id] [int] NULL,
+	[rating] [int] NULL,
+	[comment] [nvarchar](max) NULL,
+	[review_date] [datetime2](0) NULL,
+	[status] [nvarchar](20) NULL,
+	[is_verified_purchase] [bit] NULL,
+	[is_deleted] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[review_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Shipping]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Shipping](
+	[shipping_id] [int] IDENTITY(1,1) NOT NULL,
+	[order_id] [int] NULL,
+	[shipping_method] [nvarchar](100) NULL,
+	[shipping_carrier] [nvarchar](100) NULL,
+	[tracking_number] [nvarchar](100) NULL,
+	[shipping_cost] [decimal](12, 2) NULL,
+	[estimated_delivery] [date] NULL,
+	[actual_delivery] [date] NULL,
+	[status] [nvarchar](20) NULL,
+	[notes] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[shipping_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Addresses] ADD  DEFAULT ((0)) FOR [is_default]
+GO
+ALTER TABLE [dbo].[Addresses] ADD  DEFAULT ('shipping') FOR [address_type]
+GO
+ALTER TABLE [dbo].[Addresses] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[blog_categories] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[blog_categories] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[blog_categories] ADD  DEFAULT ((1)) FOR [is_active]
+GO
+ALTER TABLE [dbo].[blog_posts] ADD  DEFAULT ('draft') FOR [status]
+GO
+ALTER TABLE [dbo].[blog_posts] ADD  DEFAULT ((0)) FOR [view_count]
+GO
+ALTER TABLE [dbo].[blog_posts] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[blog_posts] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[blog_posts] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Cart_items] ADD  DEFAULT (getdate()) FOR [added_at]
+GO
+ALTER TABLE [dbo].[Carts] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Carts] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT ('active') FOR [status]
+GO
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Categories] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Coupon_products] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Coupon_usage] ADD  DEFAULT (getdate()) FOR [used_at]
+GO
+ALTER TABLE [dbo].[Coupon_usage] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Coupons] ADD  DEFAULT ((0)) FOR [usage_count]
+GO
+ALTER TABLE [dbo].[Coupons] ADD  DEFAULT ('active') FOR [status]
+GO
+ALTER TABLE [dbo].[Coupons] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Coupons] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Coupons] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Inventory_logs] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Order_items] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ('pending') FOR [status]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ('pending') FOR [payment_status]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Orders] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Payments] ADD  DEFAULT ('pending') FOR [status]
+GO
+ALTER TABLE [dbo].[Product_attribute_values] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Product_details] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Product_images] ADD  DEFAULT ((0)) FOR [is_main]
+GO
+ALTER TABLE [dbo].[Product_images] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT ('active') FOR [status]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [featured]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Products] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Promotion_products] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Promotions] ADD  DEFAULT ('active') FOR [status]
+GO
+ALTER TABLE [dbo].[Promotions] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Promotions] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Promotions] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Review_images] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Reviews] ADD  DEFAULT (getdate()) FOR [review_date]
+GO
+ALTER TABLE [dbo].[Reviews] ADD  DEFAULT ('pending') FOR [status]
+GO
+ALTER TABLE [dbo].[Reviews] ADD  DEFAULT ((0)) FOR [is_verified_purchase]
+GO
+ALTER TABLE [dbo].[Reviews] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[Shipping] ADD  DEFAULT ('pending') FOR [status]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT ('customer') FOR [role]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT ('active') FOR [status]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[Users] ADD  DEFAULT ((0)) FOR [is_deleted]
+GO
+ALTER TABLE [dbo].[wishlist] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[wishlist] ADD  DEFAULT (getdate()) FOR [updated_at]
+GO
+ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[blog_posts]  WITH CHECK ADD FOREIGN KEY([author_id])
+REFERENCES [dbo].[Users] ([user_id])
+ON DELETE SET NULL
+GO
+ALTER TABLE [dbo].[blog_posts]  WITH CHECK ADD  CONSTRAINT [FK_blog_posts_blog_categories] FOREIGN KEY([category_id])
+REFERENCES [dbo].[blog_categories] ([category_id])
+GO
+ALTER TABLE [dbo].[blog_posts] CHECK CONSTRAINT [FK_blog_posts_blog_categories]
+GO
+ALTER TABLE [dbo].[blog_posts]  WITH CHECK ADD  CONSTRAINT [FK_blog_posts_Users] FOREIGN KEY([author_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[blog_posts] CHECK CONSTRAINT [FK_blog_posts_Users]
+GO
+ALTER TABLE [dbo].[Cart_items]  WITH CHECK ADD FOREIGN KEY([cart_id])
+REFERENCES [dbo].[Carts] ([cart_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Cart_items]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Carts]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Categories]  WITH CHECK ADD FOREIGN KEY([parent_id])
+REFERENCES [dbo].[Categories] ([category_id])
+GO
+ALTER TABLE [dbo].[Coupon_products]  WITH CHECK ADD FOREIGN KEY([coupon_id])
+REFERENCES [dbo].[Coupons] ([coupon_id])
+GO
+ALTER TABLE [dbo].[Coupon_products]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Coupon_usage]  WITH CHECK ADD FOREIGN KEY([coupon_id])
+REFERENCES [dbo].[Coupons] ([coupon_id])
+GO
+ALTER TABLE [dbo].[Coupon_usage]  WITH CHECK ADD FOREIGN KEY([order_id])
+REFERENCES [dbo].[Orders] ([order_id])
+GO
+ALTER TABLE [dbo].[Coupon_usage]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Inventory_logs]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Order_items]  WITH CHECK ADD FOREIGN KEY([order_id])
+REFERENCES [dbo].[Orders] ([order_id])
+GO
+ALTER TABLE [dbo].[Order_items]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([billing_address_id])
+REFERENCES [dbo].[Addresses] ([address_id])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([shipping_address_id])
+REFERENCES [dbo].[Addresses] ([address_id])
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Payments]  WITH CHECK ADD FOREIGN KEY([order_id])
+REFERENCES [dbo].[Orders] ([order_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Product_attribute_values]  WITH CHECK ADD FOREIGN KEY([attribute_id])
+REFERENCES [dbo].[Product_attributes] ([attribute_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Product_attribute_values]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Product_details]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Product_images]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD FOREIGN KEY([category_id])
+REFERENCES [dbo].[Categories] ([category_id])
+ON DELETE SET NULL
+GO
+ALTER TABLE [dbo].[Promotion_products]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Promotion_products]  WITH CHECK ADD FOREIGN KEY([promotion_id])
+REFERENCES [dbo].[Promotions] ([promotion_id])
+GO
+ALTER TABLE [dbo].[Review_images]  WITH CHECK ADD FOREIGN KEY([review_id])
+REFERENCES [dbo].[Reviews] ([review_id])
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD FOREIGN KEY([order_id])
+REFERENCES [dbo].[Orders] ([order_id])
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD FOREIGN KEY([product_id])
+REFERENCES [dbo].[Products] ([product_id])
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD FOREIGN KEY([user_id])
+REFERENCES [dbo].[Users] ([user_id])
+GO
+ALTER TABLE [dbo].[Shipping]  WITH CHECK ADD FOREIGN KEY([order_id])
+REFERENCES [dbo].[Orders] ([order_id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Addresses]  WITH CHECK ADD CHECK  (([address_type]='billing' OR [address_type]='shipping'))
+GO
+ALTER TABLE [dbo].[blog_posts]  WITH CHECK ADD CHECK  (([status]='archived' OR [status]='published' OR [status]='draft'))
+GO
+ALTER TABLE [dbo].[Categories]  WITH CHECK ADD CHECK  (([status]='inactive' OR [status]='active'))
+GO
+ALTER TABLE [dbo].[Coupons]  WITH CHECK ADD CHECK  (([discount_type]='fixed_amount' OR [discount_type]='percentage'))
+GO
+ALTER TABLE [dbo].[Coupons]  WITH CHECK ADD CHECK  (([status]='expired' OR [status]='inactive' OR [status]='active'))
+GO
+ALTER TABLE [dbo].[Inventory_logs]  WITH CHECK ADD CHECK  (([change_type]='decrease' OR [change_type]='increase'))
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD CHECK  (([payment_method]='e-wallet' OR [payment_method]='credit_card' OR [payment_method]='bank_transfer' OR [payment_method]='cod'))
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD CHECK  (([payment_status]='failed' OR [payment_status]='paid' OR [payment_status]='pending'))
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD CHECK  (([status]='refunded' OR [status]='cancelled' OR [status]='delivered' OR [status]='shipping' OR [status]='processing' OR [status]='confirmed' OR [status]='pending'))
+GO
+ALTER TABLE [dbo].[Payments]  WITH CHECK ADD CHECK  (([payment_method]='e-wallet' OR [payment_method]='credit_card' OR [payment_method]='bank_transfer' OR [payment_method]='cod'))
+GO
+ALTER TABLE [dbo].[Payments]  WITH CHECK ADD CHECK  (([status]='refunded' OR [status]='failed' OR [status]='completed' OR [status]='pending'))
+GO
+ALTER TABLE [dbo].[Product_details]  WITH CHECK ADD CHECK  (([breeding_difficulty]='difficult' OR [breeding_difficulty]='moderate' OR [breeding_difficulty]='easy'))
+GO
+ALTER TABLE [dbo].[Product_details]  WITH CHECK ADD CHECK  (([care_level]='difficult' OR [care_level]='moderate' OR [care_level]='easy'))
+GO
+ALTER TABLE [dbo].[Product_details]  WITH CHECK ADD CHECK  (([water_type]='brackish' OR [water_type]='saltwater' OR [water_type]='freshwater'))
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD CHECK  (([status]='out_of_stock' OR [status]='inactive' OR [status]='active'))
+GO
+ALTER TABLE [dbo].[Promotions]  WITH CHECK ADD CHECK  (([discount_type]='fixed_amount' OR [discount_type]='percentage'))
+GO
+ALTER TABLE [dbo].[Promotions]  WITH CHECK ADD CHECK  (([status]='expired' OR [status]='inactive' OR [status]='active'))
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD CHECK  (([rating]>=(1) AND [rating]<=(5)))
+GO
+ALTER TABLE [dbo].[Reviews]  WITH CHECK ADD CHECK  (([status]='rejected' OR [status]='approved' OR [status]='pending'))
+GO
+ALTER TABLE [dbo].[Shipping]  WITH CHECK ADD CHECK  (([status]='failed' OR [status]='delivered' OR [status]='shipped' OR [status]='processing' OR [status]='pending'))
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD CHECK  (([role]='customer' OR [role]='admin'))
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD CHECK  (([status]='banned' OR [status]='inactive' OR [status]='active'))
+GO
+/****** Object:  StoredProcedure [dbo].[sp_AddToWishlist]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Thêm Foreign Keys (bỏ comment nếu các bảng tham chiếu đã tồn tại)
+/*
+ALTER TABLE dbo.wishlist
+ADD CONSTRAINT FK_wishlist_user 
+FOREIGN KEY (user_id) REFERENCES dbo.Users(user_id) ON DELETE CASCADE;
+GO
+
+ALTER TABLE dbo.wishlist
+ADD CONSTRAINT FK_wishlist_product 
+FOREIGN KEY (product_id) REFERENCES dbo.Products(product_id) ON DELETE CASCADE;
+GO
+*/
+
+-- =====================================================
+-- STORED PROCEDURES CHO WISHLIST
+-- =====================================================
+
+-- Procedure thêm sản phẩm vào wishlist
+CREATE PROCEDURE [dbo].[sp_AddToWishlist]
+    @user_id INT,
+    @product_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        INSERT INTO dbo.wishlist (user_id, product_id)
+        VALUES (@user_id, @product_id);
+        
+        SELECT 'SUCCESS' as Status, 'Product added to wishlist' as Message;
+    END TRY
+    BEGIN CATCH
+        IF ERROR_NUMBER() = 2627 -- Unique constraint violation
+            SELECT 'ERROR' as Status, 'Product already in wishlist' as Message;
+        ELSE
+            SELECT 'ERROR' as Status, ERROR_MESSAGE() as Message;
+    END CATCH
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetPostsByCategory]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Tạo lại stored procedure sp_GetPostsByCategory với JOIN đúng
+CREATE PROCEDURE [dbo].[sp_GetPostsByCategory]
+    @CategoryName NVARCHAR(100),
+    @PageNumber INT = 1,
+    @PageSize INT = 10
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
+    
+    SELECT 
+        bp.post_id,
+        bp.title,
+        bp.content,
+        bp.summary,
+        bp.featured_image,
+        bp.author_id,
+        ISNULL(u.full_name, u.username) as author_name,
+        bp.category_id,
+        bc.category_name,
+        bc.slug as category_slug,
+        bp.tags,
+        bp.status,
+        bp.view_count,
+        bp.created_at,
+        bp.updated_at,
+        bp.published_at,
+        bp.is_deleted,
+        COUNT(*) OVER() as total_count
+    FROM blog_posts bp
+    INNER JOIN Users u ON bp.author_id = u.user_id
+    LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
+    WHERE bc.category_name = @CategoryName 
+        AND bp.status = 'published' 
+        AND bp.is_deleted = 0
+    ORDER BY bp.published_at DESC
+    OFFSET @Offset ROWS 
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetUserWishlist]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Procedure lấy wishlist của user
+CREATE PROCEDURE [dbo].[sp_GetUserWishlist]
+    @user_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        wishlist_id,
+        user_id,
+        product_id,
+        created_at,
+        updated_at,
+        product_name,
+        description,
+        price,
+        sale_price,
+        stock_quantity,
+        product_status,
+        featured,
+        category_name
+    FROM dbo.v_wishlist_details
+    WHERE user_id = @user_id
+    ORDER BY created_at DESC;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetWishlistCount]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Procedure đếm số lượng wishlist của user
+CREATE PROCEDURE [dbo].[sp_GetWishlistCount]
+    @user_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT COUNT(*) as wishlist_count
+    FROM dbo.wishlist
+    WHERE user_id = @user_id;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_IsInWishlist]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Procedure kiểm tra sản phẩm có trong wishlist không
+CREATE PROCEDURE [dbo].[sp_IsInWishlist]
+    @user_id INT,
+    @product_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    IF EXISTS (SELECT 1 FROM dbo.wishlist WHERE user_id = @user_id AND product_id = @product_id)
+        SELECT 1 as is_in_wishlist;
+    ELSE
+        SELECT 0 as is_in_wishlist;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_RemoveFromWishlist]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Procedure xóa sản phẩm khỏi wishlist
+CREATE PROCEDURE [dbo].[sp_RemoveFromWishlist]
+    @user_id INT,
+    @product_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DELETE FROM dbo.wishlist 
+    WHERE user_id = @user_id AND product_id = @product_id;
+    
+    IF @@ROWCOUNT > 0
+        SELECT 'SUCCESS' as Status, 'Product removed from wishlist' as Message;
+    ELSE
+        SELECT 'ERROR' as Status, 'Product not found in wishlist' as Message;
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[sp_SearchPosts]    Script Date: 6/23/2025 1:02:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Tạo lại stored procedure sp_SearchPosts với JOIN đúng
+CREATE PROCEDURE [dbo].[sp_SearchPosts]
+    @Keyword NVARCHAR(255),
+    @PageNumber INT = 1,
+    @PageSize INT = 10
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
+    
+    SELECT 
+        bp.post_id,
+        bp.title,
+        bp.content,
+        bp.summary,
+        bp.featured_image,
+        bp.author_id,
+        ISNULL(u.full_name, u.username) as author_name,
+        bp.category_id,
+        bc.category_name,
+        bc.slug as category_slug,
+        bp.tags,
+        bp.status,
+        bp.view_count,
+        bp.created_at,
+        bp.updated_at,
+        bp.published_at,
+        bp.is_deleted,
+        COUNT(*) OVER() as total_count
+    FROM blog_posts bp
+    INNER JOIN Users u ON bp.author_id = u.user_id
+    LEFT JOIN blog_categories bc ON bp.category_id = bc.category_id
+    WHERE (bp.title LIKE '%' + @Keyword + '%' 
+           OR bp.content LIKE '%' + @Keyword + '%' 
+           OR bp.summary LIKE '%' + @Keyword + '%'
+           OR bp.tags LIKE '%' + @Keyword + '%')
+        AND bp.status = 'published' 
+        AND bp.is_deleted = 0
+    ORDER BY bp.published_at DESC
+    OFFSET @Offset ROWS 
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+GO
+
+-- Cha
+INSERT INTO Categories (parent_id, name, description, image, status, display_order)
+VALUES (NULL, N'Cá cảnh', N'Cá cảnh các loại', NULL, 'active', 1);
+INSERT INTO Categories (parent_id, name, description, image, status, display_order)
+VALUES (NULL, N'Trang thiết bị', N'Trang thiết bị bể cá', NULL, 'active', 2);
+
+-- Lấy ID của 'Cá cảnh'
+DECLARE @idCaCanh INT = (SELECT category_id FROM Categories WHERE name = N'Cá cảnh');
+
+-- Con của Cá cảnh
+INSERT INTO Categories (parent_id, name, description, image, status, display_order)
+VALUES (@idCaCanh, N'Cá nước lợ', N'Cá sống ở nước lợ', NULL, 'active', 1),
+       (@idCaCanh, N'Cá nước mặn', N'Cá sống ở nước mặn', NULL, 'active', 2),
+       (@idCaCanh, N'Cá nước ngọt', N'Cá sống ở nước ngọt', NULL, 'active', 3);
+
+INSERT INTO Users (username, [password], email, phone, full_name, [role], [status])
+VALUES (N'user1', N'pass1', N'user1@mail.com', N'0900000001', N'Nguyễn Văn A', 'customer', 'active'),
+       (N'user2', N'pass2', N'user2@mail.com', N'0900000002', N'Lê Thị B', 'customer', 'active'),
+       (N'admin', N'admin', N'admin@mail.com', N'0900000000', N'Quản Trị Viên', 'admin', 'active');
+-- Lấy các category id
+DECLARE @cat_ca_nuoc_lo INT = (SELECT category_id FROM Categories WHERE name = N'Cá nước lợ');
+DECLARE @cat_ca_nuoc_man INT = (SELECT category_id FROM Categories WHERE name = N'Cá nước mặn');
+DECLARE @cat_ca_nuoc_ngot INT = (SELECT category_id FROM Categories WHERE name = N'Cá nước ngọt');
+DECLARE @cat_trang_thiet_bi INT = (SELECT category_id FROM Categories WHERE name = N'Trang thiết bị');
+
+-- Cá nước lợ
+INSERT INTO Products (category_id, [name], description, short_description, price, sale_price, quantity, sku, [status], featured)
+VALUES 
+(@cat_ca_nuoc_lo, N'Cá Bống Lợ', N'Cá bống nước lợ dễ nuôi', N'Cá bống', 35000, 32000, 100, N'CA01', 'active', 1),
+(@cat_ca_nuoc_lo, N'Cá Tráp', N'Cá tráp nước lợ cho bể lớn', N'Cá tráp', 40000, 38000, 50, N'CA02', 'active', 1),
+(@cat_ca_nuoc_lo, N'Cá Đối', N'Cá đối nước lợ sống khỏe', N'Cá đối', 30000, 27000, 70, N'CA03', 'active', 0),
+(@cat_ca_nuoc_lo, N'Cá Sặc Gấm', N'Cá sặc nước lợ màu đẹp', N'Cá sặc', 25000, 22000, 60, N'CA04', 'active', 0),
+(@cat_ca_nuoc_lo, N'Cá Thòi Lòi', N'Cá thòi lòi nước lợ độc lạ', N'Cá thòi lòi', 60000, 57000, 20, N'CA05', 'active', 0);
+-- Cá nước mặn
+INSERT INTO Products (category_id, [name], description, short_description, price, sale_price, quantity, sku, [status], featured)
+VALUES 
+(@cat_ca_nuoc_man, N'Cá Hề Nemo', N'Cá hề nước mặn nổi bật', N'Cá hề Nemo', 100000, 90000, 30, N'CA06', 'active', 1),
+(@cat_ca_nuoc_man, N'Cá Tinh Tinh', N'Cá tinh tinh nước mặn màu sắc', N'Cá tinh tinh', 80000, 75000, 40, N'CA07', 'active', 0),
+(@cat_ca_nuoc_man, N'Cá Hoàng Đế', N'Cá hoàng đế nước mặn', N'Cá hoàng đế', 120000, 115000, 15, N'CA08', 'active', 1),
+(@cat_ca_nuoc_man, N'Cá Bướm', N'Cá bướm nước mặn đa sắc', N'Cá bướm', 85000, 83000, 35, N'CA09', 'active', 0),
+(@cat_ca_nuoc_man, N'Cá Đá', N'Cá đá nước mặn hiếm', N'Cá đá', 95000, 93000, 18, N'CA10', 'active', 0);
+
+-- Cá nước ngọt
+INSERT INTO Products (category_id, [name], description, short_description, price, sale_price, quantity, sku, [status], featured)
+VALUES 
+(@cat_ca_nuoc_ngot, N'Cá Betta', N'Cá betta nước ngọt', N'Cá betta', 20000, 18000, 120, N'CA11', 'active', 1),
+(@cat_ca_nuoc_ngot, N'Cá Vàng', N'Cá vàng phổ biến', N'Cá vàng', 15000, 14000, 200, N'CA12', 'active', 1),
+(@cat_ca_nuoc_ngot, N'Cá Guppy', N'Cá guppy sinh sản tốt', N'Cá guppy', 10000, 9000, 250, N'CA13', 'active', 0),
+(@cat_ca_nuoc_ngot, N'Cá Ali', N'Cá ali sống bầy đàn', N'Cá ali', 30000, 29000, 60, N'CA14', 'active', 0),
+(@cat_ca_nuoc_ngot, N'Cá Neon', N'Cá neon phát sáng', N'Cá neon', 25000, 24000, 90, N'CA15', 'active', 1);
+
+-- Trang thiết bị
+INSERT INTO Products (category_id, [name], description, short_description, price, sale_price, quantity, sku, [status], featured)
+VALUES 
+(@cat_trang_thiet_bi, N'Bể kính 50L', N'Bể kính chất lượng cao', N'Bể kính', 400000, 380000, 10, N'TB01', 'active', 1),
+(@cat_trang_thiet_bi, N'Bơm nước mini', N'Máy bơm nước cho bể cá', N'Bơm nước', 250000, 230000, 25, N'TB02', 'active', 0),
+(@cat_trang_thiet_bi, N'Máy sủi oxy', N'Máy sủi oxy êm ái', N'Sủi oxy', 120000, 110000, 35, N'TB03', 'active', 1),
+(@cat_trang_thiet_bi, N'Đèn led bể cá', N'Đèn led tăng trưởng cho cá', N'Đèn led', 180000, 170000, 22, N'TB04', 'active', 0),
+(@cat_trang_thiet_bi, N'Lọc nước mini', N'Máy lọc nước bể cá nhỏ', N'Lọc nước', 90000, 85000, 15, N'TB05', 'active', 1);
+
+-- Thêm chi tiết cho 5 sản phẩm đầu
+INSERT INTO Product_details (product_id, scientific_name, common_name, origin, size, lifespan, water_type, water_temperature, water_ph, diet, breeding_difficulty, care_level, compatibility)
+VALUES
+(1, N'Bostrychus sinensis', N'Cá Bống', N'Việt Nam', N'8-10cm', N'3 năm', N'brackish', N'24-28', N'6.5-7.5', N'Tạp', 'moderate', 'easy', N'Tất cả'),
+(2, N'Sparus sarba', N'Cá Tráp', N'Việt Nam', N'15-20cm', N'4 năm', N'brackish', N'24-28', N'7-8', N'Tạp', 'difficult', 'moderate', N'Cá hiền'),
+(6, N'Amphiprion ocellaris', N'Cá Hề', N'Indonesia', N'6-10cm', N'5 năm', N'saltwater', N'25-28', N'8-8.4', N'Tạp', 'moderate', 'easy', N'San hô'),
+(11, N'Betta splendens', N'Cá Betta', N'Thái Lan', N'3-5cm', N'2 năm', N'freshwater', N'25-28', N'6-8', N'Tạp', 'easy', 'easy', N'Cá nhỏ'),
+(16, NULL, N'Bể kính', N'Việt Nam', N'50L', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+
+
+delete from Inventory_logs
+DBCC CHECKIDENT ('Inventory_logs', RESEED, 0);
+select * from Inventory_logs
+
+select * from products 
+DELETE FROM products
+WHERE product_id BETWEEN 21 AND 35;
+DBCC CHECKIDENT ('products', RESEED, 0);
+
+INSERT INTO Inventory_logs 
+(product_id, quantity_before, quantity_after, change_type, reason, reference_id, reference_type)
+SELECT 
+    product_id,
+    quantity,
+    quantity,
+    'increase',  -- Sửa ở đây
+    N'Khởi tạo tồn kho ban đầu',
+    NULL,
+    'initial'
+FROM Products
+WHERE quantity IS NOT NULL
+AND NOT EXISTS (
+    SELECT 1 FROM Inventory_logs il
+    WHERE il.product_id = Products.product_id AND il.change_type = 'increase'
+);
+
+SELECT * FROM products
+WHERE SKU IN ('CA26', 'CA27', 'CA28', 'CA29', 'CA30');
+

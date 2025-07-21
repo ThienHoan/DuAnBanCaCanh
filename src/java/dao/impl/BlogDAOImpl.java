@@ -15,10 +15,13 @@ import java.util.logging.Logger;
  * Implementation of BlogDAO interface
  */
 public class BlogDAOImpl implements BlogDAO {
+
     private static final Logger LOGGER = Logger.getLogger(BlogDAOImpl.class.getName());    // Blog Posts methods
+
     @Override
     public List<BlogPost> getAllPublishedPosts() {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -31,9 +34,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.published_at DESC, bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 posts.add(mapResultSetToBlogPost(rs));
@@ -42,8 +43,11 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error getting all published posts", e);
         }
         return posts;
-    }    @Override
-    public BlogPost getPostById(int postId) {        String sql = """
+    }
+
+    @Override
+    public BlogPost getPostById(int postId) {
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -55,8 +59,7 @@ public class BlogDAOImpl implements BlogDAO {
             WHERE bp.post_id = ? AND bp.is_deleted = 0
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, postId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -68,9 +71,12 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error getting post by ID: " + postId, e);
         }
         return null;
-    }@Override
+    }
+
+    @Override
     public List<BlogPost> getPostsByCategory(String category) {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -83,8 +89,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.published_at DESC, bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, category);
             stmt.setString(2, category);
@@ -92,7 +97,8 @@ public class BlogDAOImpl implements BlogDAO {
                 while (rs.next()) {
                     posts.add(mapResultSetToBlogPost(rs));
                 }
-            }        } catch (SQLException e) {
+            }
+        } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting posts by category: " + category, e);
         }
         return posts;
@@ -100,7 +106,8 @@ public class BlogDAOImpl implements BlogDAO {
 
     @Override
     public List<BlogPost> getPostsByCategoryId(int categoryId) {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -113,8 +120,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.published_at DESC, bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, categoryId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -126,9 +132,12 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error getting posts by category ID: " + categoryId, e);
         }
         return posts;
-    }    @Override
+    }
+
+    @Override
     public List<BlogPost> searchPosts(String keyword) {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -142,8 +151,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.published_at DESC, bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String searchPattern = "%" + keyword + "%";
             stmt.setString(1, searchPattern);
@@ -160,9 +168,12 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error searching posts with keyword: " + keyword, e);
         }
         return posts;
-    }    @Override
+    }
+
+    @Override
     public List<BlogPost> getPostsWithPagination(int offset, int limit) {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -176,8 +187,7 @@ public class BlogDAOImpl implements BlogDAO {
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, offset);
             stmt.setInt(2, limit);
@@ -196,10 +206,8 @@ public class BlogDAOImpl implements BlogDAO {
     @Override
     public int getTotalPublishedPosts() {
         String sql = "SELECT COUNT(*) FROM blog_posts WHERE status = 'published' AND is_deleted = 0";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 return rs.getInt(1);
@@ -213,9 +221,8 @@ public class BlogDAOImpl implements BlogDAO {
     @Override
     public boolean incrementViewCount(int postId) {
         String sql = "UPDATE blog_posts SET view_count = view_count + 1 WHERE post_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, postId);
             return stmt.executeUpdate() > 0;
@@ -223,9 +230,12 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error incrementing view count for post: " + postId, e);
             return false;
         }
-    }    @Override
+    }
+
+    @Override
     public List<BlogPost> getLatestPosts(int limit) {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT TOP (?) bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -238,8 +248,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.published_at DESC, bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, limit);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -252,6 +261,7 @@ public class BlogDAOImpl implements BlogDAO {
         }
         return posts;
     }    // Admin methods
+
     @Override
     public boolean createPost(BlogPost post) {
         String sql = """
@@ -260,8 +270,7 @@ public class BlogDAOImpl implements BlogDAO {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, post.getTitle());
             stmt.setString(2, post.getContent());
@@ -271,7 +280,7 @@ public class BlogDAOImpl implements BlogDAO {
             stmt.setInt(6, post.getCategoryId()); // Changed from category to categoryId
             stmt.setString(7, post.getTags());
             stmt.setString(8, post.getStatus());
-            
+
             if ("published".equals(post.getStatus())) {
                 stmt.setTimestamp(9, new Timestamp(System.currentTimeMillis()));
             } else {
@@ -282,11 +291,13 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.info("BlogDAO createPost - rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error creating post: " + post.getTitle() + 
-                      ", categoryId: " + post.getCategoryId(), e);
+            LOGGER.log(Level.SEVERE, "Error creating post: " + post.getTitle()
+                    + ", categoryId: " + post.getCategoryId(), e);
             return false;
         }
-    }    @Override
+    }
+
+    @Override
     public boolean updatePost(BlogPost post) {
         String sql = """
             UPDATE blog_posts 
@@ -300,8 +311,7 @@ public class BlogDAOImpl implements BlogDAO {
             WHERE post_id = ?
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, post.getTitle());
             stmt.setString(2, post.getContent());
@@ -318,8 +328,8 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.info("BlogDAO updatePost - rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating post: " + post.getTitle() + 
-                      ", categoryId: " + post.getCategoryId(), e);
+            LOGGER.log(Level.SEVERE, "Error updating post: " + post.getTitle()
+                    + ", categoryId: " + post.getCategoryId(), e);
             return false;
         }
     }
@@ -327,9 +337,8 @@ public class BlogDAOImpl implements BlogDAO {
     @Override
     public boolean deletePost(int postId) {
         String sql = "UPDATE blog_posts SET is_deleted = 1 WHERE post_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, postId);
             return stmt.executeUpdate() > 0;
@@ -337,9 +346,12 @@ public class BlogDAOImpl implements BlogDAO {
             LOGGER.log(Level.SEVERE, "Error deleting post: " + postId, e);
             return false;
         }
-    }    @Override
+    }
+
+    @Override
     public List<BlogPost> getAllPosts() {
-        List<BlogPost> posts = new ArrayList<>();        String sql = """
+        List<BlogPost> posts = new ArrayList<>();
+        String sql = """
             SELECT bp.post_id, bp.title, bp.content, bp.summary, bp.featured_image, 
                    bp.author_id, ISNULL(u.full_name, u.username) as author_name, 
                    bp.category_id, bp.tags, bp.status, bp.view_count, 
@@ -352,9 +364,7 @@ public class BlogDAOImpl implements BlogDAO {
             ORDER BY bp.created_at DESC
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 posts.add(mapResultSetToBlogPost(rs));
@@ -369,9 +379,8 @@ public class BlogDAOImpl implements BlogDAO {
     @Override
     public boolean publishPost(int postId) {
         String sql = "UPDATE blog_posts SET status = 'published', published_at = GETDATE() WHERE post_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, postId);
             return stmt.executeUpdate() > 0;
@@ -384,9 +393,8 @@ public class BlogDAOImpl implements BlogDAO {
     @Override
     public boolean unpublishPost(int postId) {
         String sql = "UPDATE blog_posts SET status = 'draft', published_at = NULL WHERE post_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, postId);
             return stmt.executeUpdate() > 0;
@@ -395,9 +403,11 @@ public class BlogDAOImpl implements BlogDAO {
             return false;
         }
     }    // Categories methods
-    @Override    public List<BlogCategory> getAllCategories() {
+
+    @Override
+    public List<BlogCategory> getAllCategories() {
         List<BlogCategory> categories = new ArrayList<>();
-        
+
         // First try with is_active column
         String sql = """
             SELECT category_id, category_name, description, slug, created_at, is_deleted, 
@@ -405,9 +415,7 @@ public class BlogDAOImpl implements BlogDAO {
             FROM blog_categories WHERE is_deleted = 0 ORDER BY category_name
             """;
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 categories.add(mapResultSetToBlogCategory(rs));
@@ -415,16 +423,14 @@ public class BlogDAOImpl implements BlogDAO {
         } catch (SQLException e) {
             // If is_active column doesn't exist, try without it
             LOGGER.log(Level.WARNING, "Error with is_active column, trying fallback query", e);
-            
+
             String fallbackSql = """
                 SELECT category_id, category_name, description, slug, created_at, is_deleted, 
                        1 as is_active 
                 FROM blog_categories WHERE is_deleted = 0 ORDER BY category_name
                 """;
-            
-            try (Connection conn2 = DBContext.getConnection();
-                 PreparedStatement stmt2 = conn2.prepareStatement(fallbackSql);
-                 ResultSet rs2 = stmt2.executeQuery()) {
+
+            try (Connection conn2 = DBContext.getConnection(); PreparedStatement stmt2 = conn2.prepareStatement(fallbackSql); ResultSet rs2 = stmt2.executeQuery()) {
 
                 while (rs2.next()) {
                     categories.add(mapResultSetToBlogCategory(rs2));
@@ -436,13 +442,13 @@ public class BlogDAOImpl implements BlogDAO {
         return categories;
     }
 
-    @Override    public BlogCategory getCategoryById(int categoryId) {
-        String sql = "SELECT category_id, category_name, description, slug, created_at, is_deleted, " +
-                    "ISNULL(is_active, 1) as is_active " +
-                    "FROM blog_categories WHERE category_id = ? AND is_deleted = 0";
+    @Override
+    public BlogCategory getCategoryById(int categoryId) {
+        String sql = "SELECT category_id, category_name, description, slug, created_at, is_deleted, "
+                + "ISNULL(is_active, 1) as is_active "
+                + "FROM blog_categories WHERE category_id = ? AND is_deleted = 0";
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, categoryId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -456,19 +462,19 @@ public class BlogDAOImpl implements BlogDAO {
         return null;
     }
 
-    @Override    public boolean createCategory(BlogCategory category) {
+    @Override
+    public boolean createCategory(BlogCategory category) {
         String sql = "INSERT INTO blog_categories (category_name, description, slug, created_at, is_deleted, is_active) VALUES (?, ?, ?, GETDATE(), 0, ?)";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, category.getCategoryName());
             stmt.setString(2, category.getDescription());
             stmt.setString(3, category.getSlug());
             stmt.setBoolean(4, category.isActive());
-            
+
             int affectedRows = stmt.executeUpdate();
-            
+
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -482,83 +488,80 @@ public class BlogDAOImpl implements BlogDAO {
         }
         return false;
     }
-    
+
     @Override
     public boolean updateCategory(BlogCategory category) {
         String sql = "UPDATE blog_categories SET category_name = ?, description = ?, slug = ?, is_active = ? WHERE category_id = ? AND is_deleted = 0";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, category.getCategoryName());
             stmt.setString(2, category.getDescription());
             stmt.setString(3, category.getSlug());
             stmt.setBoolean(4, category.isActive());
             stmt.setInt(5, category.getCategoryId());
-            
+
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-            
+
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating category: " + category.getCategoryId(), e);
             return false;
         }
     }
-    
+
     @Override
     public boolean deleteCategory(int categoryId) {
         String sql = "UPDATE blog_categories SET is_deleted = 1 WHERE category_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, categoryId);
-            
+
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-            
+
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting category: " + categoryId, e);
             return false;
         }
     }
-    
+
     @Override
     public boolean activateCategory(int categoryId) {
         String sql = "UPDATE blog_categories SET is_active = 1 WHERE category_id = ? AND is_deleted = 0";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, categoryId);
-            
+
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-            
+
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error activating category: " + categoryId, e);
             return false;
         }
     }
-    
+
     @Override
     public boolean deactivateCategory(int categoryId) {
         String sql = "UPDATE blog_categories SET is_active = 0 WHERE category_id = ? AND is_deleted = 0";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, categoryId);
-            
+
             int affectedRows = stmt.executeUpdate();
             return affectedRows > 0;
-            
+
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deactivating category: " + categoryId, e);
             return false;
         }
     }
-      // Helper methods
+    // Helper methods
+
     private BlogPost mapResultSetToBlogPost(ResultSet rs) throws SQLException {
         BlogPost post = new BlogPost();
         post.setPostId(rs.getInt("post_id"));
@@ -568,13 +571,13 @@ public class BlogDAOImpl implements BlogDAO {
         post.setFeaturedImage(rs.getString("featured_image"));
         post.setAuthorId(rs.getInt("author_id"));
         post.setAuthorName(rs.getString("author_name"));
-        
+
         // Handle category relationship
         try {
             int categoryId = rs.getInt("category_id");
             if (!rs.wasNull()) {
                 post.setCategoryId(categoryId);
-                
+
                 // Create category object if we have the data
                 try {
                     String categoryName = rs.getString("category_name");
@@ -593,7 +596,7 @@ public class BlogDAOImpl implements BlogDAO {
         } catch (SQLException e) {
             // category_id column not available in this query, skip
         }
-        
+
         post.setTags(rs.getString("tags"));
         post.setStatus(rs.getString("status"));
         post.setViewCount(rs.getInt("view_count"));

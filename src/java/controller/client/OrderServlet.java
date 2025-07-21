@@ -2,6 +2,8 @@ package controller.client;
 
 import dao.impl.OrderDAOImpl;
 import dao.impl.AddressDAO;
+import dao.impl.InventoryLogDAOImpl;
+import dao.impl.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.entity.User;
 import model.entity.Address;
+import model.entity.Product;
+import model.entity.InventoryLog;
 import model.entity.pOrder.Order;
 import model.entity.pOrder.OrderItem;
 import model.entity.pOrder.Payment;
@@ -20,6 +24,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * Servlet để quản lý đơn hàng cho cả admin và khách hàng
@@ -93,6 +100,7 @@ public class OrderServlet extends HttpServlet {
             case "confirm-shipped":
                 confirmShipped(request, response, user);
                 break;
+
             case "confirm-order":
                 confirmOrder(request, response, user);
                 break;
@@ -292,12 +300,28 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
+            // Kiểm tra xem đơn hàng đã được xác nhận giao hàng chưa
+            if ("shipping".equals(order.getStatus())) {
+                response.sendRedirect("order?error=Order is already marked as shipped");
+                return;
+            }
+            
+            // Kiểm tra stock trước khi xác nhận giao hàng
+            String stockError = orderDAO.validateOrderStockForShipping(orderId);
+            if (stockError != null) {
+                response.sendRedirect("order?error=" + stockError);
+                return;
+            }
+            
             // Không cần kiểm tra trạng thái thanh toán trước khi giao hàng
             // Đơn hàng COD sẽ được thanh toán khi giao hàng
             
             boolean success = orderDAO.updateOrderStatus(orderId, "shipping");
             
             if (success) {
+                // Cập nhật inventory và inventory_logs khi admin xác nhận giao hàng
+                addInventoryLogsForShipping(orderId);
+                
                 response.sendRedirect("order?message=Order marked as shipped successfully");
             } else {
                 response.sendRedirect("order?error=Failed to mark order as shipped");
@@ -305,6 +329,294 @@ public class OrderServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             response.sendRedirect("order?error=Invalid order ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi xác nhận giao hàng: " + e.getMessage(), e);
+            response.sendRedirect("order?error=Error confirming shipment: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Thêm inventory logs và cập nhật inventory khi đơn hàng được xác nhận giao hàng
+     * Tối ưu hóa performance với batch processing và async execution
+     */
+    private void addInventoryLogsForShipping(int orderId) {
+        // Sử dụng async processing để không block response
+        new Thread(() -> {
+            try {
+                LOGGER.log(Level.INFO, "Bắt đầu xử lý inventory cho đơn hàng #" + orderId);
+                
+                // Lấy danh sách sản phẩm trong đơn hàng
+                List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
+                if (orderItems == null || orderItems.isEmpty()) {
+                    LOGGER.log(Level.WARNING, "Không tìm thấy sản phẩm cho đơn hàng #" + orderId);
+                    return;
+                }
+                
+                // Tối ưu: Lấy tất cả product IDs một lần
+                List<Integer> productIds = orderItems.stream()
+                    .map(OrderItem::getProductId)
+                    .distinct()
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Tối ưu: Lấy tất cả sản phẩm một lần query
+                Map<Integer, Product> productsMap = getProductsByIds(productIds);
+                
+                // Tối ưu: Kiểm tra existing logs một lần cho toàn bộ đơn hàng
+                Set<Integer> existingProductIds = getExistingInventoryLogProductIds(orderId, "order_shipped");
+                
+                // Tối ưu: Batch update inventory và tạo logs
+                List<InventoryLog> logsToInsert = new ArrayList<>();
+                List<Object[]> inventoryUpdates = new ArrayList<>();
+                
+                for (OrderItem item : orderItems) {
+                    Product product = productsMap.get(item.getProductId());
+                    if (product != null && !existingProductIds.contains(item.getProductId())) {
+                        // Kiểm tra stock trước khi cập nhật
+                        if (product.getQuantity() >= item.getQuantity()) {
+                            int oldQuantity = product.getQuantity();
+                            int newQuantity = oldQuantity - item.getQuantity();
+                            
+                            // Chuẩn bị inventory update
+                            inventoryUpdates.add(new Object[]{
+                                newQuantity, // new quantity
+                                item.getProductId(), // product_id
+                                item.getQuantity() // required quantity for WHERE clause
+                            });
+                            
+                            // Tạo inventory log cho việc giao hàng
+                            InventoryLog inventoryLog = new InventoryLog(
+                                item.getProductId(),
+                                oldQuantity, // quantity_before
+                                newQuantity, // quantity_after
+                                "decrease", // change_type
+                                "Đơn hàng #" + orderId + " - Xác nhận giao hàng: " + item.getProductName(),
+                                orderId, // reference_id
+                                "order_shipped" // reference_type
+                            );
+                            logsToInsert.add(inventoryLog);
+                            
+                            LOGGER.log(Level.INFO, "Chuẩn bị cập nhật inventory cho sản phẩm " + item.getProductId() + 
+                                     ": " + oldQuantity + " -> " + newQuantity);
+                        } else {
+                            LOGGER.log(Level.WARNING, "Không đủ stock cho sản phẩm " + item.getProductId() + 
+                                     " (cần: " + item.getQuantity() + ", có: " + product.getQuantity() + ")");
+                        }
+                    }
+                }
+                
+                // Batch update inventory trước
+                if (!inventoryUpdates.isEmpty()) {
+                    boolean inventorySuccess = batchUpdateInventory(inventoryUpdates);
+                    if (!inventorySuccess) {
+                        LOGGER.log(Level.SEVERE, "Không thể cập nhật inventory cho đơn hàng #" + orderId);
+                        return;
+                    }
+                }
+                
+                // Batch insert inventory logs sau khi cập nhật inventory thành công
+                if (!logsToInsert.isEmpty()) {
+                    boolean batchSuccess = batchInsertInventoryLogs(logsToInsert);
+                    if (batchSuccess) {
+                        LOGGER.log(Level.INFO, "Đã cập nhật inventory và thêm " + logsToInsert.size() + " inventory logs cho đơn hàng #" + orderId);
+                    } else {
+                        LOGGER.log(Level.WARNING, "Không thể thêm inventory logs cho đơn hàng #" + orderId);
+                    }
+                } else {
+                    LOGGER.log(Level.INFO, "Không cần cập nhật inventory cho đơn hàng #" + orderId + " (đã có sẵn logs)");
+                }
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Lỗi khi xử lý inventory cho đơn hàng #" + orderId + ": " + e.getMessage(), e);
+            }
+        }).start();
+    }
+    
+    /**
+     * Thêm inventory logs và cập nhật inventory khi admin xác nhận đơn hàng
+     * Tối ưu hóa performance với batch processing và async execution
+     */
+    private void addInventoryLogsForOrderConfirmation(int orderId) {
+        // Sử dụng async processing để không block response
+        new Thread(() -> {
+            try {
+                LOGGER.log(Level.INFO, "Bắt đầu xử lý inventory cho đơn hàng #" + orderId + " khi xác nhận");
+                
+                // Lấy danh sách sản phẩm trong đơn hàng
+                List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
+                if (orderItems == null || orderItems.isEmpty()) {
+                    LOGGER.log(Level.WARNING, "Không tìm thấy sản phẩm cho đơn hàng #" + orderId);
+                    return;
+                }
+                
+                // Tối ưu: Lấy tất cả product IDs một lần
+                List<Integer> productIds = orderItems.stream()
+                    .map(OrderItem::getProductId)
+                    .distinct()
+                    .collect(java.util.stream.Collectors.toList());
+                
+                // Tối ưu: Lấy tất cả sản phẩm một lần query
+                Map<Integer, Product> productsMap = getProductsByIds(productIds);
+                
+                // Tối ưu: Kiểm tra existing logs một lần cho toàn bộ đơn hàng
+                Set<Integer> existingProductIds = getExistingInventoryLogProductIds(orderId, "order_confirmed");
+                
+                // Tối ưu: Batch update inventory và tạo logs
+                List<InventoryLog> logsToInsert = new ArrayList<>();
+                List<Object[]> inventoryUpdates = new ArrayList<>();
+                
+                for (OrderItem item : orderItems) {
+                    Product product = productsMap.get(item.getProductId());
+                    if (product != null && !existingProductIds.contains(item.getProductId())) {
+                        // Kiểm tra stock trước khi cập nhật
+                        if (product.getQuantity() >= item.getQuantity()) {
+                            int oldQuantity = product.getQuantity();
+                            int newQuantity = oldQuantity - item.getQuantity();
+                            
+                            // Chuẩn bị inventory update
+                            inventoryUpdates.add(new Object[]{
+                                newQuantity, // new quantity
+                                item.getProductId(), // product_id
+                                item.getQuantity() // required quantity for WHERE clause
+                            });
+                            
+                            // Tạo inventory log cho việc xác nhận đơn hàng
+                            InventoryLog inventoryLog = new InventoryLog(
+                                item.getProductId(),
+                                oldQuantity, // quantity_before
+                                newQuantity, // quantity_after
+                                "decrease", // change_type
+                                "Đơn hàng #" + orderId + " - Admin xác nhận đơn hàng: " + item.getProductName(),
+                                orderId, // reference_id
+                                "order_confirmed" // reference_type
+                            );
+                            logsToInsert.add(inventoryLog);
+                            
+                            LOGGER.log(Level.INFO, "Chuẩn bị cập nhật inventory cho sản phẩm " + item.getProductId() + 
+                                     ": " + oldQuantity + " -> " + newQuantity + " (xác nhận đơn hàng)");
+                        } else {
+                            LOGGER.log(Level.WARNING, "Không đủ stock cho sản phẩm " + item.getProductId() + 
+                                     " (cần: " + item.getQuantity() + ", có: " + product.getQuantity() + ")");
+                        }
+                    }
+                }
+                
+                // Batch update inventory trước
+                if (!inventoryUpdates.isEmpty()) {
+                    boolean inventorySuccess = batchUpdateInventory(inventoryUpdates);
+                    if (!inventorySuccess) {
+                        LOGGER.log(Level.SEVERE, "Không thể cập nhật inventory cho đơn hàng #" + orderId);
+                        return;
+                    }
+                }
+                
+                // Batch insert inventory logs sau khi cập nhật inventory thành công
+                if (!logsToInsert.isEmpty()) {
+                    boolean batchSuccess = batchInsertInventoryLogs(logsToInsert);
+                    if (batchSuccess) {
+                        LOGGER.log(Level.INFO, "Đã cập nhật inventory và thêm " + logsToInsert.size() + " inventory logs cho đơn hàng #" + orderId + " (xác nhận)");
+                    } else {
+                        LOGGER.log(Level.WARNING, "Không thể thêm inventory logs cho đơn hàng #" + orderId);
+                    }
+                } else {
+                    LOGGER.log(Level.INFO, "Không cần cập nhật inventory cho đơn hàng #" + orderId + " (đã có sẵn logs)");
+                }
+                
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Lỗi khi xử lý inventory cho đơn hàng #" + orderId + ": " + e.getMessage(), e);
+            }
+        }).start();
+    }
+    
+    /**
+     * Lấy nhiều sản phẩm theo IDs (tối ưu query)
+     */
+    private Map<Integer, Product> getProductsByIds(List<Integer> productIds) {
+        try {
+            ProductDAO productDAO = new ProductDAO();
+            return productDAO.getProductsByIds(productIds);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi lấy thông tin sản phẩm: " + e.getMessage(), e);
+            return new HashMap<>();
+        }
+    }
+    
+    /**
+     * Lấy danh sách product IDs đã có inventory logs (tối ưu query)
+     */
+    private Set<Integer> getExistingInventoryLogProductIds(int orderId, String referenceType) {
+        try {
+            InventoryLogDAOImpl inventoryLogDAO = new InventoryLogDAOImpl();
+            return inventoryLogDAO.getExistingInventoryLogProductIds(orderId, referenceType);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra existing inventory logs: " + e.getMessage(), e);
+            return new HashSet<>();
+        }
+    }
+    
+    /**
+     * Batch update inventory (tối ưu performance)
+     */
+    private boolean batchUpdateInventory(List<Object[]> inventoryUpdates) {
+        if (inventoryUpdates.isEmpty()) {
+            return true;
+        }
+        
+        try {
+            String updateSql = "UPDATE Products SET quantity = ? WHERE product_id = ? AND quantity >= ?";
+            try (java.sql.Connection conn = utils.db.DBContext.getConnection();
+                 java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                
+                conn.setAutoCommit(false);
+                int successCount = 0;
+                
+                for (Object[] update : inventoryUpdates) {
+                    int newQuantity = (Integer) update[0];
+                    int productId = (Integer) update[1];
+                    int requiredQuantity = (Integer) update[2];
+                    
+                    ps.setInt(1, newQuantity);
+                    ps.setInt(2, productId);
+                    ps.setInt(3, requiredQuantity);
+                    
+                    int rowsAffected = ps.executeUpdate();
+                    if (rowsAffected > 0) {
+                        successCount++;
+                    } else {
+                        LOGGER.log(Level.WARNING, "Không thể cập nhật inventory cho sản phẩm " + productId + 
+                                 " (không đủ stock hoặc sản phẩm không tồn tại)");
+                    }
+                }
+                
+                if (successCount == inventoryUpdates.size()) {
+                    conn.commit();
+                    LOGGER.log(Level.INFO, "Đã cập nhật inventory thành công cho " + successCount + " sản phẩm");
+                    return true;
+                } else {
+                    conn.rollback();
+                    LOGGER.log(Level.WARNING, "Chỉ cập nhật được " + successCount + "/" + inventoryUpdates.size() + " sản phẩm");
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi batch update inventory: " + e.getMessage(), e);
+            return false;
+        }
+    }
+    
+    /**
+     * Batch insert inventory logs (tối ưu performance)
+     */
+    private boolean batchInsertInventoryLogs(List<InventoryLog> logs) {
+        if (logs.isEmpty()) {
+            return true;
+        }
+        
+        try {
+            InventoryLogDAOImpl inventoryLogDAO = new InventoryLogDAOImpl();
+            return inventoryLogDAO.batchInsertInventoryLogs(logs);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi batch insert inventory logs: " + e.getMessage(), e);
+            return false;
         }
     }
 
@@ -409,6 +721,9 @@ public class OrderServlet extends HttpServlet {
                         LOGGER.log(java.util.logging.Level.INFO, "Cập nhật trạng thái thanh toán trong bảng Payments: " + rows + " hàng bị ảnh hưởng");
                     }
                     
+                    // Log that payment has been confirmed
+                    LOGGER.log(java.util.logging.Level.INFO, "Payment confirmed for order #" + orderId + ". Inventory was already updated when order was created.");
+                    
                     response.sendRedirect("order?message=Payment confirmed successfully");
                 } catch (Exception e) {
                     LOGGER.log(java.util.logging.Level.WARNING, "Không thể cập nhật bảng Payments, nhưng Orders đã được cập nhật: " + e.getMessage(), e);
@@ -452,9 +767,19 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
+            // Kiểm tra stock trước khi xác nhận đơn hàng
+            String stockError = orderDAO.validateOrderStockForShipping(orderId);
+            if (stockError != null) {
+                response.sendRedirect("order?error=" + stockError);
+                return;
+            }
+            
             boolean success = orderDAO.updateOrderStatus(orderId, "confirmed");
             
             if (success) {
+                // Cập nhật inventory và inventory_logs khi admin xác nhận đơn hàng
+                addInventoryLogsForOrderConfirmation(orderId);
+                
                 response.sendRedirect("order?message=Order confirmed successfully");
             } else {
                 response.sendRedirect("order?error=Failed to confirm order");
@@ -462,8 +787,13 @@ public class OrderServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             response.sendRedirect("order?error=Invalid order ID");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi xác nhận đơn hàng: " + e.getMessage(), e);
+            response.sendRedirect("order?error=Error confirming order: " + e.getMessage());
         }
     }
+
+
 
     /**
      * Đánh dấu đã hoàn tiền cho đơn hàng VNPay đã hủy

@@ -2,6 +2,7 @@ package controller.client;
 
 import dao.impl.CouponDAO;
 import dao.impl.OrderDAOImpl;
+import dao.impl.ProductDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,17 +14,23 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.entity.Product;
+import model.entity.pOrder.OrderItem;
+import java.util.List;
+import utils.InventoryLogUtil;
 
 @WebServlet("/vnpay-return")
 public class VNPayReturnController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(VNPayReturnController.class.getName());
     private OrderDAOImpl orderDAO;
     private CouponDAO couponDAO;
+    private ProductDAO productDAO;
 
     @Override
     public void init() throws ServletException {
         orderDAO = new OrderDAOImpl();
         couponDAO = new CouponDAO();
+        productDAO = new ProductDAO();
     }
 
     @Override
@@ -76,13 +83,30 @@ public class VNPayReturnController extends HttpServlet {
                     orderDAO.updatePaymentStatus(orderId, "paid");
                     
                     // Cập nhật trạng thái thanh toán trong bảng Payments
-                    String updatePaymentSql = "UPDATE Payments SET status = 'completed' WHERE order_id = ?";
+                    String updatePaymentSql = "UPDATE Payments SET status = 'completed', transaction_id = ? WHERE order_id = ?";
                     try (java.sql.Connection conn = utils.db.DBContext.getConnection();
                          java.sql.PreparedStatement ps = conn.prepareStatement(updatePaymentSql)) {
-                        ps.setInt(1, orderId);
+                        ps.setString(1, vnp_TransactionNo);
+                        ps.setInt(2, orderId);
                         ps.executeUpdate();
                     } catch (Exception ex) {
                         LOGGER.log(Level.WARNING, "Không thể cập nhật trạng thái thanh toán: " + ex.getMessage(), ex);
+                    }
+                    
+                    // Add a log entry to notify that payment was completed and inventory has been updated
+                    try {
+                        String logSql = "INSERT INTO System_logs (log_type, message, reference_id, reference_type, created_at) " +
+                                       "VALUES (?, ?, ?, ?, GETDATE())";
+                        try (java.sql.Connection conn = utils.db.DBContext.getConnection();
+                             java.sql.PreparedStatement ps = conn.prepareStatement(logSql)) {
+                            ps.setString(1, "payment");
+                            ps.setString(2, "Payment completed for order #" + orderId + ". Inventory has been updated automatically.");
+                            ps.setInt(3, orderId);
+                            ps.setString(4, "order");
+                            ps.executeUpdate();
+                        }
+                    } catch (Exception ex) {
+                        LOGGER.log(Level.WARNING, "Không thể ghi log hệ thống: " + ex.getMessage(), ex);
                     }
                     
                     // Record coupon usage if coupon was applied

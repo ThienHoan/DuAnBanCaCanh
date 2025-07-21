@@ -24,6 +24,8 @@ import model.entity.pOrder.Order;
 import model.entity.pOrder.OrderItem;
 import model.entity.pOrder.Payment;
 import utils.db.DBContext;
+import model.entity.Product;
+import utils.InventoryLogUtil;
 
 public class OrderDAOImpl {
     private static final Logger LOGGER = Logger.getLogger(OrderDAOImpl.class.getName());
@@ -119,11 +121,22 @@ public class OrderDAOImpl {
         return items;
     }
 
+    /**
+     * Get order items for a specific order - public method for external use
+     * @param orderId The order ID
+     * @return List of order items
+     */
+    public List<OrderItem> getOrderItemsById(int orderId) {
+        return getOrderItems(orderId);
+    }
+
     public int createOrder(int userId, int cartId, String orderNumber, int addressId, String paymentMethod, String notes, BigDecimal discountAmount) throws SQLException {
         String orderSql = "INSERT INTO Orders (user_id, order_number, status, total_amount, discount_amount, shipping_fee, tax, final_amount, payment_method, payment_status, shipping_address_id, billing_address_id, notes, created_at, updated_at, is_deleted) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, GETDATE(), GETDATE(), 0)";
         String orderItemSql = "INSERT INTO Order_items (order_id, product_id, product_name, quantity, unit_price, subtotal, is_deleted) VALUES (?, ?, ?, ?, ?, ?, 0)";
         String paymentSql = "INSERT INTO Payments (order_id, payment_method, transaction_id, amount, status, payment_date, payment_details) VALUES (?, ?, ?, ?, ?, GETDATE(), ?)";
-        String inventorySql = "UPDATE Products SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?";
+        
+        // REMOVED: Inventory update SQL - inventory will only be updated when admin confirms shipping
+        // This prevents overload during order creation and ensures inventory is only updated when goods are actually shipped
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<CartItem> cartItems = cartDAO.getCartItemsByCartId(cartId);
@@ -179,78 +192,53 @@ public class OrderDAOImpl {
                                 itemPs.setDouble(5, price);
                                 itemPs.setDouble(6, price * item.getQuantity());
                                 itemPs.executeUpdate();
-                                
-                                // Update inventory
-                                try (PreparedStatement inventoryPs = conn.prepareStatement(inventorySql)) {
-                                    inventoryPs.setInt(1, item.getQuantity());
-                                    inventoryPs.setInt(2, item.getProductId());
-                                    inventoryPs.setInt(3, item.getQuantity());
-                                    inventoryPs.executeUpdate();
-                                }
                             }
                         }
 
                         // Insert payment record
                         try (PreparedStatement paymentPs = conn.prepareStatement(paymentSql)) {
+                            String transactionId = "TXN" + orderNumber;
+                            String paymentStatus = "pending";
+                            String paymentDetails = "Payment method: " + paymentMethod;
+                            
                             paymentPs.setInt(1, orderId);
                             paymentPs.setString(2, paymentMethod);
-                            
-                            // Generate transaction ID for non-COD payments
-                            String transactionId = null;
-                            String paymentDetails = null;
-                            
-                            if ("cod".equals(paymentMethod)) {
-                                transactionId = "COD-" + orderNumber;
-                                paymentDetails = "{\"method\": \"cash\"}";
-                            } else if ("e-wallet".equals(paymentMethod)) {
-                                transactionId = "VNPAY-" + orderNumber;
-                                paymentDetails = "{\"method\": \"vnpay\"}";
-                            }
-                            
                             paymentPs.setString(3, transactionId);
                             paymentPs.setBigDecimal(4, finalAmount);
-                            // Sử dụng các giá trị được phép trong ràng buộc CHECK
-                            // Có thể bảng Payments chỉ chấp nhận 'pending', 'completed', 'failed', 'refunded'
-                            paymentPs.setString(5, "cod".equals(paymentMethod) ? "pending" : "completed");
+                            paymentPs.setString(5, paymentStatus);
                             paymentPs.setString(6, paymentDetails);
-                            
-                            // If payment method is e-wallet (VNPay), update order payment status to paid
-                            if ("e-wallet".equals(paymentMethod)) {
-                                updatePaymentStatus(orderId, "paid");
-                            }
                             paymentPs.executeUpdate();
                         }
-                        
-                        // Clear the cart
+
+                        // Empty the cart
                         cartDAO.clearCart(cartId);
+
+                        // REMOVED: updateInventoryAfterOrderCreation(orderId, cartItems, conn);
+                        // Inventory will only be updated when admin confirms shipping to prevent overload
 
                         conn.commit();
                         return orderId;
                     } else {
+                        conn.rollback();
                         throw new SQLException("Không thể tạo đơn hàng, không có ID được trả về.");
                     }
                 }
             }
         } catch (SQLException e) {
-            try {
-                conn.rollback();
-            } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, "Lỗi khi rollback transaction: " + ex.getMessage(), ex);
-            }
-            LOGGER.log(Level.SEVERE, "Lỗi khi tạo đơn hàng: " + e.getMessage(), e);
-            throw new RuntimeException("Lỗi khi tạo đơn hàng: " + e.getMessage(), e);
+            conn.rollback();
+            throw e;
         } finally {
-            try {
-                conn.setAutoCommit(true);
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Lỗi khi đặt lại autocommit: " + e.getMessage(), e);
-            }
+            conn.setAutoCommit(true);
         }
     }
 
     // Overloaded method to accept Cart object instead of cartId
     public int createOrder(int userId, Cart cart, String orderNumber, int addressId, String paymentMethod, String notes, BigDecimal discountAmount) throws SQLException {
-        return createOrder(userId, cart.getCartId(), orderNumber, addressId, paymentMethod, notes, discountAmount);
+        // Get the cart ID from the cart object
+        int cartId = cart.getCartId();
+        
+        // Call the existing method
+        return createOrder(userId, cartId, orderNumber, addressId, paymentMethod, notes, discountAmount);
     }
 
     public boolean updateOrderStatus(int orderId, String status) {
@@ -258,31 +246,50 @@ public class OrderDAOImpl {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, orderId);
-            return ps.executeUpdate() > 0;
+            int result = ps.executeUpdate();
+            
+            return result > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái đơn hàng: " + e.getMessage(), e);
             return false;
         }
     }
+    
+        /**
+     * REMOVED: updateInventoryAfterOrderCreation method
+     * Inventory will only be updated when admin confirms shipping to prevent overload during order creation
+     * and ensure inventory is only updated when goods are actually shipped
+     */
+
+
 
     public boolean updatePaymentStatus(int orderId, String paymentStatus) {
         String sql = "UPDATE Orders SET payment_status = ?, updated_at = GETDATE() WHERE order_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, paymentStatus);
             ps.setInt(2, orderId);
-            return ps.executeUpdate() > 0;
+            int result = ps.executeUpdate();
+            
+            // REMOVED: updateInventoryAfterPayment(orderId);
+            // Inventory will only be updated when admin confirms shipping to prevent duplicate logs
+            // and ensure inventory is only updated when goods are actually shipped
+            
+            return result > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái thanh toán: " + e.getMessage(), e);
             return false;
         }
     }
+    
+    /**
+     * REMOVED: updateInventoryAfterPayment method
+     * Inventory will only be updated when admin confirms shipping to prevent duplicate logs
+     * and ensure inventory is only updated when goods are actually shipped
+     */
 
     public boolean cancelOrder(int orderId) {
         try {
             conn.setAutoCommit(false);
-            
-            // Get order items to restore inventory
-            List<OrderItem> items = getOrderItems(orderId);
             
             // Update order status
             String updateOrderSql = "UPDATE Orders SET status = 'cancelled', updated_at = GETDATE() WHERE order_id = ? AND status IN ('pending', 'confirmed', 'processing')";
@@ -291,20 +298,16 @@ public class OrderDAOImpl {
                 int rows = ps.executeUpdate();
                 
                 if (rows > 0) {
-                    // Restore inventory
-                    String restoreInventorySql = "UPDATE Products SET quantity = quantity + ? WHERE product_id = ?";
-                    try (PreparedStatement inventoryPs = conn.prepareStatement(restoreInventorySql)) {
-                        for (OrderItem item : items) {
-                            inventoryPs.setInt(1, item.getQuantity());
-                            inventoryPs.setInt(2, item.getProductId());
-                            inventoryPs.executeUpdate();
-                        }
-                    }
+                    // REMOVED: Restore inventory for cancelled order
+                    // Inventory is only updated when admin confirms shipping, so no need to restore here
+                    // This prevents inventory inconsistencies and simplifies the cancellation process
                     
                     conn.commit();
+                    LOGGER.log(Level.INFO, "Đã hủy đơn hàng #" + orderId + " thành công");
                     return true;
                 } else {
                     conn.rollback();
+                    LOGGER.log(Level.WARNING, "Không thể hủy đơn hàng #" + orderId + " - trạng thái không hợp lệ");
                     return false;
                 }
             }
@@ -337,6 +340,26 @@ public class OrderDAOImpl {
             }
         }
         return null;
+    }
+    
+    /**
+     * Validate stock for shipping confirmation - more strict validation
+     * This is called when admin confirms shipping to ensure stock is still available
+     */
+    public String validateOrderStockForShipping(int orderId) {
+        try {
+            List<OrderItem> orderItems = getOrderItems(orderId);
+            for (OrderItem item : orderItems) {
+                int availableStock = productDAO.getProductQuantity(item.getProductId());
+                if (availableStock < item.getQuantity()) {
+                    return "Sản phẩm '" + item.getProductName() + "' chỉ còn " + availableStock + " sản phẩm trong kho, không đủ để giao hàng.";
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra stock cho giao hàng: " + e.getMessage(), e);
+            return "Có lỗi xảy ra khi kiểm tra stock.";
+        }
     }
 
     private Order mapResultSetToOrder(ResultSet rs) throws SQLException {

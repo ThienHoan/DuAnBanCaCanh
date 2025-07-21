@@ -6,22 +6,19 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class is deprecated. Use DBContext instead.
+ * Kept for backward compatibility.
+ */
+@Deprecated
 public class DatabaseConnection {
-     public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=fishshopp";
+    public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    public static String dbURL = "jdbc:sqlserver://localhost;databaseName=fishshop";
     public static String userDB = "sa";
-    public static String passDB = "123456";
-      public static Connection getConnection() {
-        Connection con = null;
-        
-        try {
-            Class.forName(driverName);
-            con = DriverManager.getConnection(dbURL, userDB, passDB);
-            return con;
-        } catch (Exception ex) {
-            Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public static String passDB = "040604";
+    
+    public static Connection getConnection() {
+        return DBContext.getConnection();
     }
     
     public static void main(String[] args) {
