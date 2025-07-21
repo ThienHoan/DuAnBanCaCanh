@@ -9,6 +9,8 @@
 <!-- in the project's Project Properties dialog box.-->
 <project name="DuAnCaCanh" default="default" basedir=".">
     <description>Builds, tests, and runs the project DuAnCaCanh.</description>
+    <property name="javac.source" value="17"/>
+<property name="javac.target" value="17"/>
     <import file="nbproject/build-impl.xml"/>
     <!--
 

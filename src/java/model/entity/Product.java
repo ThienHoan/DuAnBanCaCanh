@@ -27,6 +27,7 @@ public class Product {
     // Default constructor
     public Product() {
     }    // Constructor with all fields
+        // Constructor with all fields
     public Product(int productId, Integer categoryId, String name, String description, 
                   String shortDescription, BigDecimal price, BigDecimal salePrice, int quantity, 
                   String sku, String status, Integer featured, String createdAt, 

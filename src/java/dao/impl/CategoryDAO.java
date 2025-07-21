@@ -15,7 +15,9 @@ public class CategoryDAO {
     
     public CategoryDAO() {
         // Connection sẽ được tạo trong mỗi method để tránh timeout
-    }public List<Category> getAllCategories() {
+    }
+    
+    public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
         String query = "SELECT * FROM Categories WHERE is_deleted = 0 ORDER BY display_order ASC";
         
@@ -26,7 +28,8 @@ public class CategoryDAO {
             while (rs.next()) {
                 Category category = mapResultSetToCategory(rs);
                 categories.add(category);
-            }        } catch (SQLException e) {
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return categories;
@@ -66,7 +69,70 @@ public class CategoryDAO {
             e.printStackTrace();
             return false;
         }
-    }public boolean updateCategory(Category category) {        String query = "UPDATE Categories SET parent_id = ?, name = ?, description = ?, status = ?, display_order = ?, updated_at = GETDATE() WHERE category_id = ? AND is_deleted = 0";
+    }
+    public boolean createCategory(Category category) {
+        String query = "INSERT INTO Categories (parent_id, name, description, status, display_order, created_at, updated_at, is_deleted) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 0)";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            // Handle null parent_id
+            if (category.getParentId() != null) {
+                ps.setInt(1, category.getParentId());
+            } else {
+                ps.setNull(1, java.sql.Types.INTEGER);
+            }
+            
+            ps.setString(2, category.getName());
+            ps.setString(3, category.getDescription());
+            
+            ps.setString(5, category.getStatus());
+            
+            // Use default display order if not set
+            int displayOrder = category.getDisplayOrder();
+            if (displayOrder <= 0) {
+                // Get the highest display order and add 1
+                displayOrder = getHighestDisplayOrder() + 1;
+            }
+            ps.setInt(6, displayOrder);
+            
+            int result = ps.executeUpdate();
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /**
+     * Create a new category - simplified version for warehouse integration
+     * @param category The category to create
+     * @return true if successful, false otherwise
+     */
+    
+    
+    /**
+     * Get the highest display order currently in use
+     * @return The highest display order, or 0 if no categories exist
+     */
+    private int getHighestDisplayOrder() {
+        String query = "SELECT MAX(display_order) AS max_order FROM Categories";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt("max_order");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+    
+    public boolean updateCategory(Category category) {
+        String query = "UPDATE Categories SET parent_id = ?, name = ?, description = ?, image = ?, status = ?, display_order = ?, updated_at = GETDATE() WHERE category_id = ? AND is_deleted = 0";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -84,7 +150,9 @@ public class CategoryDAO {
             e.printStackTrace();
             return false;
         }
-    }    public boolean deleteCategory(int categoryId) {
+    }
+    
+    public boolean deleteCategory(int categoryId) {
         String query = "UPDATE Categories SET is_deleted = 1, updated_at = GETDATE() WHERE category_id = ?";
         
         try (Connection conn = DBContext.getConnection();
@@ -98,7 +166,9 @@ public class CategoryDAO {
             e.printStackTrace();
             return false;
         }
-    }    public List<Category> getParentCategories() {
+    }
+    
+    public List<Category> getParentCategories() {
         List<Category> categories = new ArrayList<>();
         String query = "SELECT * FROM Categories WHERE parent_id IS NULL AND is_deleted = 0 ORDER BY display_order ASC";
         
@@ -126,13 +196,5 @@ public class CategoryDAO {
         category.setUpdatedAt(rs.getString("updated_at"));
         category.setIsDeleted(rs.getInt("is_deleted"));
         return category;
-    }    // Test method to check database connection
-    public boolean testConnection() {
-        try (Connection conn = DBContext.getConnection()) {
-            return conn != null && !conn.isClosed();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }

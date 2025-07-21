@@ -6,8 +6,14 @@ import model.entity.BlogPost;
 import model.entity.Product;
 import model.entity.Category;
 import model.entity.ProductImage;
+import model.entity.Product;
+import model.entity.Category;
+import model.entity.ProductImage;
 import service.interfaces.BlogService;
 import service.impl.BlogServiceImpl;
+import dao.impl.ProductDAO;
+import dao.impl.CategoryDAO;
+import dao.impl.ProductImageDAO;
 import dao.impl.ProductDAO;
 import dao.impl.CategoryDAO;
 import dao.impl.ProductImageDAO;
@@ -22,6 +28,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -377,6 +385,7 @@ public class HomeServlet extends HttpServlet {
             return;
         }
         
+        // If logged in, check role
         // If logged in, check role
         if ("admin".equals(user.getRole())) {
             // Admin can see dashboard link in header

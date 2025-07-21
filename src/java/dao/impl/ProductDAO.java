@@ -1,6 +1,11 @@
 package dao.impl;
 
 import java.math.BigDecimal;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.entity.Product;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,8 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import model.entity.Product;
 import utils.db.DBContext;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductDAO {
+
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -51,20 +59,21 @@ public class ProductDAO {
                 );
                 products.add(product);
             }
+            System.out.println("Số sản phẩm lấy được: " + products.size()); // Log ra console
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("Lỗi SQL: " + e.getMessage());
         }
-        
+
         return products;
     }
 
     public boolean toggleIsDeleted(int productId) {
-        String query = "UPDATE Products SET is_deleted = CASE WHEN is_deleted = 0 THEN 1 ELSE 0 END, " +
-                      "updated_at = GETDATE() WHERE product_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            
+        String query = "UPDATE Products SET is_deleted = CASE WHEN is_deleted = 0 THEN 1 ELSE 0 END, "
+                + "updated_at = GETDATE() WHERE product_id = ?";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+
             ps.setInt(1, productId);
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -74,42 +83,70 @@ public class ProductDAO {
     }
 
     public boolean createProduct(Product product) {
-        String query = "INSERT INTO Products (category_id, name, description, short_description, " +
-                      "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted) " +
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            
-            ps.setObject(1, product.getCategoryId(), java.sql.Types.INTEGER);
-            ps.setString(2, product.getName());
-            ps.setString(3, product.getDescription());
-            ps.setString(4, product.getShortDescription());
-            ps.setBigDecimal(5, product.getPrice());
-            ps.setBigDecimal(6, product.getSalePrice());
+        String query = "INSERT INTO Products (category_id, name, description, short_description, "
+                + "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE(), ?)";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+
+            // Safely set the category ID (handle null case)
+            if (product.getCategoryId() != null) {
+                ps.setInt(1, product.getCategoryId());
+            } else {
+                ps.setInt(1, 1); // Default category if null
+            }
+
+            // Set name with null check
+            ps.setString(2, product.getName() != null ? product.getName() : "");
+
+            // Set description with null check
+            ps.setString(3, product.getDescription() != null ? product.getDescription() : "");
+
+            // Set short description with null check
+            ps.setString(4, product.getShortDescription() != null ? product.getShortDescription() : "");
+
+            // Set price with null check
+            ps.setBigDecimal(5, product.getPrice() != null ? product.getPrice() : BigDecimal.ZERO);
+
+            // Set sale price with null check
+            ps.setBigDecimal(6, product.getSalePrice() != null ? product.getSalePrice() : null);
+
+            // Set quantity
             ps.setInt(7, product.getQuantity());
-            ps.setString(8, product.getSku());
-            ps.setString(9, product.getStatus());
+
+            // Set SKU with null check
+            ps.setString(8, product.getSku() != null ? product.getSku() : "");
+
+            // Set status with null check
+            ps.setString(9, product.getStatus() != null ? product.getStatus() : "active");
+
+            // Set featured with null check
             ps.setInt(10, product.getFeatured() != null ? product.getFeatured() : 0);
-            ps.setString(11, product.getCreatedAt());
-            ps.setString(12, product.getUpdatedAt());
-            ps.setInt(13, product.getIsDeleted() != null ? product.getIsDeleted() : 0);
+
+            // We're using GETDATE() for created_at and updated_at in the SQL query
+            // Set is_deleted with null check
+            ps.setInt(11, product.getIsDeleted() != null ? product.getIsDeleted() : 0);
+
+            System.out.println("Executing SQL: " + query);
+            System.out.println("With SKU: " + product.getSku());
+
             int rowsAffected = ps.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
+            System.out.println("SQL Error creating product: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
 
     public boolean updateProduct(Product product) {
-        String query = "UPDATE Products SET category_id = ?, name = ?, description = ?, short_description = ?, " +
-                      "price = ?, sale_price = ?, quantity = ?, sku = ?, status = ?, featured = ?, " +
-                      "is_deleted = ?, updated_at = GETDATE() WHERE product_id = ?";
-        
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            
+        String query = "UPDATE Products SET category_id = ?, name = ?, description = ?, short_description = ?, "
+                + "price = ?, sale_price = ?, quantity = ?, sku = ?, status = ?, featured = ?, "
+                + "is_deleted = ?, updated_at = GETDATE() WHERE product_id = ?";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+
             ps.setObject(1, product.getCategoryId(), java.sql.Types.INTEGER);
             ps.setString(2, product.getName());
             ps.setString(3, product.getDescription());
@@ -131,20 +168,18 @@ public class ProductDAO {
     }
 
     public int getLastInsertProductId() {
-        String query = "SELECT IDENT_CURRENT('Products') AS last_id"; // SQL Server
-        int id = -1;
-        
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-            
+        String query = "SELECT TOP 1 product_id FROM Products ORDER BY product_id DESC";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+
             if (rs.next()) {
-                id = rs.getInt("last_id");
+                return rs.getInt("product_id");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error getting last insert product ID: " + e.getMessage());
         }
-        return id;
+
+        return -1;
     }
 
     public Product getProductById(int productId) {
@@ -512,8 +547,8 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         if (categoryId == 0) {
             query.append("WHERE p.is_deleted = 0 ");
         } else if (isParent) {
-            query.append("JOIN Categories c ON p.category_id = c.category_id " +
-                         "WHERE (c.category_id = ? OR c.parent_id = ?) AND p.is_deleted = 0 AND c.is_deleted = 0 ");
+            query.append("JOIN Categories c ON p.category_id = c.category_id "
+                    + "WHERE (c.category_id = ? OR c.parent_id = ?) AND p.is_deleted = 0 AND c.is_deleted = 0 ");
             categoryIds.add(categoryId);
             categoryIds.add(categoryId);
         } else {
@@ -552,9 +587,8 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         // Add pagination
         query.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query.toString())) {
-            
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(query.toString())) {
+
             int paramIndex = 1;
             for (Integer id : categoryIds) {
                 ps.setInt(paramIndex++, id);
@@ -567,9 +601,9 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
 
             // Log the query and parameters for debugging
             System.out.println("Executing query: " + query.toString());
-            System.out.println("Parameters: categoryId=" + categoryId + ", isParent=" + isParent + 
-                               ", page=" + page + ", pageSize=" + pageSize + ", sort=" + sort + 
-                               ", search=" + (search != null ? search : "null"));
+            System.out.println("Parameters: categoryId=" + categoryId + ", isParent=" + isParent
+                    + ", page=" + page + ", pageSize=" + pageSize + ", sort=" + sort
+                    + ", search=" + (search != null ? search : "null"));
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -601,6 +635,7 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         return products;
     }
 
+    
     public int getTotalProductsByCategoryId(int categoryId, boolean isParent, String search) {
         StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM Products p ");
         List<Integer> categoryIds = new ArrayList<>();
@@ -701,5 +736,201 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
             e.printStackTrace();
         }
         return 0;
+    }
+    
+    /**
+     * Check if a SKU already exists in the database (including deleted products)
+     * @param sku The SKU to check
+     * @return true if the SKU exists, false otherwise
+     */
+    public boolean skuExists(String sku) {
+        if (sku == null || sku.trim().isEmpty()) {
+            return false;
+        }
+        
+        String query = "SELECT COUNT(*) FROM Products WHERE sku = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, sku);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error checking if SKU exists: " + e.getMessage());
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Generate a unique SKU if the provided SKU already exists
+     * @param sku The original SKU
+     * @return A unique SKU (either the original one if it's unique, or a modified version)
+     */
+    public String getUniqueSku(String sku) {
+        if (!skuExists(sku)) {
+            return sku; // SKU is unique, return as is
+        }
+        
+        // SKU exists, generate a unique one by appending a number
+        String baseSku = sku;
+        int counter = 1;
+        
+        while (skuExists(baseSku + counter)) {
+            counter++;
+        }
+        
+        return baseSku + counter;
+    }
+    
+    /**
+     * Get product by SKU
+     */
+    public Product getProductBySku(String sku) {
+        if (sku == null || sku.trim().isEmpty()) {
+            return null;
+        }
+        
+        Product product = null;
+        String sql = "SELECT * FROM Products WHERE sku = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, sku);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getString("created_at"));
+                product.setUpdatedAt(rs.getString("updated_at"));
+                product.setIsDeleted(rs.getInt("is_deleted"));
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return product;
+    }
+
+    
+    /**
+     * Get products with stock level below or equal to the specified threshold
+     * @param threshold The stock level threshold
+     * @return List of products with low stock
+     */
+    public List<Product> getProductsByStockLevel(int threshold) {
+        List<Product> products = new ArrayList<>();
+        String query = "SELECT product_id, category_id, name, description, short_description, "
+                + "price, sale_price, quantity, sku, status, featured, created_at, updated_at, is_deleted "
+                + "FROM Products "
+                + "WHERE quantity <= ? AND is_deleted = 0 "
+                + "ORDER BY quantity ASC, name ASC";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            ps.setInt(1, threshold);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Product product = new Product();
+                product.setProductId(rs.getInt("product_id"));
+                product.setCategoryId(rs.getInt("category_id"));
+                product.setName(rs.getString("name"));
+                product.setDescription(rs.getString("description"));
+                product.setShortDescription(rs.getString("short_description"));
+                product.setPrice(rs.getBigDecimal("price"));
+                product.setSalePrice(rs.getBigDecimal("sale_price"));
+                product.setQuantity(rs.getInt("quantity"));
+                product.setSku(rs.getString("sku"));
+                product.setStatus(rs.getString("status"));
+                product.setFeatured(rs.getInt("featured"));
+                product.setCreatedAt(rs.getString("created_at"));
+                product.setUpdatedAt(rs.getString("updated_at"));
+                product.setIsDeleted(rs.getInt("is_deleted"));
+                
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting products by stock level: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return products;
+    }
+
+    /**
+     * Get multiple products by IDs (tối ưu performance)
+     * @param productIds List of product IDs
+     * @return Map of product ID to Product object
+     */
+    public Map<Integer, Product> getProductsByIds(List<Integer> productIds) {
+        Map<Integer, Product> productsMap = new HashMap<>();
+        if (productIds == null || productIds.isEmpty()) {
+            return productsMap;
+        }
+        
+        // Tạo placeholders cho IN clause
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < productIds.size(); i++) {
+            if (i > 0) placeholders.append(",");
+            placeholders.append("?");
+        }
+        
+        String query = "SELECT * FROM Products WHERE product_id IN (" + placeholders.toString() + ")";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            
+            // Set parameters
+            for (int i = 0; i < productIds.size(); i++) {
+                ps.setInt(i + 1, productIds.get(i));
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setCategoryId(rs.getInt("category_id"));
+                    product.setName(rs.getString("name"));
+                    product.setDescription(rs.getString("description"));
+                    product.setShortDescription(rs.getString("short_description"));
+                    product.setPrice(rs.getBigDecimal("price"));
+                    product.setSalePrice(rs.getBigDecimal("sale_price"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setSku(rs.getString("sku"));
+                    product.setStatus(rs.getString("status"));
+                    product.setFeatured(rs.getInt("featured"));
+                    product.setCreatedAt(rs.getString("created_at"));
+                    product.setUpdatedAt(rs.getString("updated_at"));
+                    product.setIsDeleted(rs.getInt("is_deleted"));
+                    
+                    productsMap.put(product.getProductId(), product);
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy nhiều sản phẩm: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return productsMap;
     }
 }
