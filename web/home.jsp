@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="assets/css/product-gridd.css">
 
         <!-- Custom styles for user display -->
-            <style>
+        <style>
         /* Badges for bestseller products */
         .badges {
             position: absolute;
@@ -43,10 +43,10 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .user-greeting {
-            font-size: 14px !important;
-            line-height: 1.5 !important;
-        }
+            .user-greeting {
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+            }
 
             .user-greeting strong {
                 font-weight: 600 !important;
@@ -986,9 +986,9 @@
                                 <c:choose>
                                     <c:when test="${not empty bestsellerProducts}">
                                         <c:forEach var="product" items="${bestsellerProducts}" varStatus="status" begin="0" end="9">
-                                            <li class="product-item">
-                                                <div class="contain-product layout-default">
-                                                    <div class="product-thumb">
+                                <li class="product-item">
+                                    <div class="contain-product layout-default">
+                                        <div class="product-thumb">
                                                         <a href="product-detail?id=${product.productId}" class="link-to-product">
                                                             <c:choose>
                                                                 <c:when test="${not empty bestsellerProductImages[product.productId]}">
@@ -998,15 +998,15 @@
                                                                     <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
                                                                 </c:otherwise>
                                                             </c:choose>
-                                                        </a>
-                                                        <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                            </a>
+                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
                                                         <c:if test="${product.soldQuantity > 0}">
                                                             <div class="badges">
                                                                 <span class="sale-badge">${product.soldQuantity} đã bán</span>
-                                                            </div>
+                                        </div>
                                                         </c:if>
-                                                    </div>
-                                                    <div class="info">
+                                        </div>
+                                        <div class="info">
                                                         <c:choose>
                                                             <c:when test="${not empty bestsellerProductCategories[product.productId]}">
                                                                 <b class="categories">${bestsellerProductCategories[product.productId].name}</b>
@@ -1026,41 +1026,41 @@
                                                                     <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></ins>
                                                                 </c:otherwise>
                                                             </c:choose>
-                                                        </div>
-                                                        <div class="slide-down-box">
+                                            </div>
+                                            <div class="slide-down-box">
                                                             <p class="message">Sản phẩm chất lượng cao được chọn lọc kỹ càng.</p>
-                                                            <div class="buttons">
+                                                <div class="buttons">
                                                                 <a href="#" class="btn wishlist-btn" onclick="addToWishlist(event, '${product.productId}')"><i class="fa fa-heart" aria-hidden="true"></i></a>
                                                                 <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(event, '${product.productId}')"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>thêm vào giỏ hàng</a>
-                                                                <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
                                                 </div>
-                                            </li>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
                                         </c:forEach>
                                     </c:when>
                                     <c:otherwise>
-                                        <li class="product-item">
-                                            <div class="contain-product layout-default">
-                                                <div class="product-thumb">
-                                                    <a href="#" class="link-to-product">
+                                <li class="product-item">
+                                    <div class="contain-product layout-default">
+                                        <div class="product-thumb">
+                                            <a href="#" class="link-to-product">
                                                         <img src="assets/images/products/p-19.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                                    </a>
-                                                    <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                                </div>
-                                                <div class="info">
+                                            </a>
+                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                        </div>
+                                        <div class="info">
                                                     <b class="categories">Cá cảnh</b>
                                                     <h4 class="product-title"><a href="#" class="pr-name">Chưa có sản phẩm bán chạy</a></h4>
-                                                    <div class="price ">
+                                            <div class="price ">
                                                         <ins><span class="price-amount"><span class="currencySymbol">₫</span>0</span></ins>
-                                                    </div>
-                                                    <div class="slide-down-box">
-                                                        <p class="message">Chưa có sản phẩm nào bán được trên 5 sản phẩm.</p>
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </li>
+                                            <div class="slide-down-box">
+                                                        <p class="message">Chưa có sản phẩm nào bán được trên 5 sản phẩm.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
                                     </c:otherwise>
                                 </c:choose>
                             </ul>

@@ -1,5 +1,7 @@
-package dao.impl;
+package dao.impl.pOrder;
 
+import dao.impl.CartDAO;
+import dao.impl.ProductDAO;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,7 +82,6 @@ public class OrderDAOImpl {
     }
 
     public Order getOrderByOrderNumber(String orderNumber) {
-        System.out.println("DEBUG - getOrderByOrderNumber - searching for: " + orderNumber);
         String sql = "SELECT * FROM Orders WHERE order_number = ? AND is_deleted = 0";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, orderNumber);
@@ -88,49 +89,11 @@ public class OrderDAOImpl {
                 if (rs.next()) {
                     Order order = mapResultSetToOrder(rs);
                     order.setOrderItems(getOrderItems(order.getOrderId()));
-                    
-                    // Lấy cartId từ database
-                    // Commented out code that was previously in a try-catch block:
-                    // order.setCartId(rs.getInt("cart_id"));
-                    
-                    System.out.println("DEBUG - getOrderByOrderNumber - found order: " + order.getOrderId() + ", status: " + order.getStatus());
                     return order;
                 }
             }
-            System.out.println("DEBUG - getOrderByOrderNumber - no order found for: " + orderNumber);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), e);
-            System.out.println("DEBUG - getOrderByOrderNumber - SQLException: " + e.getMessage());
-        }
-        return null;
-    }
-
-    /**
-     * Lấy thông tin đơn hàng theo số đơn hàng (không phân biệt hoa thường)
-     * 
-     * @param orderNumber số đơn hàng cần tìm
-     * @return đơn hàng nếu tìm thấy, null nếu không tìm thấy
-     */
-    public Order getOrderByOrderNumberCaseInsensitive(String orderNumber) {
-        System.out.println("DEBUG - getOrderByOrderNumberCaseInsensitive - searching for: " + orderNumber);
-        try {
-            String sql = "SELECT * FROM Orders WHERE LOWER(order_number) = LOWER(?) AND is_deleted = 0";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, orderNumber);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        Order order = mapResultSetToOrder(rs);
-                        order.setOrderItems(getOrderItems(order.getOrderId()));
-                        System.out.println("DEBUG - getOrderByOrderNumberCaseInsensitive - found order with ID: " + order.getOrderId());
-                        return order;
-                    } else {
-                        System.out.println("DEBUG - getOrderByOrderNumberCaseInsensitive - no order found for: " + orderNumber);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("DEBUG - getOrderByOrderNumberCaseInsensitive - error: " + e.getMessage());
         }
         return null;
     }
@@ -283,16 +246,13 @@ public class OrderDAOImpl {
     public boolean updateOrderStatus(int orderId, String status) {
         String sql = "UPDATE Orders SET status = ?, updated_at = GETDATE() WHERE order_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            System.out.println("DEBUG - updateOrderStatus - orderId: " + orderId + ", status: " + status);
             ps.setString(1, status);
             ps.setInt(2, orderId);
             int result = ps.executeUpdate();
-            System.out.println("DEBUG - updateOrderStatus - rows affected: " + result);
             
             return result > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái đơn hàng: " + e.getMessage(), e);
-            System.out.println("DEBUG - updateOrderStatus - SQLException: " + e.getMessage());
             return false;
         }
     }
@@ -414,14 +374,15 @@ public class OrderDAOImpl {
         order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
         order.setShippingFee(rs.getBigDecimal("shipping_fee"));
         order.setTax(rs.getBigDecimal("tax"));
+        order.setFinalAmount(rs.getBigDecimal("final_amount"));
         order.setPaymentMethod(rs.getString("payment_method"));
         order.setPaymentStatus(rs.getString("payment_status"));
         order.setShippingAddressId(rs.getInt("shipping_address_id"));
+        order.setBillingAddressId(rs.getInt("billing_address_id"));
         order.setNotes(rs.getString("notes"));
         order.setCreatedAt(rs.getTimestamp("created_at"));
         order.setUpdatedAt(rs.getTimestamp("updated_at"));
         order.setIsDeleted(rs.getBoolean("is_deleted"));
-        
         return order;
     }
 
@@ -671,172 +632,5 @@ public class OrderDAOImpl {
             LOGGER.log(Level.SEVERE, "Lỗi khi kiểm tra trạng thái hoàn tiền: " + e.getMessage(), e);
             return false;
         }
-    }
-
-    /**
-     * Cập nhật ghi chú cho đơn hàng
-     * 
-     * @param orderId ID của đơn hàng
-     * @param notes Ghi chú mới
-     * @return true nếu cập nhật thành công, false nếu thất bại
-     */
-    public boolean updateOrderNotes(int orderId, String notes) {
-        String sql = "UPDATE Orders SET notes = ?, updated_at = GETDATE() WHERE order_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, notes);
-            ps.setInt(2, orderId);
-            int result = ps.executeUpdate();
-            
-            return result > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật ghi chú đơn hàng: " + e.getMessage(), e);
-            return false;
-        }
-    }
-
-    /**
-     * Tạo đơn hàng tạm thời cho thanh toán SePay
-     * 
-     * @param userId người dùng tạo đơn hàng
-     * @param cartId giỏ hàng
-     * @param orderNumber số đơn hàng (tempOrderNumber)
-     * @param addressId địa chỉ giao hàng
-     * @param notes ghi chú
-     * @param totalAmount tổng tiền đơn hàng
-     * @return id của đơn hàng
-     */
-    public int createTemporaryOrder(int userId, int cartId, String orderNumber, int addressId, String notes, BigDecimal totalAmount) {
-        System.out.println("DEBUG - Creating temporary order: " + orderNumber);
-        
-        // Tính toán các giá trị
-        BigDecimal shippingFee = new BigDecimal("20000"); // 20,000 VNĐ
-        BigDecimal taxRate = new BigDecimal("0.05"); // 5%
-        BigDecimal tax = totalAmount.multiply(taxRate);
-        BigDecimal finalAmount = totalAmount.add(shippingFee).add(tax);
-        
-        String sql = "INSERT INTO Orders (user_id, order_number, shipping_address_id, status, payment_method, payment_status, tax, shipping_fee, discount_amount, notes, created_at, updated_at) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
-        
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, userId);
-            ps.setString(2, orderNumber);
-            ps.setInt(3, addressId);
-            ps.setString(4, "pending");
-            ps.setString(5, "bank_transfer");
-            ps.setString(6, "pending");
-            ps.setBigDecimal(7, tax);
-            ps.setBigDecimal(8, shippingFee);
-            ps.setBigDecimal(9, BigDecimal.ZERO); // Không có giảm giá
-            ps.setString(10, notes);
-            
-            int result = ps.executeUpdate();
-            if (result > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    int orderId = rs.getInt(1);
-                    
-                    // Tạo chi tiết đơn hàng
-                    try { // Added try-catch here
-                        createOrderItems(orderId, cartId);
-                    } catch (Exception e) {
-                        System.out.println("DEBUG - Error creating order items but continuing: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                    
-                    System.out.println("DEBUG - Temporary order created with ID: " + orderId);
-                    return orderId;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi tạo đơn hàng tạm thời: " + e.getMessage(), e);
-            System.out.println("DEBUG - Error creating temporary order: " + e.getMessage());
-        }
-        
-        return 0;
-    }
-
-    /**
-     * Tạo chi tiết đơn hàng từ giỏ hàng
-     * 
-     * @param orderId ID đơn hàng
-     * @param cartId ID giỏ hàng
-     * @return true nếu tạo thành công, false nếu có lỗi
-     */
-    private boolean createOrderItems(int orderId, int cartId) {
-        System.out.println("DEBUG - Creating order items for order: " + orderId + " from cart: " + cartId);
-        try {
-            // Lấy danh sách sản phẩm từ giỏ hàng - sử dụng truy vấn trực tiếp với tên bảng chính xác
-            String selectCartItemsSql = "SELECT ci.*, p.name as product_name, p.price as product_price " +
-                    "FROM Cart_items ci " + // Tên bảng chính xác là Cart_items, không phải CartItems
-                    "JOIN Products p ON ci.product_id = p.product_id " +
-                    "WHERE ci.cart_id = ?";
-            
-            String insertOrderItemSql = "INSERT INTO Order_items (order_id, product_id, product_name, quantity, unit_price, subtotal, is_deleted) VALUES (?, ?, ?, ?, ?, ?, 0)";
-            
-            int count = 0;
-            try (PreparedStatement psSelect = conn.prepareStatement(selectCartItemsSql)) {
-                psSelect.setInt(1, cartId);
-                
-                try (ResultSet rs = psSelect.executeQuery()) {
-                    PreparedStatement psInsert = conn.prepareStatement(insertOrderItemSql);
-                    
-                    while (rs.next()) {
-                        int productId = rs.getInt("product_id");
-                        int quantity = rs.getInt("quantity");
-                        BigDecimal price = rs.getBigDecimal("product_price");
-                        BigDecimal subtotal = price.multiply(new BigDecimal(quantity));
-                        String productName = rs.getString("product_name");
-                        
-                        psInsert.setInt(1, orderId);
-                        psInsert.setInt(2, productId);
-                        psInsert.setString(3, productName);
-                        psInsert.setInt(4, quantity);
-                        psInsert.setBigDecimal(5, price);
-                        psInsert.setBigDecimal(6, subtotal);
-                        
-                        psInsert.addBatch();
-                        count++;
-                        System.out.println("DEBUG - Added item to batch: " + productName + ", quantity: " + quantity);
-                    }
-                    
-                    if (count > 0) {
-                        int[] results = psInsert.executeBatch();
-                        System.out.println("DEBUG - Created " + results.length + " order items");
-                        return true;
-                    }
-                    
-                    psInsert.close();
-                }
-            }
-            
-            return count > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi tạo chi tiết đơn hàng: " + e.getMessage(), e);
-            System.out.println("DEBUG - Error creating order items: " + e.getMessage());
-            return false;
-        }
-    }
-    
-    /**
-     * Lấy tên sản phẩm từ ID sản phẩm
-     * 
-     * @param productId ID sản phẩm
-     * @return Tên sản phẩm
-     */
-    private String getProductName(int productId) {
-        try {
-            String sql = "SELECT name FROM Products WHERE product_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, productId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getString("name");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("DEBUG - Error getting product name: " + e.getMessage());
-        }
-        return "Sản phẩm #" + productId;
     }
 } 

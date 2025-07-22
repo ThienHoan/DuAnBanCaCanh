@@ -1,171 +1,187 @@
-//package ai;
-//
-//import ai.tools.AquariumTools;
-//import com.google.gson.Gson;
-//import com.google.genai.Client;
-//import com.google.genai.types.FunctionDeclaration;
-//import com.google.genai.types.Schema;
-//import com.google.genai.types.Type;
-//import com.google.genai.types.Tool;
-//import com.google.genai.types.GenerateContentConfig;
-//import com.google.genai.types.GenerateContentResponse;
-//import com.google.genai.types.FunctionCall;
-//import com.google.genai.types.Part;
-//import com.google.common.collect.ImmutableMap;
-//import com.google.common.collect.ImmutableList;
-//import com.google.genai.types.Tool;
-//import com.google.genai.types.FunctionDeclaration;
-//import com.google.genai.Client;
-//import com.google.genai.types.Tool;
-//import com.google.genai.types.FunctionDeclaration;
-//
-//import java.io.IOException;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//
-///**
-// * Lớp Agent với Google GenAI SDK mới (com.google.genai).
-// * Hỗ trợ Function Calling cho tư vấn cá cảnh, sản phẩm, bệnh và thức ăn.
-// */
-//public class Agent {
-//    private final Client client;
-//    private final String modelName;
-//    private final AquariumTools aquariumTools;
-//    private final Gson gson = new Gson();
-//
-//    // Các khai báo FunctionDeclaration lưu thành trường để tái sử dụng (tùy trường hợp)
-//    private final List<FunctionDeclaration> functionDeclarations;
-//
-//    public Agent(String apiKey, String modelName) throws IOException {
-//        this.modelName = modelName;
-//        this.aquariumTools = new AquariumTools();
-//        this.client = Client.builder()
-//                .apiKey(apiKey)
-//                .build();
-//        // Khởi tạo FunctionDeclaration cho các function gọi được
-//        this.functionDeclarations = ImmutableList.of(
-//                FunctionDeclaration.builder()
-//                        .name("fishRecommendation")
-//                        .description("Tư vấn chọn cá cảnh phù hợp dựa trên kinh nghiệm người chơi (beginner, intermediate, advanced).")
-//                        .parameters(
-//                                Schema.builder()
-//                                        .type(Type.Known.OBJECT)
-//                                        .properties(ImmutableMap.of(
-//                                                "experience",
-//                                                Schema.builder().type(Type.Known.STRING)
-//                                                        .description("Kinh nghiệm của người chơi (beginner, intermediate, advanced).")
-//                                                        .build()
-//                                        ))
-//                                        .required(ImmutableList.of("experience"))
-//                                        .build()
-//                        )
-//                        .build(),
-//                FunctionDeclaration.builder()
-//                        .name("productInquiry")
-//                        .description("Tra cứu một sản phẩm cụ thể trong database. Dùng khi người dùng hỏi về một sản phẩm có tên cụ thể.")
-//                        .parameters(
-//                                Schema.builder()
-//                                        .type(Type.Known.OBJECT)
-//                                        .properties(ImmutableMap.of(
-//                                                "productName",
-//                                                Schema.builder().type(Type.Known.STRING)
-//                                                        .description("Tên sản phẩm cần tìm.")
-//                                                        .build()
-//                                        ))
-//                                        .required(ImmutableList.of("productName"))
-//                                        .build()
-//                        )
-//                        .build(),
-//                FunctionDeclaration.builder()
-//                        .name("feedingAdvice")
-//                        .description("Tư vấn các loại thức ăn phù hợp cho một loại cá cụ thể.")
-//                        .parameters(
-//                                Schema.builder()
-//                                        .type(Type.Known.OBJECT)
-//                                        .properties(ImmutableMap.of(
-//                                                "fishType",
-//                                                Schema.builder().type(Type.Known.STRING)
-//                                                        .description("Tên loại cá cần tư vấn.")
-//                                                        .build()
-//                                        ))
-//                                        .required(ImmutableList.of("fishType"))
-//                                        .build()
-//                        )
-//                        .build(),
-//                FunctionDeclaration.builder()
-//                        .name("diseaseDiagnosis")
-//                        .description("Chẩn đoán bệnh dựa trên triệu chứng và gợi ý sản phẩm điều trị.")
-//                        .parameters(
-//                                Schema.builder()
-//                                        .type(Type.Known.OBJECT)
-//                                        .properties(ImmutableMap.of(
-//                                                "symptoms",
-//                                                Schema.builder().type(Type.Known.STRING)
-//                                                        .description("Mô tả triệu chứng của cá.")
-//                                                        .build()
-//                                        ))
-//                                        .required(ImmutableList.of("symptoms"))
-//                                        .build()
-//                        )
-//                        .build()
-//        );
-//    }
-//
-//    public String chat(String userMessage) throws IOException {
-//        // Tạo Tool từ các hàm đã định nghĩa
-//        Tool tool = Tool.builder()
-//    .functions(functionDeclarations) // functionDeclarations là List<FunctionDeclaration>
-//    .build();
-//
-//        // Cấu hình để gọi model với Function Calling
-//        GenerateContentConfig config = GenerateContentConfig.builder()
-//                .tools(ImmutableList.of(tool))
-//                .build();
-//        // Gửi message tới model
-//        GenerateContentResponse response = client.models.generateContent(
-//                modelName,
-//                userMessage,
-//                config
-//        );
-//        // Xử lý function call nếu có
-//        List<FunctionCall> functionCalls = response.functionCalls();
-//        if (functionCalls != null && !functionCalls.isEmpty()) {
-//            FunctionCall functionCall = functionCalls.get(0); // chỉ xử lý function call đầu tiên (nếu nhiều)
-//            Map<String, Object> result = executeFunction(functionCall);
-//            // Gửi kết quả function call trở lại cho model
-//            GenerateContentResponse finalResponse = client.models.generateContent(
-//                    modelName,
-//                    Part.fromFunctionResponse(functionCall.name(), result),
-//                    null
-//            );
-//            return getText(finalResponse);
-//        }
-//        return getText(response);
-//    }
-//
-//    private Map<String, Object> executeFunction(FunctionCall functionCall) {
-//        String functionName = functionCall.name();
-//        Map<String, Object> args = functionCall.args();
-//        if (args == null) args = new HashMap<>();
-//        switch (functionName) {
-//            case "fishRecommendation":
-//                return aquariumTools.fishRecommendation((String) args.get("experience"));
-//            case "productInquiry":
-//                return aquariumTools.productInquiry((String) args.get("productName"));
-//            case "feedingAdvice":
-//                return aquariumTools.feedingAdvice((String) args.get("fishType"));
-//            case "diseaseDiagnosis":
-//                return aquariumTools.diseaseDiagnosis((String) args.get("symptoms"));
-//            default:
-//                return Map.of("error", "Unknown function: " + functionName);
-//        }
-//    }
-//
-//    private String getText(GenerateContentResponse response) {
-//        if (response == null || response.text() == null || response.text().trim().isEmpty()) {
-//            return "Xin lỗi, tôi không thể xử lý yêu cầu này ngay bây giờ.";
-//        }
-//        return response.text();
-//    }
-//}
+package ai;
+
+import ai.tools.AquariumTools;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.io.FileInputStream;
+
+/**
+ * Lớp Agent đơn giản hóa sử dụng HttpURLConnection thay vì Google GenAI SDK
+ */
+public class Agent {
+
+    private final String apiKey;
+    private final String modelName;
+    private final AquariumTools aquariumTools;
+    
+    public Agent(String apiKey, String modelName) {
+        this.apiKey = apiKey;
+        this.modelName = modelName;
+        this.aquariumTools = new AquariumTools();
+    }
+    
+    /**
+     * Phương thức chính để chat với AI
+     */
+    public String chat(String userMessage) throws IOException {
+        // Xử lý đơn giản: kiểm tra từ khóa trong tin nhắn để quyết định gọi function nào
+        if (userMessage.toLowerCase().contains("cá") && 
+            (userMessage.toLowerCase().contains("mới chơi") || 
+             userMessage.toLowerCase().contains("beginner") || 
+             userMessage.toLowerCase().contains("kinh nghiệm"))) {
+            return processFunction("fishRecommendation", "beginner");
+        } 
+        else if (userMessage.toLowerCase().contains("sản phẩm") || 
+                 userMessage.toLowerCase().contains("product")) {
+            // Tìm tên sản phẩm trong tin nhắn (đơn giản hóa)
+            String productName = extractProductName(userMessage);
+            return processFunction("productInquiry", productName);
+        }
+        else if (userMessage.toLowerCase().contains("thức ăn") || 
+                 userMessage.toLowerCase().contains("feed")) {
+            // Tìm loại cá trong tin nhắn
+            String fishType = extractFishType(userMessage);
+            return processFunction("feedingAdvice", fishType);
+        }
+        else if (userMessage.toLowerCase().contains("bệnh") || 
+                 userMessage.toLowerCase().contains("triệu chứng") || 
+                 userMessage.toLowerCase().contains("symptom")) {
+            // Lấy mô tả triệu chứng
+            return processFunction("diseaseDiagnosis", userMessage);
+        }
+        else {
+            // Gọi API bên ngoài nếu cần
+            return callExternalAPI(userMessage);
+        }
+    }
+    
+    /**
+     * Xử lý các function call dựa trên loại function
+     */
+    private String processFunction(String functionName, String param) {
+        Map<String, Object> result = new HashMap<>();
+        
+        switch (functionName) {
+            case "fishRecommendation":
+                result = aquariumTools.fishRecommendation(param);
+                break;
+            case "productInquiry":
+                result = aquariumTools.productInquiry(param);
+                break;
+            case "feedingAdvice":
+                result = aquariumTools.feedingAdvice(param);
+                break;
+            case "diseaseDiagnosis":
+                result = aquariumTools.diseaseDiagnosis(param);
+                break;
+            default:
+                result.put("error", "Unknown function: " + functionName);
+        }
+        
+        // Chuyển kết quả thành chuỗi có định dạng
+        return formatResult(result);
+    }
+    
+    /**
+     * Gọi API bên ngoài (ví dụ: OpenAI) nếu cần
+     */
+    private String callExternalAPI(String message) {
+        try {
+            // Đọc cấu hình API từ file (nếu có)
+            Properties props = new Properties();
+            try {
+                props.load(new FileInputStream("config.properties"));
+                // Nếu có API key trong file cấu hình, sử dụng nó
+                String configApiKey = props.getProperty("api.key");
+                if (configApiKey != null && !configApiKey.isEmpty()) {
+                    // Sử dụng API key từ file
+                }
+            } catch (IOException e) {
+                // Sử dụng API key mặc định
+            }
+            
+            // Mẫu gọi API đơn giản
+            URL url = new URL("https://api.example.com/chat");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+            conn.setDoOutput(true);
+            
+            // Tạo request body
+            String jsonInputString = "{\"model\": \"" + modelName + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]}";
+            
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+            
+            // Đọc response
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+            
+            // Xử lý response đơn giản
+            String responseStr = response.toString();
+            if (responseStr.contains("\"content\":")) {
+                // Trích xuất nội dung phản hồi (đơn giản hóa)
+                int start = responseStr.indexOf("\"content\":") + 11;
+                int end = responseStr.indexOf("\"", start);
+                return responseStr.substring(start, end);
+            }
+            
+            return responseStr;
+        } catch (Exception e) {
+            return "Xin lỗi, tôi không thể xử lý yêu cầu này ngay bây giờ. Lỗi: " + e.getMessage();
+        }
+    }
+    
+    /**
+     * Trích xuất tên sản phẩm từ tin nhắn
+     */
+    private String extractProductName(String message) {
+        // Đơn giản hóa: lấy từ sau "sản phẩm" hoặc "product"
+        if (message.toLowerCase().contains("sản phẩm")) {
+            int index = message.toLowerCase().indexOf("sản phẩm") + 8;
+            return message.substring(index).trim();
+        } else if (message.toLowerCase().contains("product")) {
+            int index = message.toLowerCase().indexOf("product") + 7;
+            return message.substring(index).trim();
+        }
+        return "unknown";
+    }
+    
+    /**
+     * Trích xuất loại cá từ tin nhắn
+     */
+    private String extractFishType(String message) {
+        // Đơn giản hóa: lấy từ sau "cá"
+        if (message.toLowerCase().contains("cá")) {
+            int index = message.toLowerCase().indexOf("cá") + 2;
+            return message.substring(index).trim();
+        }
+        return "unknown";
+    }
+    
+    /**
+     * Format kết quả thành chuỗi có định dạng
+     */
+    private String formatResult(Map<String, Object> result) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Object> entry : result.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return sb.toString();
+    }
+}

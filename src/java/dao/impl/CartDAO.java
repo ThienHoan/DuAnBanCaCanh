@@ -187,6 +187,32 @@ public boolean testInsertHardcode() throws SQLException {
         }
     }
 
+    /**
+     * Xóa tất cả các mục trong giỏ hàng
+     * 
+     * @param cartId ID của giỏ hàng
+     * @return true nếu thành công, false nếu thất bại
+     */
+    public boolean clearCartItems(int cartId) {
+        String sql = "DELETE FROM Cart_items WHERE cart_id = ?";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, cartId);
+            
+            int rowsAffected = ps.executeUpdate();
+            
+            System.out.println("DEBUG - Cleared " + rowsAffected + " items from cart " + cartId);
+            
+            return rowsAffected >= 0; // Trả về true ngay cả khi không có mục nào bị xóa
+            
+        } catch (SQLException e) {
+            System.out.println("DEBUG - Error clearing cart items: " + e.getMessage());
+            return false;
+        }
+    }
+
     // Get cart item count
     public int getCartItemCount(int cartId) throws SQLException {
         try (Connection connection = DBContext.getConnection()) {

@@ -33,7 +33,7 @@ public class ReviewController extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         try {
-            reviewService = new ReviewServiceImpl();
+        reviewService = new ReviewServiceImpl();
             System.out.println("ReviewController - ReviewService initialized successfully");
         } catch (Exception e) {
             System.err.println("ReviewController - Error initializing ReviewService: " + e.getMessage());
@@ -42,10 +42,10 @@ public class ReviewController extends HttpServlet {
         
         // Create upload directory if it doesn't exist
         try {
-            String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
+        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
             }
             System.out.println("ReviewController - Upload directory created: " + uploadPath);
         } catch (Exception e) {

@@ -30,7 +30,8 @@ public class AuthenticationFilter implements Filter {
         "/ai-agent.jsp",
         "/ai-agent-api.jsp",
         "/CategoryServlet",
-        "/category"
+        "/category",
+        "/sepay-webhook"  // Thêm webhook URL vào danh sách công khai
     );
     
     // Các trang giỏ hàng và thanh toán - cần đăng nhập nhưng không cần quyền admin
@@ -109,6 +110,14 @@ public class AuthenticationFilter implements Filter {
             System.out.println("❌ User not logged in, redirecting to login");
             httpResponse.sendRedirect(contextPath + "/login");
             return;
+        }
+
+        // Đảm bảo thông tin người dùng được lưu trong session với các key chuẩn
+        if (session != null && user != null) {
+            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("userEmail", user.getEmail());
+            session.setAttribute("userName", user.getFullName());
+            System.out.println("✅ User info stored in session: userId=" + user.getUserId() + ", email=" + user.getEmail());
         }
 
         // Kiểm tra quyền admin

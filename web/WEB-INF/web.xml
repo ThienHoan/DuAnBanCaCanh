@@ -544,4 +544,29 @@
         <url-pattern>/review-simple</url-pattern>
     </servlet-mapping>
     
+    <!-- SePay Webhook Controller -->
+    <servlet>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <servlet-class>controller.client.SePayWebhookController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <url-pattern>/sepay-webhook</url-pattern>
+    </servlet-mapping>
+    <!-- Thêm mapping cho URL tuyệt đối -->
+    <servlet-mapping>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <url-pattern>/DuAnBanCaCanh/sepay-webhook</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Ngrok Config Controller -->
+    <servlet>
+        <servlet-name>NgrokConfigController</servlet-name>
+        <servlet-class>controller.admin.NgrokConfigController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NgrokConfigController</servlet-name>
+        <url-pattern>/admin/ngrok-config</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

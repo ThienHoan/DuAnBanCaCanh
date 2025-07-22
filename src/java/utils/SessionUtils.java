@@ -4,23 +4,17 @@ import jakarta.servlet.http.HttpSession;
 import model.entity.User;
 
 /**
- * Utility class để quản lý session và authentication
+ * Utility class for session management
  */
 public class SessionUtils {
     
-    public static final String USER_SESSION_KEY = "user";
-    public static final String ADMIN_ROLE = "admin";
-    public static final String CUSTOMER_ROLE = "customer";
+    private static final String USER_SESSION_KEY = "user";
     
     /**
-     * Lưu user vào session
-     */
-    public static void setUser(HttpSession session, User user) {
-        session.setAttribute(USER_SESSION_KEY, user);
-    }
-    
-    /**
-     * Lấy user từ session
+     * Get the current logged-in user from session
+     * 
+     * @param session The HttpSession object
+     * @return The User object or null if not logged in
      */
     public static User getUser(HttpSession session) {
         if (session == null) {
@@ -30,59 +24,49 @@ public class SessionUtils {
     }
     
     /**
-     * Kiểm tra user đã đăng nhập chưa
+     * Set the user in session (login)
+     * 
+     * @param session The HttpSession object
+     * @param user The User object to set
+     */
+    public static void setUser(HttpSession session, User user) {
+        if (session != null) {
+            session.setAttribute(USER_SESSION_KEY, user);
+        }
+    }
+    
+    /**
+     * Remove the user from session (logout)
+     * 
+     * @param session The HttpSession object
+     */
+    public static void removeUser(HttpSession session) {
+        if (session != null) {
+            session.removeAttribute(USER_SESSION_KEY);
+        }
+    }
+    
+    /**
+     * Check if a user is logged in
+     * 
+     * @param session The HttpSession object
+     * @return true if logged in, false otherwise
      */
     public static boolean isLoggedIn(HttpSession session) {
         return getUser(session) != null;
     }
     
     /**
-     * Kiểm tra user có phải admin không
+     * Check if the logged in user has admin role
+     * 
+     * @param session The HttpSession object
+     * @return true if admin, false otherwise
      */
     public static boolean isAdmin(HttpSession session) {
         User user = getUser(session);
-        return user != null && ADMIN_ROLE.equals(user.getRole());
-    }
-    
-    /**
-     * Kiểm tra user có phải customer không
-     */
-    public static boolean isCustomer(HttpSession session) {
-        User user = getUser(session);
-        return user != null && CUSTOMER_ROLE.equals(user.getRole());
-    }
-    
-    /**
-     * Xóa user khỏi session (logout)
-     */
-    public static void logout(HttpSession session) {
-        if (session != null) {
-            session.removeAttribute(USER_SESSION_KEY);
-            session.invalidate();
+        if (user == null) {
+            return false;
         }
-    }
-    
-    /**
-     * Lấy user ID từ session
-     */
-    public static Integer getUserId(HttpSession session) {
-        User user = getUser(session);
-        return user != null ? user.getUserId() : null;
-    }
-    
-    /**
-     * Lấy username từ session
-     */
-    public static String getUsername(HttpSession session) {
-        User user = getUser(session);
-        return user != null ? user.getUsername() : null;
-    }
-    
-    /**
-     * Lấy full name từ session
-     */
-    public static String getFullName(HttpSession session) {
-        User user = getUser(session);
-        return user != null ? user.getFullName() : null;
+        return "admin".equalsIgnoreCase(user.getRole());
     }
 }

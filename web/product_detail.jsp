@@ -1372,7 +1372,7 @@ function updateCartCount(count) {
     <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
     <!-- Phần giá và nút vẫn giữ nguyên -->
 </div>
-                                                            <div class="info">
+                            <div class="info">
                                 <b class="categories">${category.name}</b>
                                 <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
                                 <div class="product-rating">
