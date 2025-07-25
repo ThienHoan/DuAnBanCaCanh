@@ -1,0 +1,51 @@
+# Configuration file for Fish Shop Application - EXAMPLE
+# Copy this file to config.properties and fill in your actual values
+# DO NOT commit the actual config.properties file to git!
+
+# TinyMCE Configuration
+# Get your API key from: https://www.tiny.cloud/my-account/dashboard/
+tinymce.api.key=your-tinymce-api-key-here
+tinymce.version=6
+
+# Google OAuth Configuration
+# Get credentials from: https://console.cloud.google.com/
+google.oauth.client.id=your-google-client-id
+google.oauth.client.secret=your-google-client-secret
+google.oauth.redirect.uri=http://localhost:8080/DuAnCaCanh/googlecallback
+google.oauth.grant.type=authorization_code
+google.oauth.scope=openid email profile
+
+# Application Settings
+app.name=Fish Shop
+app.version=1.0
+app.debug=false
+
+# File Upload Settings
+upload.max.size=10485760
+upload.allowed.types=jpg,jpeg,png,gif,pdf,doc,docx
+
+# Blog Settings
+blog.posts.per.page=9
+blog.featured.posts.count=3
+blog.excerpt.length=150
+
+# Database Configuration (if needed)
+# db.host=localhost
+# db.port=1433
+# db.name=your-database-name
+# db.username=your-db-username
+# db.password=your-db-password
+
+# Email Configuration (if needed)
+# email.smtp.host=smtp.gmail.com
+# email.smtp.port=587
+# email.username=your-email@gmail.com
+# email.password=your-app-password
+
+# Security Settings
+# jwt.secret=your-jwt-secret-key
+# session.timeout=3600
+
+# Cache Settings
+# cache.enabled=true
+# cache.timeout=300

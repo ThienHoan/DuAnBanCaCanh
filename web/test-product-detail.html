@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Product Detail with Review</title>
+</head>
+<body>
+    <h1>Test Product Detail with Review</h1>
+    
+    <h2>Test Product Detail Pages:</h2>
+    <a href="product-detail-with-review?id=1">Test Product Detail with Review (ID=1)</a><br>
+    <a href="product-detail-with-review?id=2">Test Product Detail with Review (ID=2)</a><br>
+    
+    <h2>Test Review Submission:</h2>
+    <form action="submit-review" method="post">
+        <input type="hidden" name="action" value="submit">
+        <input type="hidden" name="productId" value="1">
+        <label>Rating: <input type="number" name="rating" value="5" min="1" max="5" required></label><br>
+        <label>Comment: <textarea name="comment" required>Test review comment</textarea></label><br>
+        <button type="submit">Submit Review</button>
+    </form>
+    
+    <h2>Current Context:</h2>
+    <p>Context Path: <span id="contextPath"></span></p>
+    <p>Full URL: <span id="fullUrl"></span></p>
+    
+    <script>
+        document.getElementById('contextPath').textContent = window.location.pathname.split('/')[1] || 'No context path';
+        document.getElementById('fullUrl').textContent = window.location.href;
+    </script>
+</body>
+</html> 

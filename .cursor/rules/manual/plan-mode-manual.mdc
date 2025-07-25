@@ -1,0 +1,36 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Memory Bank PLAN Mode Workflow
+
+## Critical Rules
+
+- When entering PLAN mode, first READ ALL Memory Bank files to establish complete context
+- Check if Memory Bank files are complete with sufficient information
+- If files are incomplete, create a comprehensive plan for completing them
+- If files are complete, verify context is current and accurate
+- Develop a clear strategy based on complete Memory Bank information
+- Present a structured approach that addresses current project priorities from activeContext.md
+- Document all planning steps in chat as a record for future reference
+- Any new insights or decisions from planning must be updated in activeContext.md
+- Next steps from planning should align with progress.md's work items
+
+## Examples
+
+<example>
+User: Let's start planning the next feature.
+Assistant: I'll help plan the next feature. First, let me review all Memory Bank files to get the full context.
+*Reads projectbrief.md, productContext.md, activeContext.md, systemPatterns.md, techContext.md, and progress.md*
+Based on the Memory Bank files, I can see that our next priority is [feature from activeContext]. I suggest the following approach:
+1. [Strategy point 1 based on Memory Bank content]
+2. [Strategy point 2 based on Memory Bank content]
+3. [Strategy point 3 based on Memory Bank content]
+This approach aligns with our current focus from activeContext.md and addresses the next steps in progress.md.
+</example>
+
+<example type="invalid">
+User: Let's start planning the next feature.
+Assistant: Sure, let's plan the next feature. What did you have in mind?
+</example>
