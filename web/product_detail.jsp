@@ -591,7 +591,6 @@
                 <h4 class="mb-3"><i class="fa fa-fish"></i> Chi tiết cá cảnh</h4>
                 <table class="tbl_attributes table table-bordered">
                     <tbody>
-
                         <tr>
                             <th>Tên khoa học:</th>
                             <td>${not empty productDetail.scientificName ? productDetail.scientificName : 'N/A'}</td>
@@ -701,9 +700,7 @@
                             </c:if>
                         </div>
                         
-                        <!-- Đánh giá -->
-
-<!-- ====== REVIEW TAB ====== -->
+                        <!-- ====== REVIEW TAB - GIỮ NGUYÊN TỪ PASTE-2 ====== -->
 <div id="tab_5th" class="tab-contain review-tab">
 
     
@@ -756,11 +753,6 @@
             </div>
           </div>
         </div>
-        
-        <!-- Debug info -->
-        <p>Total Reviews: ${totalReviews}</p>
-        <p>Average Rating: ${averageRating}</p>
-        <p>Rating Counts: ${ratingCounts[0]}, ${ratingCounts[1]}, ${ratingCounts[2]}, ${ratingCounts[3]}, ${ratingCounts[4]}</p>
         
         <style>
             
@@ -1188,82 +1180,6 @@
   }
 }
 </style>
-
-<!-- ====== SCRIPT ====== -->
-<script>
-function showImageModal(imageUrl){
-  document.getElementById('modalImage').src = imageUrl;
-  const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
-  imageModal.show();
-}
-
-/* Script for Cart Functions */
-function addToCart(event, productId) {
-    if (event) event.preventDefault();
-    
-    // Lấy số lượng từ input
-    var quantityInput = document.querySelector('.qty-input input[name="qty"]');
-    var quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-
-    var formData = new FormData();
-    formData.append('action', 'add');
-    formData.append('productId', productId);
-    formData.append('quantity', quantity);
-
-    fetch('cartClient', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage(data.message, 'success');
-            updateCartCount(data.itemCount);
-        } else {
-            showMessage(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
-    });
-}
-
-function showMessage(message, type) {
-    // Create message element
-    var messageDiv = document.createElement('div');
-    messageDiv.className = 'alert alert-' + type;
-    messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
-    
-    if (type === 'success') {
-        messageDiv.style.backgroundColor = '#28a745';
-    } else {
-        messageDiv.style.backgroundColor = '#dc3545';
-    }
-    
-    messageDiv.textContent = message;
-    document.body.appendChild(messageDiv);
-    
-    // Remove message after 3 seconds
-    setTimeout(function() {
-        document.body.removeChild(messageDiv);
-    }, 3000);
-}
-
-function updateCartCount(count) {
-    // Update cart counter if you have one
-    var cartCounter = document.querySelector('.cart-counter');
-    if (cartCounter) {
-        cartCounter.textContent = count;
-    }
-}
-</script>
-
-
-
-
-
-
                         
                         <!-- New Shipping & Stock Tab -->
                         <div id="tab_6th" class="tab-contain shipping-stock-tab">
@@ -1340,8 +1256,6 @@ function updateCartCount(count) {
                     </div>
                 </div>
 
-
-
                 <!-- related products -->
 <div class="product-related-box single-layout">
     <div class="biolife-title-box lg-margin-bottom-26px-im">
@@ -1366,11 +1280,6 @@ function updateCartCount(count) {
             </c:otherwise>
         </c:choose>
     </a>
-</div>
-<div class="info">
-    <b class="categories">${category.name}</b>
-    <h4 class="product-title"><a href="product-detail?id=${relatedProduct.productId}" class="pr-name">${relatedProduct.name}</a></h4>
-    <!-- Phần giá và nút vẫn giữ nguyên -->
 </div>
                             <div class="info">
                                 <b class="categories">${category.name}</b>
@@ -1647,6 +1556,74 @@ function updateCartCount(count) {
                 );
             });
         });
+        
+        // Script for image modal
+        function showImageModal(imageUrl){
+          document.getElementById('modalImage').src = imageUrl;
+          const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+          imageModal.show();
+        }
+
+        /* Script for Cart Functions */
+        function addToCart(event, productId) {
+            if (event) event.preventDefault();
+            
+            // Lấy số lượng từ input
+            var quantityInput = document.querySelector('.qty-input input[name="qty"]');
+            var quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+
+            var formData = new FormData();
+            formData.append('action', 'add');
+            formData.append('productId', productId);
+            formData.append('quantity', quantity);
+
+            fetch('cartClient', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    updateCartCount(data.itemCount);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
+            });
+        }
+
+        function showMessage(message, type) {
+            // Create message element
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'alert alert-' + type;
+            messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
+            
+            if (type === 'success') {
+                messageDiv.style.backgroundColor = '#28a745';
+            } else {
+                messageDiv.style.backgroundColor = '#dc3545';
+            }
+            
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            // Remove message after 3 seconds
+            setTimeout(function() {
+                document.body.removeChild(messageDiv);
+            }, 3000);
+        }
+
+        function updateCartCount(count) {
+            // Update cart counter if you have one
+            var cartCounter = document.querySelector('.cart-counter');
+            if (cartCounter) {
+                cartCounter.textContent = count;
+            }
+        }
     </script>
 </body>
 

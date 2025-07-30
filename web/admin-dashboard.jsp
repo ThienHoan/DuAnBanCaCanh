@@ -1,3 +1,4 @@
+<%@page import="model.entity.pOrder.Order"%>
 <%@page import="dao.impl.OrderDAO"%>
 <%@page import="dao.impl.ProductDAO"%>
 <%@page import="dao.impl.UserDAO"%>

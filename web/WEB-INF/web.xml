@@ -146,14 +146,7 @@
     </servlet-mapping>
     
     <!-- Admin Dashboard servlet -->
-    <servlet>
-        <servlet-name>AdminDashboardServlet</servlet-name>
-        <servlet-class>controller.admin.AdminDashboardServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AdminDashboardServlet</servlet-name>
-        <url-pattern>/admin-dashboard</url-pattern>
-    </servlet-mapping>
+    <!-- Đã xóa định nghĩa AdminDashboardServlet vì đã có annotation @WebServlet trong class -->
     
     <!-- Client Dashboard servlet -->
     <servlet>
@@ -473,7 +466,7 @@
     <servlet>
         <servlet-name>AIAgentServlet</servlet-name>
         <!-- THAY ĐỔI DUY NHẤT Ở ĐÂY -->
-        <servlet-class>controller.AIAgentServlet</servlet-class> 
+        <servlet-class>controller.client.AIAgentServlet</servlet-class> 
     </servlet>
     <servlet-mapping>
         <servlet-name>AIAgentServlet</servlet-name>

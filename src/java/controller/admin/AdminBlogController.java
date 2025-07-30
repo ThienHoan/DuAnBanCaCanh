@@ -234,7 +234,7 @@ public class AdminBlogController extends HttpServlet {
             User user = (User) session.getAttribute("user");
             
             String action = request.getParameter("action");
-            String redirectUrl = request.getContextPath() + "/admin-blog";
+            String redirectUrl = request.getContextPath() + "/admin-blogs";
 
             switch (action) {
                 case "create":
@@ -301,7 +301,7 @@ public class AdminBlogController extends HttpServlet {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error handling blog action", e);
             request.getSession().setAttribute("errorMessage", "Lỗi thực hiện hành động: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/admin-blog");
+            response.sendRedirect(request.getContextPath() + "/admin-blogs");
         }
     }    private void handleCreatePost(HttpServletRequest request, User user) {
         LOGGER.info("Creating new post for user: " + user.getUserId());

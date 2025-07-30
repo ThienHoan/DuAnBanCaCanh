@@ -570,37 +570,59 @@
         }
 
         async function sendMessage(event) {
-            event.preventDefault();
-            const userInput = document.getElementById('userInput').value.trim();
-            if (!userInput) return;
+    event.preventDefault();
+    const userInput = document.getElementById('userInput').value.trim();
+    if (!userInput) return;
 
-            addMessage('user', userInput);
-            document.getElementById('userInput').value = '';
-            showLoading(true);
+    addMessage('user', userInput);
+    document.getElementById('userInput').value = '';
+    showLoading(true);
 
-            try {
-                const response = await fetch('ai-agent', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'question=' + encodeURIComponent(userInput)
-                });
+    try {
+        const response = await fetch('ai-agent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'question=' + encodeURIComponent(userInput)
+        });
 
-                if (!response.ok) {
-                    throw new Error('Lỗi server: ' + response.status);
-                }
-
-                const responseText = await response.text();
-                addMessage('agent', responseText);
-
-            } catch (error) {
-                console.error('SendMessage Error:', error);
-                addMessage('agent', '❌ Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
-            } finally {
-                showLoading(false);
-            }
+        if (!response.ok) {
+            throw new Error('Lỗi server: ' + response.status);
         }
+
+        const responseText = await response.text();
+        
+        // Kiểm tra xem response có phải là JSON không
+        let finalResponse;
+        try {
+            const jsonData = JSON.parse(responseText);
+            // Nếu là JSON và có field response, lấy nội dung từ field đó
+            if (jsonData.success && jsonData.response) {
+                finalResponse = jsonData.response;
+            } else if (jsonData.response) {
+                finalResponse = jsonData.response;
+            } else if (jsonData.message) {
+                finalResponse = jsonData.message;
+            } else {
+                // Nếu JSON không có field mong muốn, hiển thị toàn bộ
+                finalResponse = responseText;
+            }
+        } catch (parseError) {
+            // Nếu không phải JSON, hiển thị nguyên văn
+            finalResponse = responseText;
+        }
+
+        addMessage('agent', finalResponse);
+
+    } catch (error) {
+        console.error('SendMessage Error:', error);
+        addMessage('agent', '❌ Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
+    } finally {
+        showLoading(false);
+    }
+}
+
         
         // Thiết lập SSE để nhận thông báo thanh toán thành công
         function setupPaymentNotifications() {

@@ -123,8 +123,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="category-status ${category.isActive ? 'status-active' : 'status-inactive'}">
-                                        ${category.isActive ? 'Kích hoạt' : 'Ẩn'}
+                                    <span class="category-status ${category.active ? 'status-active' : 'status-inactive'}">
+                                        ${category.active ? 'Kích hoạt' : 'Ẩn'}
                                     </span>
                                 </td>                                <td class="table-actions">
                                     <button type="button" class="btn btn-sm btn-outline-primary btn-action btn-edit" 
@@ -132,13 +132,13 @@
                                             data-category-name="${category.categoryName}"
                                             data-category-slug="${category.slug}"
                                             data-category-description="${category.description}"
-                                            data-category-active="${category.isActive}"
+                                            data-category-active="${category.active}"
                                             title="Sửa">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                     
                                     <c:choose>
-                                        <c:when test="${category.isActive}">
+                                        <c:when test="${category.active}">
                                             <button type="button" class="btn btn-sm btn-outline-warning btn-action btn-toggle" 
                                                     data-category-id="${category.categoryId}"
                                                     data-action="deactivate"

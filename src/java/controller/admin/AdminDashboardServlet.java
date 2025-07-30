@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@WebServlet(name = "AdminDashboardServlet", urlPatterns = {"/admin-dashboard"})
 public class AdminDashboardServlet extends HttpServlet {
     private ProductDAO productDAO = new ProductDAO();
     private OrderDAO orderDAO = new OrderDAO();
@@ -47,7 +48,7 @@ public class AdminDashboardServlet extends HttpServlet {
             request.setAttribute("orderStatistics", dashboardData.get("orderStatistics"));
             
             // Forward đến trang dashboard
-            request.getRequestDispatcher("admin-dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin-dashboard.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
