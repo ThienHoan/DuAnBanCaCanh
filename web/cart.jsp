@@ -228,7 +228,7 @@
                                                 <td>
                                                     <div class="input-group" style="max-width: 120px; margin: 0 auto;">
                                                         <input type="number" id="quantity-${item.cartItemId}" name="quantity" value="${item.quantity}" 
-                                                               min="1" max="20" class="quantity-input"/>
+                                                               min="1" max="${productQuantities[item.productId]}"  class="quantity-input"/>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -340,17 +340,7 @@
         });
     });
 
-    // Quantity input validation
-    document.querySelectorAll('input[name="quantity"]').forEach(input => {
-        input.addEventListener('change', function() {
-            if (this.value < 1) {
-                this.value = 1;
-            }
-            if (this.value > 20) {
-                this.value = 20;
-            }
-        });
-    });
+
 
     // Hàm cập nhật sản phẩm
    function updateCartItem(cartItemId) {

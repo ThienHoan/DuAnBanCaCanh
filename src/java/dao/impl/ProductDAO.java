@@ -1905,11 +1905,64 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         return products;
     }
 
-    /**
-     * Get multiple products by IDs (tối ưu performance)
-     * @param productIds List of product IDs
-     * @return Map of product ID to Product object
-     */
+    
+     public Map<Integer, Integer> getProductQuantitiesByIds(List<Integer> productIds) {
+    Map<Integer, Integer> quantitiesMap = new HashMap<>();
+    if (productIds == null || productIds.isEmpty()) {
+        return quantitiesMap;
+    }
+    
+    // Tạo placeholders cho IN clause
+    StringBuilder placeholders = new StringBuilder();
+    for (int i = 0; i < productIds.size(); i++) {
+        if (i > 0) placeholders.append(",");
+        placeholders.append("?");
+    }
+    
+    String query = "SELECT product_id, quantity FROM Products WHERE product_id IN (" + placeholders.toString() + ")";
+    
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        
+        // Set parameters
+        for (int i = 0; i < productIds.size(); i++) {
+            ps.setInt(i + 1, productIds.get(i));
+        }
+        
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int productId = rs.getInt("product_id");
+                int quantity = rs.getInt("quantity");
+                quantitiesMap.put(productId, quantity);
+            }
+        }
+        
+    } catch (SQLException e) {
+        System.err.println("Lỗi khi lấy quantity của sản phẩm: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return quantitiesMap;
+}
+    
+     
+       public int getProductStockQuantity(int productId) {
+    String query = "SELECT quantity FROM Products WHERE product_id = ?";
+    try (Connection conn = DBContext.getConnection(); 
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, productId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("quantity");
+            }
+            return 0;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return 0;
+    }
+}
+    
     public Map<Integer, Product> getProductsByIds(List<Integer> productIds) {
         Map<Integer, Product> productsMap = new HashMap<>();
         if (productIds == null || productIds.isEmpty()) {

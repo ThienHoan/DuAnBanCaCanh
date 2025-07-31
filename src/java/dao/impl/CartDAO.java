@@ -165,6 +165,26 @@ public boolean testInsertHardcode() throws SQLException {
         }
     }
 
+    
+    public int getCurrentQuantityInCart(int userId, int productId) throws SQLException {
+    String query = "SELECT ci.quantity FROM Cart_items ci " +
+                   "JOIN Carts c ON ci.cart_id = c.cart_id " +
+                   "WHERE c.user_id = ? AND ci.product_id = ?";
+    try (Connection connection = DBContext.getConnection();
+         PreparedStatement ps = connection.prepareStatement(query)) {
+        ps.setInt(1, userId);
+        ps.setInt(2, productId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("quantity");
+            }
+            return 0;
+        }
+    }
+}
+    
+    
+    
     // Remove cart item
     public boolean removeCartItem(int cartItemId) throws SQLException {
         try (Connection connection = DBContext.getConnection()) {

@@ -149,6 +149,10 @@
                                                         <li class="menu-item"><a href="CategoryServlet?categoryId=8">Thuốc cho cá</a></li>
                                                     </ul>
                                                 </li>
+                                                <li class="menu-item menu-item-has-children has-child">
+                                                    <a href="ai-agent.jsp" class="menu-name" data-title="Cá cảnh"><i class="biolife-icon icon-fish"></i>Tư Vấn Bởi AI</a>
+                                                    
+                                                </li>
                                                 
                                             </ul>
                                         </div>
@@ -731,7 +735,7 @@
                     <div class="col-lg-8 sm-margin-top-84px">
                         <div class="advance-product-box">
                             <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny lg-margin-bottom-26px-im">
-                                <h3 class="title">Bestseller Products</h3>
+                                <h3 class="title">Những Sản Phẩm Được Mua Nhiều Nhất</h3>
                                 <p class="subtitle">Sản phẩm bán chạy nhất (trên 5 sản phẩm đã bán)</p>
                             </div>
                             <ul class="products-list biolife-carousel nav-top-right nav-main-color nav-none-on-mobile eq-height-contain" data-slick='{"rows":2 ,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":0,"slidesToShow":3, "slidesToScroll":3, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 3, "slidesToScroll":3}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesToScroll":3, "slidesMargin": 20}},{"breakpoint":768, "settings":{ "slidesToShow": 2, "slidesToScroll":2, "slidesMargin": 15}}]}'>

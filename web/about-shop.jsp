@@ -15,12 +15,12 @@
 <body>
     <header>
         <div class="content-fit">
-            <div class="logo">Fish Shop</div>
+            <li class="logo"><a href="home" style="text-decoration: none">Trang Chủ</a></li>
             <nav>
                 <ul>
-                    <li>Liên hệ</li>
-                    <li>Sản phẩm</li>
-                    <li>Đăng nhập</li>
+                    <li class="menu-item"><a href="contact_us.jsp" style="text-decoration: none">Liên Hệ</a></li>
+                    <li class="menu-item"><a href="category" style="text-decoration: none">Sản Phẩm</a></li>
+                    <li class="menu-item"><a href="login" style="text-decoration: none">Đăng Nhập</a></li>
                 </ul>
             </nav>
         </div>
