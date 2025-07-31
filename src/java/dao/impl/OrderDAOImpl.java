@@ -431,9 +431,11 @@ public class OrderDAOImpl {
         order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
         order.setShippingFee(rs.getBigDecimal("shipping_fee"));
         order.setTax(rs.getBigDecimal("tax"));
+        order.setFinalAmount(rs.getBigDecimal("final_amount"));
         order.setPaymentMethod(rs.getString("payment_method"));
         order.setPaymentStatus(rs.getString("payment_status"));
         order.setShippingAddressId(rs.getInt("shipping_address_id"));
+        order.setBillingAddressId(rs.getInt("billing_address_id"));
         order.setNotes(rs.getString("notes"));
         order.setCreatedAt(rs.getTimestamp("created_at"));
         order.setUpdatedAt(rs.getTimestamp("updated_at"));

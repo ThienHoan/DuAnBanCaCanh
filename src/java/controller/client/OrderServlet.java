@@ -321,9 +321,14 @@ public class OrderServlet extends HttpServlet {
             boolean success = orderDAO.updateOrderStatus(orderId, "shipping");
             
             if (success) {
-                // Cập nhật inventory và inventory_logs khi admin xác nhận giao hàng
-                addInventoryLogsForShipping(orderId);
-                
+                // Chỉ trừ kho khi đơn hàng là COD
+                if ("cod".equalsIgnoreCase(order.getPaymentMethod())) {
+                    addInventoryLogsForShipping(orderId); // Vừa trừ kho vừa ghi log
+                } else {
+                    // Đơn VNPay: chỉ ghi log, không trừ kho nữa
+                    // Có thể bổ sung ghi log xác nhận giao hàng nếu muốn
+                    LOGGER.info("Đơn hàng VNPay đã được trừ kho khi thanh toán, chỉ ghi log xác nhận giao hàng cho orderId=" + orderId);
+                }
                 response.sendRedirect("order?message=Order marked as shipped successfully");
             } else {
                 response.sendRedirect("order?error=Failed to mark order as shipped");
