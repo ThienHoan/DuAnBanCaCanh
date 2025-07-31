@@ -32,5 +32,6 @@
     <p>Request URI: ${pageContext.request.requestURI}</p>
     <p>Server Name: ${pageContext.request.serverName}</p>
     <p>Server Port: ${pageContext.request.serverPort}</p>
+    <jsp:include page="footer.jsp" />
 </body>
 </html>

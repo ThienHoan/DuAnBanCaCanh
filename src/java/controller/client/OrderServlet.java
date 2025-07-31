@@ -1,3 +1,4 @@
+
 package controller.client;
 
 import dao.impl.OrderDAOImpl;
@@ -319,9 +320,7 @@ public class OrderServlet extends HttpServlet {
             boolean success = orderDAO.updateOrderStatus(orderId, "shipping");
             
             if (success) {
-                // Cập nhật inventory và inventory_logs khi admin xác nhận giao hàng
-                addInventoryLogsForShipping(orderId);
-                
+                // KHÔNG cập nhật inventory và inventory_logs ở đây nữa
                 response.sendRedirect("order?message=Order marked as shipped successfully");
             } else {
                 response.sendRedirect("order?error=Failed to mark order as shipped");
@@ -704,15 +703,12 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
-            // Thêm log trước khi thực hiện cập nhật
             LOGGER.log(java.util.logging.Level.INFO, "Đang xác nhận thanh toán cho đơn hàng: " + orderId);
             
-            // Cập nhật trạng thái thanh toán trong bảng Orders
             boolean success = orderDAO.updatePaymentStatus(orderId, "paid");
             
             if (success) {
                 try {
-                    // Cập nhật trạng thái thanh toán trong bảng Payments
                     String updatePaymentSql = "UPDATE Payments SET status = 'completed' WHERE order_id = ?";
                     try (java.sql.Connection conn = utils.db.DBContext.getConnection();
                          java.sql.PreparedStatement ps = conn.prepareStatement(updatePaymentSql)) {
@@ -720,10 +716,9 @@ public class OrderServlet extends HttpServlet {
                         int rows = ps.executeUpdate();
                         LOGGER.log(java.util.logging.Level.INFO, "Cập nhật trạng thái thanh toán trong bảng Payments: " + rows + " hàng bị ảnh hưởng");
                     }
-                    
-                    // Log that payment has been confirmed
-                    LOGGER.log(java.util.logging.Level.INFO, "Payment confirmed for order #" + orderId + ". Inventory was already updated when order was created.");
-                    
+                    // Chỉ cập nhật inventory và inventory_logs ở đây khi admin xác nhận thanh toán
+                    addInventoryLogsForShipping(orderId);
+                    LOGGER.log(java.util.logging.Level.INFO, "Payment confirmed for order #" + orderId + ". Inventory updated at payment confirmation.");
                     response.sendRedirect("order?message=Payment confirmed successfully");
                 } catch (Exception e) {
                     LOGGER.log(java.util.logging.Level.WARNING, "Không thể cập nhật bảng Payments, nhưng Orders đã được cập nhật: " + e.getMessage(), e);
@@ -777,9 +772,7 @@ public class OrderServlet extends HttpServlet {
             boolean success = orderDAO.updateOrderStatus(orderId, "confirmed");
             
             if (success) {
-                // Cập nhật inventory và inventory_logs khi admin xác nhận đơn hàng
-                addInventoryLogsForOrderConfirmation(orderId);
-                
+                // KHÔNG cập nhật inventory và inventory_logs ở đây nữa
                 response.sendRedirect("order?message=Order confirmed successfully");
             } else {
                 response.sendRedirect("order?error=Failed to confirm order");

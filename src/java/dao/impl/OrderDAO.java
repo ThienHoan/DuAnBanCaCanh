@@ -65,17 +65,18 @@ public class OrderDAO {
     }
     
     /**
-     * Lấy doanh thu theo tháng của năm hiện tại
+     * Lấy doanh thu theo tháng của năm hiện tại - tính từ tất cả đơn hàng có trạng thái hợp lệ
      */
     public Map<String, BigDecimal> getMonthlyRevenue() {
         Map<String, BigDecimal> monthlyRevenue = new HashMap<>();
         
+        // Tính doanh thu từ tất cả đơn hàng có trạng thái hợp lệ (không phải pending, cancelled)
         String sql = "SELECT " +
                      "    MONTH(created_at) as month, " +
                      "    COALESCE(SUM(total_amount), 0) as revenue " +
                      "FROM Orders " +
                      "WHERE YEAR(created_at) = YEAR(GETDATE()) " +
-                     "    AND status = 'completed' " +
+                     "    AND status NOT IN ('pending', 'cancelled') " +
                      "    AND is_deleted = 0 " +
                      "GROUP BY MONTH(created_at) " +
                      "ORDER BY MONTH(created_at)";
@@ -99,6 +100,46 @@ public class OrderDAO {
             }
         } catch ( SQLException e) {
             System.out.println("Database error getting monthly revenue: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return monthlyRevenue;
+    }
+    
+    /**
+     * Lấy doanh thu theo tháng từ tất cả đơn hàng (không phân biệt status)
+     */
+    public Map<String, BigDecimal> getAllMonthlyRevenue() {
+        Map<String, BigDecimal> monthlyRevenue = new HashMap<>();
+        
+        String sql = "SELECT " +
+                     "    MONTH(created_at) as month, " +
+                     "    COALESCE(SUM(total_amount), 0) as revenue " +
+                     "FROM Orders " +
+                     "WHERE YEAR(created_at) = YEAR(GETDATE()) " +
+                     "    AND is_deleted = 0 " +
+                     "GROUP BY MONTH(created_at) " +
+                     "ORDER BY MONTH(created_at)";
+        
+        // Khởi tạo 12 tháng với giá trị 0
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        for (String month : months) {
+            monthlyRevenue.put(month, BigDecimal.ZERO);
+        }
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int month = rs.getInt("month");
+                    BigDecimal revenue = rs.getBigDecimal("revenue");
+                    monthlyRevenue.put(months[month - 1], revenue);
+                }
+            }
+        } catch ( SQLException e) {
+            System.out.println("Database error getting all monthly revenue: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -548,5 +589,40 @@ public class OrderDAO {
             System.out.println("DEBUG - getOrderByOrderNumber - error: " + e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Debug method để kiểm tra dữ liệu đơn hàng theo tháng
+     */
+    public void debugMonthlyOrders() {
+        String sql = "SELECT " +
+                     "    MONTH(created_at) as month, " +
+                     "    status, " +
+                     "    total_amount, " +
+                     "    order_id " +
+                     "FROM Orders " +
+                     "WHERE YEAR(created_at) = YEAR(GETDATE()) " +
+                     "    AND is_deleted = 0 " +
+                     "ORDER BY MONTH(created_at), status";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                System.out.println("=== DEBUG: Monthly Orders Data ===");
+                while (rs.next()) {
+                    int month = rs.getInt("month");
+                    String status = rs.getString("status");
+                    BigDecimal amount = rs.getBigDecimal("total_amount");
+                    int orderId = rs.getInt("order_id");
+                    System.out.println("Month: " + month + ", Order #" + orderId + 
+                                     ", Status: " + status + ", Amount: " + amount);
+                }
+                System.out.println("=== END DEBUG ===");
+            }
+        } catch ( SQLException e) {
+            System.out.println("Database error in debugMonthlyOrders: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

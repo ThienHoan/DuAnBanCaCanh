@@ -5,6 +5,7 @@ import dao.impl.InventoryLogDAOImpl;
 import dao.impl.ProductDAO;
 import dao.interfaces.InventoryLogDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import model.entity.Product;
  * Controller for warehouse management page
  */
 @WebServlet("/admin/warehouse")
+@MultipartConfig
 public class WarehouseController extends HttpServlet {
     
     private ProductDAO productDAO;
@@ -274,118 +276,213 @@ public class WarehouseController extends HttpServlet {
         String action = request.getParameter("action");
         
         if ("import_csv".equals(action)) {
-            // Handle CSV import
+            // --- KHÔI PHỤC LOGIC UPLOAD NHẬT KÝ KHO HÀNG ---
             Part filePart = request.getPart("csvFile");
             if (filePart != null && filePart.getSize() > 0) {
                 try (InputStream inputStream = filePart.getInputStream();
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                    
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
                     String line;
                     boolean isFirstLine = true;
                     int successCount = 0;
                     int failCount = 0;
                     StringBuilder errors = new StringBuilder();
-                    
                     while ((line = reader.readLine()) != null) {
                         if (isFirstLine) {
                             isFirstLine = false;
                             continue; // Skip header row
                         }
-                        
                         List<String> values = parseCSVLine(line);
-                        if (values.size() < 5) {
+                        if (values.size() < 9) {
                             failCount++;
-                            errors.append("Line format error: ").append(line).append("<br>");
+                            errors.append("Thiếu cột dữ liệu: ").append(line).append("<br>");
                             continue;
                         }
-                        
                         try {
-                            // Extract values from CSV
-                            String name = values.get(0);
-                            String sku = values.get(1);
-                            int quantity = Integer.parseInt(values.get(2));
-                            String categoryName = values.get(3);
-                            String priceStr = values.get(4);
-                            
-                            // Ensure SKU is unique
-                            sku = productDAO.getUniqueSku(sku);
-                            
-                            // Find or create category
-                            int categoryId = getCategoryIdByName(categoryName);
-                            
-                            // Create product object
+                            // Expected columns: ID | Sản Phẩm | SKU | SL Trước | SL Sau | Thay Đổi | Loại | Lý Do | Thời Gian
+                            String productName = values.get(1);
+                            String sku = values.get(2);
+                            int qtyBefore = Integer.parseInt(values.get(3));
+                            int qtyAfter = Integer.parseInt(values.get(4));
+                            String change = values.get(5);
+                            String type = values.get(6);
+                            String reason = values.get(7);
+                            String time = values.get(8);
+                            // Tìm sản phẩm theo SKU
+                            Product product = productDAO.getProductBySku(sku);
+                            if (product == null) {
+                                failCount++;
+                                errors.append("Không tìm thấy sản phẩm với SKU: ").append(sku).append("<br>");
+                                continue;
+                            }
+                            // Ghi log kho hàng
+                            InventoryLog log = new InventoryLog();
+                            log.setProductId(product.getProductId());
+                            log.setQuantityBefore(qtyBefore);
+                            log.setQuantityAfter(qtyAfter);
+                            log.setChangeType(type);
+                            log.setReason(reason);
+                            log.setCreatedAt(time);
+                            log.setProductName(productName);
+                            log.setProductSku(sku);
+                            boolean result = inventoryLogDAO.insertInventoryLog(log);
+                            if (result) {
+                                successCount++;
+                                // Cập nhật số lượng sản phẩm
+                                product.setQuantity(qtyAfter);
+                                productDAO.updateProduct(product);
+                            } else {
+                                failCount++;
+                                errors.append("Không thể thêm log cho SKU: ").append(sku).append("<br>");
+                            }
+                        } catch (Exception e) {
+                            failCount++;
+                            errors.append("Lỗi xử lý: ").append(line).append(" - ").append(e.getMessage()).append("<br>");
+                        }
+                    }
+                    String message = "Đã nhập: " + successCount + " nhật ký kho hàng thành công";
+                    if (failCount > 0) {
+                        message += ", lỗi: " + failCount;
+                    }
+                    if (errors.length() > 0) {
+                        request.setAttribute("importErrors", errors.toString());
+                    }
+                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=inventory&success=import&msg=" +
+                            java.net.URLEncoder.encode(message, "UTF-8"));
+                    return;
+                } catch (Exception e) {
+                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=inventory&error=import&msg=" +
+                            java.net.URLEncoder.encode("Lỗi xử lý file: " + e.getMessage(), "UTF-8"));
+                    return;
+                }
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=inventory&error=import&msg=" +
+                        java.net.URLEncoder.encode("Chưa chọn file hoặc file rỗng", "UTF-8"));
+                return;
+            }
+        }
+        // --- TÁCH RIÊNG UPLOAD SẢN PHẨM MỚI ---
+        else if ("import_product_csv".equals(action)) {
+            Part filePart = request.getPart("csvFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                try (InputStream inputStream = filePart.getInputStream();
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
+                    String line;
+                    int successCount = 0;
+                    int failCount = 0;
+                    StringBuilder errors = new StringBuilder();
+                    boolean isFirstLine = true;
+                    int lineNum = 0;
+                    while ((line = reader.readLine()) != null) {
+                        lineNum++;
+                        if (line.trim().isEmpty()) continue;
+                        List<String> values = parseCSVLine(line);
+                        // Bỏ qua dòng đầu tiên nếu là header (có thể có BOM)
+                        String firstCol = values.get(0).replace("\uFEFF", "").trim();
+                        if (isFirstLine && (firstCol.equalsIgnoreCase("category_id") || firstCol.equalsIgnoreCase("Category ID"))) {
+                            isFirstLine = false;
+                            continue;
+                        }
+                        isFirstLine = false;
+                        if (values.size() < 11) {
+                            failCount++;
+                            errors.append("Thiếu cột dữ liệu dòng ").append(lineNum).append(": ").append(line).append("<br>");
+                            continue;
+                        }
+                        try {
+                            int categoryId = Integer.parseInt(values.get(0).replaceAll("[^0-9]", ""));
+                            String name = values.get(1);
+                            String description = values.get(2);
+                            String shortDescription = values.get(3);
+                            // Xử lý giá, sale_price, quantity loại bỏ ký tự lạ
+                            String priceStr = values.get(4).replaceAll("[^0-9.]", "");
+                            String salePriceStr = values.get(5).replaceAll("[^0-9.]", "");
+                            String quantityStr = values.get(6).replaceAll("[^0-9]", "");
+                            java.math.BigDecimal price = new java.math.BigDecimal(priceStr);
+                            java.math.BigDecimal salePrice = null;
+                            if (!salePriceStr.isEmpty()) {
+                                try {
+                                    salePrice = new java.math.BigDecimal(salePriceStr);
+                                } catch (Exception ex) {
+                                    salePrice = null; // Nếu không hợp lệ thì bỏ qua, không báo lỗi
+                                }
+                            }
+                            int quantity = Integer.parseInt(quantityStr);
+                            String sku = values.get(7);
+                            String status = values.get(8);
+                            // Chuẩn hóa featured
+                            int featured = 0;
+                            String featuredStr = values.get(9).trim();
+                            if (featuredStr.equalsIgnoreCase("TRUE") || featuredStr.equals("1")) featured = 1;
+                            // Chuẩn hóa is_deleted
+                            int isDeleted = 0;
+                            String isDeletedStr = values.get(10).trim();
+                            if (isDeletedStr.equalsIgnoreCase("TRUE") || isDeletedStr.equals("1")) isDeleted = 1;
+                            // Nếu sku đã tồn tại thì bỏ qua, báo lỗi
+                            if (productDAO.skuExists(sku)) {
+                                failCount++;
+                                errors.append("SKU đã tồn tại: ").append(sku).append(" (Sản phẩm: ").append(name).append(") dòng ").append(lineNum).append("<br>");
+                                continue;
+                            }
                             Product product = new Product();
                             product.setName(name);
                             product.setSku(sku);
                             product.setQuantity(quantity);
                             product.setCategoryId(categoryId);
-                            product.setPrice(new java.math.BigDecimal(priceStr));
-                            product.setStatus("active");
-                            product.setFeatured(0);
-                            product.setIsDeleted(0);
-                            
-                            // Add optional fields if available
-                            if (values.size() > 5) product.setDescription(values.get(5));
-                            if (values.size() > 6) product.setShortDescription(values.get(6));
-                            if (values.size() > 7 && !values.get(7).isEmpty()) {
-                                product.setSalePrice(new java.math.BigDecimal(values.get(7)));
-                            }
-                            
-                            // Save product
+                            product.setPrice(price);
+                            product.setSalePrice(salePrice);
+                            product.setStatus(status);
+                            product.setFeatured(featured);
+                            product.setIsDeleted(isDeleted);
+                            product.setDescription(description);
+                            product.setShortDescription(shortDescription);
                             boolean success = productDAO.createProduct(product);
-                            
                             if (success) {
                                 successCount++;
-                                
-                                // Log inventory addition
                                 int productId = productDAO.getLastInsertProductId();
                                 if (productId > 0) {
                                     product.setProductId(productId);
                                     utils.InventoryLogUtil.logInventoryChange(
-                                            product, 
-                                            0, 
-                                            "Initial import from CSV", 
-                                            null, 
+                                            product,
+                                            0,
+                                            "Initial import from CSV",
+                                            null,
                                             "csv_import");
                                 }
                             } else {
                                 failCount++;
-                                errors.append("Failed to import: ").append(name).append(" (").append(sku).append(")<br>");
+                                errors.append("Không thể thêm: ").append(name).append(" (SKU: ").append(sku).append(") dòng ").append(lineNum).append("<br>");
                             }
-                            
                         } catch (NumberFormatException e) {
                             failCount++;
-                            errors.append("Number format error: ").append(line).append("<br>");
+                            errors.append("Lỗi định dạng số ở dòng ").append(lineNum).append(": ").append(line).append("<br>");
                         } catch (Exception e) {
                             failCount++;
-                            errors.append("Error processing: ").append(line).append(" - ").append(e.getMessage()).append("<br>");
+                            errors.append("Lỗi xử lý dòng ").append(lineNum).append(": ").append(line).append(" - ").append(e.getMessage()).append("<br>");
                         }
                     }
-                    
-                    // Set attributes for response
-                    String message = "Import completed: " + successCount + " products imported successfully";
+                    String message = "Đã nhập: " + successCount + " sản phẩm thành công";
                     if (failCount > 0) {
-                        message += ", " + failCount + " failed";
+                        message += ", lỗi: " + failCount;
                     }
-                    
                     if (errors.length() > 0) {
                         request.setAttribute("importErrors", errors.toString());
                     }
-                    
-                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?success=import&msg=" + 
-                            java.net.URLEncoder.encode(message, "UTF-8"));
+                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=products&success=import&msg=" +
+                            java.net.URLEncoder.encode(message, "UTF-8") +
+                            (errors.length() > 0 ? "&errorDetail=" + java.net.URLEncoder.encode(errors.toString(), "UTF-8") : ""));
                     return;
                 } catch (Exception e) {
-                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?error=import&msg=" + 
-                            java.net.URLEncoder.encode("Error processing file: " + e.getMessage(), "UTF-8"));
+                    response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=products&error=import&msg=" +
+                            java.net.URLEncoder.encode("Lỗi xử lý file: " + e.getMessage(), "UTF-8"));
                     return;
                 }
             } else {
-                response.sendRedirect(request.getContextPath() + "/admin/warehouse?error=import&msg=" + 
-                        java.net.URLEncoder.encode("No file uploaded or file is empty", "UTF-8"));
+                response.sendRedirect(request.getContextPath() + "/admin/warehouse?tab=products&error=import&msg=" +
+                        java.net.URLEncoder.encode("Chưa chọn file hoặc file rỗng", "UTF-8"));
                 return;
             }
-        } else if ("update_quantity".equals(action)) {
+        }
+        else if ("update_quantity".equals(action)) {
             // Handle quantity update
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
@@ -460,20 +557,19 @@ public class WarehouseController extends HttpServlet {
     private List<String> parseCSVLine(String line) {
         List<String> result = new ArrayList<>();
         if (line == null || line.isEmpty()) return result;
-        boolean inQuotes = false;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == '\"') {
-                inQuotes = !inQuotes;
-            } else if (c == ',' && !inQuotes) {
-                result.add(sb.toString().trim());
-                sb.setLength(0);
-            } else {
-                sb.append(c);
-            }
+        // Sử dụng split với limit = -1 để giữ trường rỗng cuối dòng
+        String[] parts = line.split(",", -1);
+        for (String part : parts) {
+            result.add(part.trim());
         }
-        result.add(sb.toString().trim());
         return result;
+    }
+
+    // Helper để tìm index header
+    private int findHeaderIndex(String[] headers, String name) {
+        for (int i = 0; i < headers.length; i++) {
+            if (headers[i].trim().equalsIgnoreCase(name)) return i;
+        }
+        return -1;
     }
 } 

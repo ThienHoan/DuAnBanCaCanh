@@ -59,13 +59,13 @@ public class CategoryServlet extends HttpServlet {
         String search = request.getParameter("search");
 
         // Set page size
-        int pageSize = 10; // Number of products per page
+        int pageSize = 12; // Number of product groups per page
 
         // Fetch categories for sidebar
         List<Category> categories = categoryDAO.getAllCategories();
         request.setAttribute("categories", categories);
 
-        // Fetch products
+        // Fetch products (already grouped by name in DAO)
         List<Product> products = productDAO.getProductsByCategoryId(categoryId, isParent, page, pageSize, sort, search);
 
         // Maps to store additional data for each product
@@ -94,7 +94,7 @@ public class CategoryServlet extends HttpServlet {
         Map<Integer, ProductAttribute> attributeMap = listProductAttribute.stream()
             .collect(Collectors.toMap(ProductAttribute::getAttributeId, Function.identity()));
         
-        // Group products by name
+        // Group products by name (products are already grouped in DAO, but we need to regroup for display)
         Map<String, List<Product>> groupedProducts = new LinkedHashMap<>();
         for (Product product : products) {
             String name = product.getName();

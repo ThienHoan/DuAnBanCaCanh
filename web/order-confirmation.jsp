@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="action-buttons">
-                    <a href="HomeServlet" class="btn btn-continue-shopping">Tiếp tục mua sắm</a>
+                    <a href="category" class="btn btn-continue-shopping">Tiếp tục mua sắm</a>
                     <a href="order" class="btn btn-view-orders">Xem đơn hàng của tôi</a>
                 </div>
             </div>

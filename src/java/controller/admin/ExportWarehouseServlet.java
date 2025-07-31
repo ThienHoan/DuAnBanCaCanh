@@ -70,12 +70,17 @@ public class ExportWarehouseServlet extends HttpServlet {
             // Reset buffer to make sure we have a clean start
             response.reset();
             
-            // Check if this is a template request
+            // Check if this is a template request for inventory
             if ("template".equals(exportType)) {
+                exportTemplateToExcel(response);
+                return;
+            }
+            // Check if this is a template request for product
+            if ("product_template".equals(exportType)) {
                 response.setContentType("text/csv; charset=UTF-8");
                 response.setCharacterEncoding("UTF-8");
-                response.setHeader("Content-Disposition", "attachment; filename=inventory_template.csv");
-                exportTemplateToCSV(response);
+                response.setHeader("Content-Disposition", "attachment; filename=sample-product.csv");
+                exportProductTemplateToCSV(response);
                 return;
             }
             
@@ -200,8 +205,6 @@ public class ExportWarehouseServlet extends HttpServlet {
         
         try (OutputStreamWriter osw = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
              PrintWriter writer = new PrintWriter(osw)) {
-            
-            // Ghi tiêu đề theo đúng định dạng để mỗi cột trong Excel hiển thị một tiêu đề
             writer.println("ID,Sản Phẩm,SKU,SL Trước,SL Sau,Thay Đổi,Loại,Lý Do,Thời Gian");
             
             // Chỉ xuất dữ liệu thực từ database
@@ -236,11 +239,7 @@ public class ExportWarehouseServlet extends HttpServlet {
         if (input == null) {
             return "";
         }
-        
-        // Với CSV sử dụng dấu phẩy làm dấu phân cách, phải bọc giá trị trong dấu ngoặc kép nếu có dấu phẩy hoặc dấu ngoặc kép
-        String escaped = input.replace("\"", "\"\""); // Escape dấu ngoặc kép bằng cách gấp đôi
-        
-        // Nếu chuỗi chứa dấu phẩy, dấu ngoặc kép hoặc dòng mới, bọc nó trong dấu ngoặc kép
+                String escaped = input.replace("\"", "\"\"");      
         if (escaped.contains(",") || escaped.contains("\"") || 
             escaped.contains("\n") || escaped.contains("\r")) {
             return "\"" + escaped + "\"";
@@ -2185,131 +2184,168 @@ public class ExportWarehouseServlet extends HttpServlet {
     }
     
     /**
-     * Export a CSV template file for inventory import
+     * Export an Excel template file for inventory import
      */
-    private void exportTemplateToCSV(HttpServletResponse response) throws IOException {
-        List<Product> products = productDAO.getAllProducts();
-        PrintWriter out = response.getWriter();
+    private void exportTemplateToExcel(HttpServletResponse response) throws IOException {
+        // Tạo workbook Excel mới
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("inventory_template");
         
-        // Write UTF-8 BOM
-        out.print("\uFEFF");
+        // Tạo font cho header
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 11);
+        headerFont.setFontName("Aptos Narrow");
         
-        // Header row
-        out.println("ID;Sản Phẩm;SKU;SL Trước;SL Sau;Thay Đổi;Loại;Lý Do;Thời Gian");
+        // Tạo style cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFont(headerFont);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(BorderStyle.THIN);
+        headerStyle.setBorderBottom(BorderStyle.THIN);
+        headerStyle.setBorderLeft(BorderStyle.THIN);
+        headerStyle.setBorderRight(BorderStyle.THIN);
+        
+        // Tạo style cho dữ liệu
+        CellStyle dataStyle = workbook.createCellStyle();
+        dataStyle.setBorderTop(BorderStyle.THIN);
+        dataStyle.setBorderBottom(BorderStyle.THIN);
+        dataStyle.setBorderLeft(BorderStyle.THIN);
+        dataStyle.setBorderRight(BorderStyle.THIN);
+        
+        // Tạo style cho hướng dẫn
+        Font instructionFont = workbook.createFont();
+        instructionFont.setBold(true);
+        instructionFont.setColor(IndexedColors.BLUE.getIndex());
+        
+        CellStyle instructionStyle = workbook.createCellStyle();
+        instructionStyle.setFont(instructionFont);
+        instructionStyle.setBorderTop(BorderStyle.THIN);
+        instructionStyle.setBorderBottom(BorderStyle.THIN);
+        instructionStyle.setBorderLeft(BorderStyle.THIN);
+        instructionStyle.setBorderRight(BorderStyle.THIN);
+        
+        // Header row - Cấu trúc chính xác như trong hình
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"ID", "Sản Phẩm", "SKU", "SL Trước", "SL Sau", "Thay Đổi", "Loại", "Lý Do", "Thời Gian"};
+        
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
         
         // Get current date/time formatted
         String currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         
-        // Sample data with a few products
-        int rowIndex = 3; // Starting from ID=3 like in the example
-        for (Product product : products) {
-            if (rowIndex > 12) break; // Include only first 10 products as examples (ending at ID=12)
+        // Sample data tương tự như trong hình - sử dụng dữ liệu mẫu cố định
+        Object[][] sampleData = {
+            {31, "Cá Bống Lợ", "CA01", "", 150, "+150", "Tăng", "Nhập hàng từ nhà cung cấp A", currentTime},
+            {32, "Cá Tráp", "CA02", "", 200, "+200", "Tăng", "Nhập hàng từ nhà cung cấp B", currentTime},
+            {33, "Cá Đối", "CA03", 100, 98, "-2", "Giảm", "Bán cho khách hàng #1001", currentTime},
+            {34, "Cá Sặc Gấm", "CA04", "", 75, "+75", "Tăng", "Nhập hàng từ nhà cung cấp C", currentTime},
+            {35, "Cá Thòi Lòi", "CA05", 50, 48, "-2", "Giảm", "Kiểm kê thiếu 2 cá thòi lòi", currentTime},
+            {36, "Cá Hề Nemo", "CA06", "", 120, "+120", "Tăng", "Nhập hàng từ nhà cung cấp D", currentTime},
+            {37, "Cá Tinh Tinh", "CA07", 80, 79, "-1", "Giảm", "Bán cho khách hàng #1002", currentTime},
+            {38, "Cá Hoàng Đế", "CA08", "", 90, "+90", "Tăng", "Nhập hàng từ nhà cung cấp E", currentTime},
+            {39, "Cá Bướm", "CA09", 60, 59, "-1", "Giảm", "Bán cho khách hàng #1003", currentTime},
+            {40, "Cá Đá", "CA10", "", 110, "+110", "Tăng", "Nhập hàng từ nhà cung cấp F", currentTime}
+        };
+        
+        // Write sample data
+        for (int i = 0; i < sampleData.length; i++) {
+            Row row = sheet.createRow(i + 1);
+            Object[] rowData = sampleData[i];
             
-            String sku = product.getSku();
-            String name = product.getName();
-            int currentQty = product.getQuantity();
+            // ID
+            Cell idCell = row.createCell(0);
+            idCell.setCellValue((Integer) rowData[0]);
+            idCell.setCellStyle(dataStyle);
             
-            // For odd rows: decrease example
-            if (rowIndex % 2 != 0) {
-                int decreaseBy = 5;
-                if (sku.equals("CA04")) decreaseBy = 2;  // Special case for CA04
-                if (sku.equals("CA05")) decreaseBy = 2;  // Special case for CA05
-                if (sku.equals("CA06")) decreaseBy = 2;  // Special case for CA06
-                
-                out.print(rowIndex);
-                out.print(";");
-                out.print("\"" + name + "\"");
-                out.print(";");
-                out.print(sku);
-                out.print(";");
-                out.print(""); // SL Trước is empty - will be filled from database
-                out.print(";");
-                out.print(currentQty - decreaseBy); // Example: decrease by amount
-                out.print(";");
-                out.print("-" + decreaseBy); // Thay đổi
-                out.print(";");
-                out.print("Giảm"); // Loại
-                out.print(";");
-                
-                // Customize reason based on product
-                String reason;
-                if (sku.equals("CA01")) {
-                    reason = "Bán cho khách hàng #1001";
-                } else if (sku.equals("CA03")) {
-                    reason = "Khách hàng đặt hàng #1002";
-                } else if (sku.equals("CA04")) {
-                    reason = "Kiểm kê phát hiện thiếu 2 con cá";
-                } else if (sku.equals("CA05")) {
-                    reason = "Kiểm kê thiếu 2 cá thòi lòi";
-                } else if (sku.equals("CA06")) {
-                    reason = "Khách mua 2 cá hề Nemo";
-                } else if (sku.equals("TB02")) {
-                    reason = "Hỏng 5 bơm nước mini";
-                } else if (sku.equals("CA15")) {
-                    reason = "Bán 5 cá neon";
-                } else {
-                    reason = "Bán cho khách hàng";
-                }
-                out.print("\"" + reason + "\"");
-                out.print(";");
-                out.println(currentTime);
-            } 
-            // For even rows: increase example
-            else {
-                int increaseBy;
-                if (sku.equals("CA02")) {
-                    increaseBy = 30;
-                } else if (sku.equals("CA13")) {
-                    increaseBy = 10;
-                } else {
-                    increaseBy = 5;
-                }
-                
-                out.print(rowIndex);
-                out.print(";");
-                out.print("\"" + name + "\"");
-                out.print(";");
-                out.print(sku);
-                out.print(";");
-                out.print(""); // SL Trước is empty - will be filled from database
-                out.print(";");
-                out.print(currentQty + increaseBy); // Example: increase by amount
-                out.print(";");
-                out.print("+" + increaseBy); // Thay đổi
-                out.print(";");
-                out.print("Tăng"); // Loại
-                out.print(";");
-                
-                // Customize reason based on product
-                String reason;
-                if (sku.equals("CA02")) {
-                    reason = "Nhập hàng từ nhà cung cấp A";
-                } else if (sku.equals("CA13")) {
-                    reason = "Nhập thêm cá Guppy sinh sản";
-                } else if (sku.equals("TB01")) {
-                    reason = "Nhập thêm bể kính 50L";
-                } else {
-                    reason = "Nhập hàng mới";
-                }
-                out.print("\"" + reason + "\"");
-                out.print(";");
-                out.println(currentTime);
+            // Sản Phẩm
+            Cell productCell = row.createCell(1);
+            productCell.setCellValue((String) rowData[1]);
+            productCell.setCellStyle(dataStyle);
+            
+            // SKU
+            Cell skuCell = row.createCell(2);
+            skuCell.setCellValue((String) rowData[2]);
+            skuCell.setCellStyle(dataStyle);
+            
+            // SL Trước
+            Cell beforeCell = row.createCell(3);
+            if (rowData[3] instanceof String && !((String) rowData[3]).isEmpty()) {
+                beforeCell.setCellValue((String) rowData[3]);
             }
+            beforeCell.setCellStyle(dataStyle);
             
-            rowIndex++;
+            // SL Sau
+            Cell afterCell = row.createCell(4);
+            afterCell.setCellValue((Integer) rowData[4]);
+            afterCell.setCellStyle(dataStyle);
+            
+            // Thay Đổi
+            Cell changeCell = row.createCell(5);
+            changeCell.setCellValue((String) rowData[5]);
+            changeCell.setCellStyle(dataStyle);
+            
+            // Loại
+            Cell typeCell = row.createCell(6);
+            typeCell.setCellValue((String) rowData[6]);
+            typeCell.setCellStyle(dataStyle);
+            
+            // Lý Do
+            Cell reasonCell = row.createCell(7);
+            reasonCell.setCellValue((String) rowData[7]);
+            reasonCell.setCellStyle(dataStyle);
+            
+            // Thời Gian
+            Cell timeCell = row.createCell(8);
+            timeCell.setCellValue((String) rowData[8]);
+            timeCell.setCellStyle(dataStyle);
         }
         
-        // Instructions row
-        out.println(";;;;;;;;");
-        out.println("\"HƯỚNG DẪN:\";;;;;;;;");
-        out.println("\"1. Để trống cột SL Trước để sử dụng số lượng hiện có trong cơ sở dữ liệu\";;;;;;;;");
-        out.println("\"2. Điền SL Sau hoặc cột Thay Đổi (thêm dấu + hoặc - cho tăng/giảm)\";;;;;;;;");
-        out.println("\"3. Cột Loại nên là 'Tăng' hoặc 'Giảm', nếu trống sẽ dựa vào số lượng\";;;;;;;;");
-        out.println("\"4. Cột Thời Gian sẽ được tự động cập nhật khi nhập\";;;;;;;;");
-        out.println("\"5. Cần giữ đúng thứ tự các cột như trong mẫu này\";;;;;;;;");
-        out.println("\"6. Nên lưu file này dưới dạng CSV (Comma Separated Values) với mã UTF-8\";;;;;;;;");
+        // Thêm hướng dẫn
+        int instructionRow = sampleData.length + 2;
         
-        out.flush();
+        Row titleRow = sheet.createRow(instructionRow);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("HƯỚNG DẪN:");
+        titleCell.setCellStyle(instructionStyle);
+        
+        String[] instructions = {
+            "1. Để trống cột SL Trước để sử dụng số lượng hiện có trong cơ sở dữ liệu",
+            "2. Điền SL Sau hoặc cột Thay Đổi (thêm dấu + hoặc - cho tăng/giảm)",
+            "3. Cột Loại nên là 'Tăng' hoặc 'Giảm', nếu trống sẽ dựa vào số lượng",
+            "4. Cột Thời Gian sẽ được tự động cập nhật khi nhập",
+            "5. Cần giữ đúng thứ tự các cột như trong mẫu này",
+            "6. Nên lưu file này dưới dạng CSV (Comma Separated Values) với mã UTF-8"
+        };
+        
+        for (int i = 0; i < instructions.length; i++) {
+            Row row = sheet.createRow(instructionRow + i + 1);
+            Cell cell = row.createCell(0);
+            cell.setCellValue(instructions[i]);
+            cell.setCellStyle(dataStyle);
+        }
+        
+        // Tự động điều chỉnh độ rộng cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        
+        // Set response headers for Excel file
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=inventory_template.xlsx");
+        
+        // Write to output
+        try (OutputStream os = response.getOutputStream()) {
+            workbook.write(os);
+        }
+        workbook.close();
     }
     
     private void exportWarehouseToExcel(HttpServletResponse response) throws IOException {
@@ -2353,34 +2389,16 @@ public class ExportWarehouseServlet extends HttpServlet {
         for (int i = 0; i < sampleData.length; i++) {
             Row row = sheet.createRow(i + 1);
             Object[] rowData = sampleData[i];
-            
-            // ID - số nguyên
             Cell idCell = row.createCell(0);
             idCell.setCellValue((Integer) rowData[0]);
-            
-            // Sản Phẩm - chuỗi
             row.createCell(1).setCellValue((String) rowData[1]);
-            
-            // SKU - chuỗi
             row.createCell(2).setCellValue((String) rowData[2]);
-            
-            // SL Trước - để trống
             row.createCell(3).setCellValue((String) rowData[3]);
-            
-            // SL Sau - để trống
             row.createCell(4).setCellValue((String) rowData[4]);
-            
-            // Thay Đổi - số nguyên
             Cell changeCell = row.createCell(5);
             changeCell.setCellValue((Integer) rowData[5]);
-            
-            // Loại - chuỗi
             row.createCell(6).setCellValue((String) rowData[6]);
-            
-            // Lý Do - chuỗi
             row.createCell(7).setCellValue((String) rowData[7]);
-            
-            // Thời Gian - chuỗi định dạng ngày tháng
             Cell dateCell = row.createCell(8);
             dateCell.setCellValue((String) rowData[8]);
         }
@@ -2404,24 +2422,73 @@ public class ExportWarehouseServlet extends HttpServlet {
     private void exportInventoryLogsToExcel(List<InventoryLog> logs, HttpServletResponse response) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Inventory Logs");
+        
+        // Tạo font in đậm cho header
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        
+        // Tạo style cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFont(headerFont);
+        
+        // Tạo style cho ngày tháng
+        CellStyle dateStyle = workbook.createCellStyle();
+        DataFormat format = workbook.createDataFormat();
+        dateStyle.setDataFormat(format.getFormat("dd/MM/yyyy HH:mm"));
+        
         String[] headers = {"ID", "Sản Phẩm", "SKU", "SL Trước", "SL Sau", "Thay Đổi", "Loại", "Lý Do", "Thời Gian"};
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
-            headerRow.createCell(i).setCellValue(headers[i]);
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
         }
+        
         int rowIdx = 1;
         for (InventoryLog log : logs) {
             Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(log.getLogId());
+            
+            // ID
+            Cell idCell = row.createCell(0);
+            idCell.setCellValue(log.getLogId());
+            
+            // Sản Phẩm
             row.createCell(1).setCellValue(log.getProductName());
+            
+            // SKU
             row.createCell(2).setCellValue(log.getProductSku());
-            row.createCell(3).setCellValue(log.getQuantityBefore());
-            row.createCell(4).setCellValue(log.getQuantityAfter());
-            row.createCell(5).setCellValue(log.getQuantityAfter() - log.getQuantityBefore());
-            row.createCell(6).setCellValue("increase".equals(log.getChangeType()) ? "Tăng" : "Giảm");
+            
+            // SL Trước
+            Cell beforeCell = row.createCell(3);
+            beforeCell.setCellValue(log.getQuantityBefore());
+            
+            // SL Sau
+            Cell afterCell = row.createCell(4);
+            afterCell.setCellValue(log.getQuantityAfter());
+            
+            // Thay Đổi
+            int change = log.getQuantityAfter() - log.getQuantityBefore();
+            Cell changeCell = row.createCell(5);
+            changeCell.setCellValue(change);
+            
+            // Loại
+            String changeType = "increase".equals(log.getChangeType()) ? "Tăng" : "Giảm";
+            row.createCell(6).setCellValue(changeType);
+            
+            // Lý Do
             row.createCell(7).setCellValue(log.getReason());
-            row.createCell(8).setCellValue(log.getCreatedAt().toString());
+            
+            // Thời Gian
+            Cell dateCell = row.createCell(8);
+            dateCell.setCellValue(log.getCreatedAt());
+            dateCell.setCellStyle(dateStyle);
         }
+        
+        // Tự động điều chỉnh độ rộng cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=inventory_logs_export.xlsx");
         try (OutputStream os = response.getOutputStream()) {
@@ -2430,4 +2497,15 @@ public class ExportWarehouseServlet extends HttpServlet {
         workbook.close();
     }
     
+    // Thêm hàm exportProductTemplateToCSV
+    private void exportProductTemplateToCSV(HttpServletResponse response) throws IOException {
+        PrintWriter out = response.getWriter();
+        // Thêm BOM UTF-8 để Excel nhận diện đúng encoding
+        out.write("\uFEFF");
+        // Header mới
+        out.println("category_id,name,description,short_description,price,sale_price,quantity,sku,status,featured,is_deleted");
+        // 2 dòng ví dụ
+        out.println("3,Cá Bống Cát,\"Cá bống nước lợ sống đáy, dễ chăm\",Cá bống cát,36000,33000,150,CA15,active,TRUE,0");
+        out.println("3,Cá Tráp Biển,\"Cá tráp biển lớn thích hợp hồ rộng\",Cá tráp biển,42000,39000,200,CA16,active,TRUE,0");
+    }
 } 

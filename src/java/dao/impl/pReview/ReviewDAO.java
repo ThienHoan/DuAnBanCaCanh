@@ -22,7 +22,7 @@ public class ReviewDAO {
     // Get all reviews by product ID (only non-deleted reviews)
 public List<Review> getAllReviewsByProductIdForCus(int productId) {
     List<Review> reviews = new ArrayList<>();
-    String query = "SELECT * FROM RReviews WHERE product_id = ? AND is_deleted = 0 ORDER BY review_date DESC";
+    String query = "SELECT * FROM Reviews WHERE product_id = ? AND is_deleted = 0 ORDER BY review_date DESC";
     try {
         conn = DBContext.getConnection();
         ps = conn.prepareStatement(query);
@@ -325,7 +325,7 @@ public List<Review> getAllReviewsByProductIdForCus(int productId) {
     // Get average rating for a product
     public double getAverageRatingByProductId(int productId) {
         double averageRating = 0.0;
-        String query = "SELECT AVG(CAST(rating AS DECIMAL)) as avg_rating FROM Reviews WHERE product_id = ? AND is_deleted = 0 AND status = 'approved'";
+        String query = "SELECT AVG(CAST(rating AS DECIMAL)) as avg_rating FROM Reviews WHERE product_id = ? AND is_deleted = 0";
         try {
             conn = DBContext.getConnection();
             ps = conn.prepareStatement(query);
@@ -346,7 +346,7 @@ public List<Review> getAllReviewsByProductIdForCus(int productId) {
     // Get review count for a product
     public int getReviewCountByProductId(int productId) {
         int count = 0;
-        String query = "SELECT COUNT(*) as review_count FROM Reviews WHERE product_id = ? AND is_deleted = 0 AND status = 'approved'";
+        String query = "SELECT COUNT(*) as review_count FROM Reviews WHERE product_id = ? AND is_deleted = 0";
         try {
             conn = DBContext.getConnection();
             ps = conn.prepareStatement(query);

@@ -31,6 +31,9 @@ import model.entity.pAttribute.ProductAttribute;
 import model.entity.pAttribute.ProductAttributeValue;
 import model.entity.pReview.Review;
 import model.entity.pReview.ReviewImage;
+import service.impl.ReviewServiceImpl;
+import service.interfaces.ReviewService;
+import utils.SessionUtils;
 
 @WebServlet(name = "ProductDetailServlet", urlPatterns = {"/product-detail"})
 public class ProductDetailServlet extends HttpServlet {
@@ -190,8 +193,97 @@ public class ProductDetailServlet extends HttpServlet {
             request.setAttribute("uniqueNameProductSameCategory", uniqueNameProductSameCategory);
             request.setAttribute("uniqueNameProductSameCategoryImages", uniqueNameProductSameCategoryImages);
             
-            // Gửi danh sách đã xử lý tới JSP, không cần gửi reviews và reviewImages riêng lẻ nữa
+            // --- PHẦN KIỂM TRA QUYỀN ĐÁNH GIÁ ---
+            User currentUser = SessionUtils.getUser(request.getSession());
+            ReviewService reviewService = new ReviewServiceImpl();
+            
+            boolean canReview = false;
+            boolean hasUserReview = false;
+            Review userReview = null;
+            
+            if (currentUser != null) {
+                // Kiểm tra xem user đã mua sản phẩm chưa
+                canReview = reviewService.hasUserPurchasedProduct(currentUser.getUserId(), productId);
+                
+                // Kiểm tra xem user đã đánh giá chưa
+                hasUserReview = reviewService.hasUserReviewedProduct(currentUser.getUserId(), productId);
+                
+                // Nếu đã đánh giá, lấy thông tin review của user
+                if (hasUserReview) {
+                    List<Review> userReviews = reviewDAO.getReviewsByUserId(currentUser.getUserId());
+                    for (Review review : userReviews) {
+                        if (review.getProductId() != null && review.getProductId() == productId) {
+                            userReview = review;
+                            break;
+                        }
+                    }
+                    
+                    // Nếu tìm thấy review của user, lấy thêm thông tin user và ảnh
+                    if (userReview != null) {
+                        // Lấy username
+                        User user = userDAO.getUserById(userReview.getUserId());
+                        String username = (user != null) ? user.getUsername() : "Người dùng ẩn danh";
+                        
+                        // Lấy ảnh review
+                        List<ReviewImage> userReviewImages = new ReviewImageDAO().getReviewImagesByReviewId(userReview.getReviewId());
+                        
+                        // Tạo Map chứa thông tin đầy đủ
+                        Map<String, Object> userReviewData = new HashMap<>();
+                        userReviewData.put("review", userReview);
+                        userReviewData.put("username", username);
+                        userReviewData.put("images", userReviewImages);
+                        
+                        request.setAttribute("userReviewData", userReviewData);
+                    }
+                }
+            }
+            
+            // Tính toán thống kê review
+            double averageRating = reviewService.getAverageRatingByProductId(productId);
+            int totalReviews = reviewService.getReviewCountByProductId(productId);
+            int[] ratingCounts = reviewService.getReviewCountsByRating(productId);
+            
+            // Đếm số lượng review theo từng sao
+            int star1 = 0, star2 = 0, star3 = 0, star4 = 0, star5 = 0;
+            for (Review review : reviews) {
+                if (review.getRating() != null) {
+                    switch (review.getRating()) {
+                        case 1: star1++; break;
+                        case 2: star2++; break;
+                        case 3: star3++; break;
+                        case 4: star4++; break;
+                        case 5: star5++; break;
+                    }
+                }
+            }
+            
+            // Gửi danh sách reviews đã xử lý
+            request.setAttribute("reviews", reviews);
             request.setAttribute("processedReviews", processedReviews);
+            
+            // Debug log
+            System.out.println("DEBUG - Total reviews found: " + (reviews != null ? reviews.size() : 0));
+            System.out.println("DEBUG - Current user: " + (currentUser != null ? currentUser.getUsername() : "null"));
+            System.out.println("DEBUG - Can review: " + canReview);
+            System.out.println("DEBUG - Has user review: " + hasUserReview);
+            System.out.println("DEBUG - Total reviews for display: " + totalReviews);
+            System.out.println("DEBUG - Average rating: " + averageRating);
+            
+            // Gửi thông tin quyền đánh giá
+            request.setAttribute("user", currentUser);
+            request.setAttribute("canReview", canReview);
+            request.setAttribute("hasUserReview", hasUserReview);
+            request.setAttribute("userReview", userReview);
+            
+            // Gửi thống kê review
+            request.setAttribute("averageRating", averageRating);
+            request.setAttribute("totalReviews", totalReviews);
+            request.setAttribute("ratingCounts", ratingCounts);
+            request.setAttribute("star1", star1);
+            request.setAttribute("star2", star2);
+            request.setAttribute("star3", star3);
+            request.setAttribute("star4", star4);
+            request.setAttribute("star5", star5);
 
             // Forward đến JSP
             request.getRequestDispatcher("product_detail.jsp").forward(request, response);
