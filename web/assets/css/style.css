@@ -6992,6 +6992,7 @@ body.open-overlay #overlay{
     background-position: center center;
     background-size: cover;
     height: 578px;
+    border-radius: 15px;
 }
 .slider-opt04__layout01 .text-content{
     display: inline-block;
@@ -9112,6 +9113,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     background-color: #9FB3DF;
     background-position: top left;
     background-size: initial;
+    border-radius: 10px;
 }
 .biolife-banner__style-14 .media,
 .biolife-banner__style-13 .media,
@@ -9234,6 +9236,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 .biolife-banner__style-14,
 .biolife-banner__style-03{
     background-color: #9EC6F3;
+    border-radius: 10px;
 }
 .biolife-banner__style-03 .media{
     top: 25px;
@@ -9283,6 +9286,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 }
 .biolife-banner__style-04{
     background-color: #BDDDE4;
+    border-radius: 10px;
 }
 .biolife-banner__style-10 .media,
 .biolife-banner__style-04 .media{

@@ -427,11 +427,11 @@
                                                                 <div class="price">
                                                                     <c:choose>
                                                                         <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
-                                                                            <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
-                                                                            <del><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
+                                                                            <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <ins><span class="price-amount"><span class="currencySymbol">$</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                 </div>
@@ -693,7 +693,7 @@
                                         </div>
                                         <div class="text-content">
                                             <b class="text1">Mid June Royal Lee cherries</b>
-                                            <b class="text-pr"><span>Only:</span>£8.00</b>
+                                            <b class="text-pr"><span>Only:</span>₫8.00</b>
                                             <a href="#" class="btn btn-shopnow">shop now</a>
                                         </div>
                                     </div>
@@ -708,7 +708,7 @@
                                         <div class="text-content">
                                             <b class="text1">California</b>
                                             <b class="text2">Peaches</b>
-                                            <b class="text-pr"><span>Only:</span>£8.00</b>
+                                            <b class="text-pr"><span>Only:</span>₫8.00</b>
                                             <a href="#" class="btn btn-shopnow">shop now</a>
                                         </div>
                                     </div>
@@ -723,7 +723,7 @@
                                         <div class="text-content">
                                             <b class="text1">Grapes</b>
                                             <span class="text2">Make the plate</span>
-                                            <b class="text-pr"><span>Only:</span>£18.00</b>
+                                            <b class="text-pr"><span>Only:</span>₫18.00</b>
                                             <a href="#" class="btn btn-shopnow">shop now</a>
                                         </div>
                                     </div>
@@ -921,11 +921,11 @@
                                                             <div class="price">
                                                                 <c:choose>
                                                                     <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
-                                                                        <del><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
+                                                                        <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </div>
@@ -949,8 +949,8 @@
                                                     <div class="info">
                                                         <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
                                                         <div class="price">
-                                                            <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                            <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
+                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">₫</span>95.00</span></del>
                                                         </div>
                                                         <div class="rating">
                                                             <p class="star-rating"><span class="width-80percent"></span></p>
@@ -994,11 +994,11 @@
                                                             <div class="price">
                                                                 <c:choose>
                                                                     <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
-                                                                        <del><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
+                                                                        <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </div>
@@ -1022,8 +1022,8 @@
                                                     <div class="info">
                                                         <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
                                                         <div class="price">
-                                                            <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                            <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
+                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">₫</span>95.00</span></del>
                                                         </div>
                                                         <div class="rating">
                                                             <p class="star-rating"><span class="width-80percent"></span></p>
@@ -1042,7 +1042,7 @@
                         <div class="col-sm-6 col-md-4 col-xs-12 sm-margin-top-54px md-margin-top-0">
                             <div class="advance-product-box">
                                 <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny">
-                                    <h3 class="title">On Sale Products</h3>
+                                    <h3 class="title">Sản phẩm khuyến mãi</h3>
                                 </div>
                                 <ul class="products-list vertical-layout products-list__vertical-layout">
                                     <c:choose>
@@ -1067,11 +1067,11 @@
                                                             <div class="price">
                                                                 <c:choose>
                                                                     <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
-                                                                        <del><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0.00"/></span></ins>
+                                                                        <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></del>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <ins><span class="price-amount"><span class="currencySymbol">£</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0.00"/></span></ins>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </div>
@@ -1095,8 +1095,8 @@
                                                     <div class="info">
                                                         <h4 class="product-title"><a href="#" class="pr-name">Pumpkins Fairytale</a></h4>
                                                         <div class="price">
-                                                            <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                                            <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
+                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span>85.00</span></ins>
+                                                            <del><span class="price-amount"><span class="currencySymbol">₫</span>95.00</span></del>
                                                         </div>
                                                         <div class="rating">
                                                             <p class="star-rating"><span class="width-80percent"></span></p>
@@ -1116,8 +1116,8 @@
                 <div class="blog-posts xs-margin-top-80px sm-margin-top-61px sm-padding-top-54px xs-padding-bottom-50px">
                     <div class="container">
                         <div class="biolife-title-box link-all">
-                            <h3 class="main-title">Our Latest Articles</h3>
-                            <a href="blog" class="blog-link">View All Articles</a>
+                            <h3 class="main-title">Các bài viết mới nhất của chúng tôi</h3>
+                            <a href="blog" class="blog-link">Xem tất cả</a>
                         </div>
                         <ul class="biolife-carousel nav-center xs-margin-top-33px nav-none-on-mobile" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":30,"slidesToShow":3, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 3}},{"breakpoint":992, "settings":{ "slidesToShow": 2}},{"breakpoint":768, "settings":{ "slidesToShow": 2}},{"breakpoint":600, "settings":{ "slidesToShow": 1}}]}'>
                             <c:choose>
@@ -1193,7 +1193,7 @@
                                                         </c:choose>
                                                     </p>
                                                     <div class="group-buttons">
-                                                        <a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}" class="btn readmore">continue reading</a>
+                                                        <a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}" class="btn readmore">Tiếp tục đọc</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1253,8 +1253,8 @@
                                 <p class="star-rating"><span class="width-80percent"></span></p>
                             </div>
                             <div class="price price-contain">
-                                <ins><span class="price-amount"><span class="currencySymbol">£</span>85.00</span></ins>
-                                <del><span class="price-amount"><span class="currencySymbol">£</span>95.00</span></del>
+                                <ins><span class="price-amount"><span class="currencySymbol">₫</span>85.00</span></ins>
+                                <del><span class="price-amount"><span class="currencySymbol">₫</span>95.00</span></del>
                             </div>
                             <p class="excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel maximus lacus. Duis ut mauris eget justo dictum tempus sed vel tellus.</p>
                             <div class="from-cart">

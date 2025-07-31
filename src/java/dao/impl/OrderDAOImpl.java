@@ -340,9 +340,26 @@ public class OrderDAOImpl {
                 int rows = ps.executeUpdate();
                 
                 if (rows > 0) {
-                    // REMOVED: Restore inventory for cancelled order
-                    // Inventory is only updated when admin confirms shipping, so no need to restore here
-                    // This prevents inventory inconsistencies and simplifies the cancellation process
+                    // === BẮT ĐẦU: Khôi phục lại số lượng sản phẩm khi hủy đơn ===
+                    List<OrderItem> orderItems = getOrderItems(orderId);
+                    if (orderItems != null && !orderItems.isEmpty()) {
+                        ProductDAO productDAO = new ProductDAO();
+                        for (OrderItem item : orderItems) {
+                            int productId = item.getProductId();
+                            int quantity = item.getQuantity();
+                            int currentQuantity = productDAO.getProductQuantity(productId);
+                            int newQuantity = currentQuantity + quantity;
+                            try (Connection conn2 = utils.db.DBContext.getConnection();
+                                 PreparedStatement ps2 = conn2.prepareStatement("UPDATE Products SET quantity = ? WHERE product_id = ?")) {
+                                ps2.setInt(1, newQuantity);
+                                ps2.setInt(2, productId);
+                                ps2.executeUpdate();
+                            } catch (Exception ex) {
+                                LOGGER.log(Level.WARNING, "Không thể khôi phục tồn kho cho sản phẩm " + productId + ": " + ex.getMessage(), ex);
+                            }
+                        }
+                    }
+                    // === KẾT THÚC: Khôi phục lại số lượng sản phẩm khi hủy đơn ===
                     
                     conn.commit();
                     LOGGER.log(Level.INFO, "Đã hủy đơn hàng #" + orderId + " thành công");

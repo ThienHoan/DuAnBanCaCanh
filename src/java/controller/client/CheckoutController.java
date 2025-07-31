@@ -349,6 +349,57 @@ public class CheckoutController extends HttpServlet {
                     discountAmount
                 );
                 
+                // === BẮT ĐẦU: Bổ sung logic trừ kho ===
+                List<Object[]> inventoryUpdates = new ArrayList<>();
+                for (CartItem item : cartItems) {
+                    int productId = item.getProductId();
+                    int requiredQuantity = item.getQuantity();
+                    int currentQuantity = productDAO.getProductQuantity(productId);
+                    int newQuantity = currentQuantity - requiredQuantity;
+                    if (newQuantity < 0) {
+                        // Nếu không đủ tồn kho, rollback đơn hàng (nếu cần) và báo lỗi
+                        session.setAttribute("ERROR_MESSAGE", "Sản phẩm '" + item.getProductName() + "' không đủ tồn kho.");
+                        response.sendRedirect("cartClient");
+                        return;
+                    }
+                    inventoryUpdates.add(new Object[]{newQuantity, productId, requiredQuantity});
+                }
+                // Batch update inventory
+                if (!inventoryUpdates.isEmpty()) {
+                    try (java.sql.Connection conn = utils.db.DBContext.getConnection()) {
+                        String updateSql = "UPDATE Products SET quantity = ? WHERE product_id = ? AND quantity >= ?";
+                        try (java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                            conn.setAutoCommit(false);
+                            int successCount = 0;
+                            for (Object[] update : inventoryUpdates) {
+                                int newQuantity = (Integer) update[0];
+                                int productId = (Integer) update[1];
+                                int requiredQuantity = (Integer) update[2];
+                                ps.setInt(1, newQuantity);
+                                ps.setInt(2, productId);
+                                ps.setInt(3, requiredQuantity);
+                                int rowsAffected = ps.executeUpdate();
+                                if (rowsAffected > 0) {
+                                    successCount++;
+                                }
+                            }
+                            if (successCount == inventoryUpdates.size()) {
+                                conn.commit();
+                            } else {
+                                conn.rollback();
+                                session.setAttribute("ERROR_MESSAGE", "Có lỗi khi cập nhật tồn kho. Đơn hàng chưa được xử lý.");
+                                response.sendRedirect("cartClient");
+                                return;
+                            }
+                        }
+                    } catch (Exception e) {
+                        session.setAttribute("ERROR_MESSAGE", "Lỗi khi cập nhật tồn kho: " + e.getMessage());
+                        response.sendRedirect("cartClient");
+                        return;
+                    }
+                }
+                // === KẾT THÚC: Bổ sung logic trừ kho ===
+                
                 // Record coupon usage if coupon was applied
                 if (coupon != null) {
                     couponDAO.recordCouponUsage(coupon.getCouponId(), user.getUserId(), orderId, discountAmount);

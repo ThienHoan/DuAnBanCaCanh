@@ -91,6 +91,56 @@ public class VNPayReturnController extends HttpServlet {
                         LOGGER.log(Level.WARNING, "Không thể cập nhật trạng thái thanh toán: " + ex.getMessage(), ex);
                     }
                     
+                    // === BẮT ĐẦU: Bổ sung logic trừ kho ===
+                    List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
+                    List<Object[]> inventoryUpdates = new java.util.ArrayList<>();
+                    for (OrderItem item : orderItems) {
+                        int productId = item.getProductId();
+                        int requiredQuantity = item.getQuantity();
+                        int currentQuantity = productDAO.getProductQuantity(productId);
+                        int newQuantity = currentQuantity - requiredQuantity;
+                        if (newQuantity < 0) {
+                            session.setAttribute("ERROR_MESSAGE", "Sản phẩm '" + item.getProductName() + "' không đủ tồn kho.");
+                            response.sendRedirect("cartClient");
+                            return;
+                        }
+                        inventoryUpdates.add(new Object[]{newQuantity, productId, requiredQuantity});
+                    }
+                    if (!inventoryUpdates.isEmpty()) {
+                        try (java.sql.Connection conn = utils.db.DBContext.getConnection()) {
+                            String updateSql = "UPDATE Products SET quantity = ? WHERE product_id = ? AND quantity >= ?";
+                            try (java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                                conn.setAutoCommit(false);
+                                int successCount = 0;
+                                for (Object[] update : inventoryUpdates) {
+                                    int newQuantity = (Integer) update[0];
+                                    int productId = (Integer) update[1];
+                                    int requiredQuantity = (Integer) update[2];
+                                    ps.setInt(1, newQuantity);
+                                    ps.setInt(2, productId);
+                                    ps.setInt(3, requiredQuantity);
+                                    int rowsAffected = ps.executeUpdate();
+                                    if (rowsAffected > 0) {
+                                        successCount++;
+                                    }
+                                }
+                                if (successCount == inventoryUpdates.size()) {
+                                    conn.commit();
+                                } else {
+                                    conn.rollback();
+                                    session.setAttribute("ERROR_MESSAGE", "Có lỗi khi cập nhật tồn kho. Đơn hàng chưa được xử lý.");
+                                    response.sendRedirect("cartClient");
+                                    return;
+                                }
+                            }
+                        } catch (Exception e) {
+                            session.setAttribute("ERROR_MESSAGE", "Lỗi khi cập nhật tồn kho: " + e.getMessage());
+                            response.sendRedirect("cartClient");
+                            return;
+                        }
+                    }
+                    // === KẾT THÚC: Bổ sung logic trừ kho ===
+                    
                     // Add a log entry to notify that payment was completed and inventory has been updated
                     try {
                         String logSql = "INSERT INTO System_logs (log_type, message, reference_id, reference_type, created_at) " +

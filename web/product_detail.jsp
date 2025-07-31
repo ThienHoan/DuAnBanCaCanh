@@ -512,10 +512,7 @@
                                 <i class="fa fa-cart-arrow-down" aria-hidden="true"></i>
                                 thêm vào giỏ hàng
                             </a>
-                            <p class="pull-row">
-                                <a href="#" class="btn wishlist-btn">yêu thích</a>
-                                <a href="#" class="btn compare-btn">so sánh</a>
-                            </p>
+                            
                         </div>
                     </div>
                 </div>
