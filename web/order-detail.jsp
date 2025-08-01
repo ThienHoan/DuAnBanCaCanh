@@ -198,6 +198,10 @@
             background-color: #f3e5f5;
             color: #7b1fa2;
         }
+        .btn-reorder {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
         .btn-action:hover {
             opacity: 0.9;
         }
@@ -415,6 +419,15 @@
                                         </button>
                                     </form>
                                 </c:if>
+                                
+                                <!-- Nút mua lại (hiển thị với mọi trạng thái đơn hàng) -->
+                                <form action="${pageContext.request.contextPath}/order" method="post" style="display:inline;">
+                                    <input type="hidden" name="action" value="reorder">
+                                    <input type="hidden" name="id" value="${order.orderId}">
+                                    <button type="submit" class="btn-action btn-reorder" onclick="return confirm('Thêm tất cả sản phẩm từ đơn hàng này vào giỏ hàng?');">
+                                        <i class="fa fa-shopping-cart"></i> Mua lại
+                                    </button>
+                                </form>
                             </c:if>
                             
                             <!-- Các nút hành động cho admin -->

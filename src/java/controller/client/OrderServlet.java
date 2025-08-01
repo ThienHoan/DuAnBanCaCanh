@@ -4,6 +4,7 @@ import dao.impl.OrderDAOImpl;
 import dao.impl.AddressDAO;
 import dao.impl.InventoryLogDAOImpl;
 import dao.impl.ProductDAO;
+import dao.impl.CartDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -37,12 +38,14 @@ public class OrderServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(OrderServlet.class.getName());
     private OrderDAOImpl orderDAO;
     private ProductDAO productDAO;
+    private CartDAO cartDAO;
     private static final int ORDERS_PER_PAGE = 10;
 
     @Override
     public void init() throws ServletException {
         orderDAO = new OrderDAOImpl();
         productDAO = new ProductDAO();
+        cartDAO = new CartDAO();
     }
 
     @Override
@@ -114,6 +117,9 @@ public class OrderServlet extends HttpServlet {
                 break;
             case "mark-refunded":
                 markRefunded(request, response, user);
+                break;
+            case "reorder":
+                reorderItems(request, response, user);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
@@ -768,6 +774,82 @@ public class OrderServlet extends HttpServlet {
     } catch (Exception e) {
         session.setAttribute("ERROR_MESSAGE", "Error: " + e.getMessage());
         response.sendRedirect("order");
+        }
+    }
+
+    /**
+     * Reorder items from a previous order
+     * Adds all items from the specified order to the user's cart
+     */
+    private void reorderItems(HttpServletRequest request, HttpServletResponse response, User user)
+            throws ServletException, IOException {
+        
+        HttpSession session = request.getSession();
+        
+        try {
+            int orderId = Integer.parseInt(request.getParameter("id"));
+            Order order = orderDAO.getOrderById(orderId);
+            
+            if (order == null) {
+                session.setAttribute("ERROR_MESSAGE", "Không tìm thấy đơn hàng.");
+                response.sendRedirect("order");
+                return;
+            }
+            
+            // Kiểm tra quyền truy cập
+            if (!"admin".equals(user.getRole()) && order.getUserId() != user.getUserId()) {
+                session.setAttribute("ERROR_MESSAGE", "Bạn không có quyền truy cập đơn hàng này.");
+                response.sendRedirect("order");
+                return;
+            }
+            
+            // Lấy danh sách sản phẩm từ đơn hàng
+            List<OrderItem> orderItems = orderDAO.getOrderItemsById(orderId);
+            
+            if (orderItems.isEmpty()) {
+                session.setAttribute("ERROR_MESSAGE", "Đơn hàng không có sản phẩm nào.");
+                response.sendRedirect("order?action=detail&id=" + orderId);
+                return;
+            }
+            
+            // Thêm từng sản phẩm vào giỏ hàng
+            int addedCount = 0;
+            int skippedCount = 0;
+            
+            for (OrderItem item : orderItems) {
+                try {
+                    // Kiểm tra tồn kho
+                    int stockQuantity = productDAO.getProductStockQuantity(item.getProductId());
+                    
+                    if (stockQuantity > 0) {
+                        // Thêm vào giỏ hàng với số lượng tối đa có thể
+                        int quantityToAdd = Math.min(item.getQuantity(), stockQuantity);
+                        boolean success = cartDAO.addItemToCartByUserId(user.getUserId(), item.getProductId(), quantityToAdd);
+                        
+                        if (success) {
+                            addedCount++;
+                        } else {
+                            skippedCount++;
+                        }
+                    } else {
+                        skippedCount++;
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Lỗi khi thêm sản phẩm " + item.getProductId() + " vào giỏ hàng: " + e.getMessage());
+                    skippedCount++;
+                }
+            }
+            
+            // Chuyển hướng trực tiếp đến giỏ hàng
+            response.sendRedirect("cartClient");
+            
+        } catch (NumberFormatException e) {
+            session.setAttribute("ERROR_MESSAGE", "ID đơn hàng không hợp lệ.");
+            response.sendRedirect("order");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi mua lại đơn hàng: " + e.getMessage(), e);
+            session.setAttribute("ERROR_MESSAGE", "Có lỗi xảy ra khi mua lại đơn hàng: " + e.getMessage());
+            response.sendRedirect("order");
         }
     }
 } 
