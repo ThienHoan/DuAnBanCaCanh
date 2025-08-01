@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import model.entity.Category;
 import model.entity.Product;
 import model.entity.ProductDetail;
 import model.entity.ProductImage;
+import model.entity.User;
 import model.entity.pAttribute.ProductAttribute;
 import model.entity.pAttribute.ProductAttributeValue;
 import service.impl.ProductsImageService;
@@ -63,6 +65,16 @@ public class ProductServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        
+        
+         HttpSession session = request.getSession(true); // ✅ tạo mới session nếu chưa có
+User user = (User) session.getAttribute("user");
+if (user == null || !"admin".equals(user.getRole())) {
+   response.sendRedirect("home");
+            return;
+}
+        
+        
         String action = request.getParameter("action");
         if (action == null) {
             action = "list";
@@ -87,6 +99,9 @@ public class ProductServlet extends HttpServlet {
                     break;
                 case "view":
                     viewProduct(request, response);
+                    break;
+                case "restoreImage":
+                    restoreImage(request, response);
                     break;
                 default:
                     listProducts(request, response);
@@ -128,6 +143,11 @@ public class ProductServlet extends HttpServlet {
     List<Category> listCategory = categoryDAO.getAllCategories();
     ProductDetail productDetail = productDetailDAO.getProductDetailByProductId(id);
     List<ProductImage> productImages = productImageDAO.getImagesByProductId(id);
+    
+    // Lấy ảnh đã xóa mềm để hiển thị trong phần khôi phục
+    List<ProductImage> deletedImages = productImageDAO.getDeletedImagesByProductId(id);
+    ProductImage deletedMainImage = productImageDAO.getDeletedMainImageByProductId(id);
+    
     List<ProductAttributeValue> listProductAttributeValueByPID = 
         productAttributeValueDAO.getProductAttributeValuesByProductId(id);
     
@@ -136,6 +156,8 @@ public class ProductServlet extends HttpServlet {
     request.setAttribute("listCategory", listCategory);
     request.setAttribute("productDetail", productDetail);
     request.setAttribute("productImages", productImages);
+    request.setAttribute("deletedImages", deletedImages);
+    request.setAttribute("deletedMainImage", deletedMainImage);
     request.setAttribute("listProductAttributeValueByPID", listProductAttributeValueByPID);
     request.setAttribute("listProductAttribute",listProductAttribute);
     
@@ -632,6 +654,55 @@ if (!imageUploadSuccess) {
     request.setAttribute("warningMessage", "Upload thành công nhưng có một số lỗi: " + imageErrorMessage);
 }
 
+        // ===== XỬ LÝ XÓA ẢNH THEO YÊU CẦU =====
+        String[] deleteImageIds = request.getParameterValues("deleteImageIds[]");
+        if (deleteImageIds != null) {
+            for (String idStr : deleteImageIds) {
+                try {
+                    int imageId = Integer.parseInt(idStr);
+                    ProductImage image = productImageDAO.getImageById(imageId);
+                    if (image != null && image.getIsDeleted() == 0) {
+                        if (image.getIsMain() == 1) {
+                            // Ảnh chính: xóa mềm (có thể khôi phục)
+                            productImageDAO.softDeleteImage(imageId);
+                        } else {
+                            // Ảnh phụ: xóa cứng (không thể khôi phục)
+                            productImageDAO.hardDeleteImage(imageId);
+                        }
+                    }
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+
+        // ===== CẬP NHẬT DISPLAY ORDER ẢNH CŨ =====
+        // ĐÃ BỎ TOÀN BỘ XỬ LÝ DISPLAY ORDER ẢNH
+        String[] existingImageIds = request.getParameterValues("existingImageIds");
+        String mainImageIdStr = request.getParameter("mainImageId");
+        int mainImageId = -1;
+        if (mainImageIdStr != null && !mainImageIdStr.isEmpty()) {
+            try {
+                mainImageId = Integer.parseInt(mainImageIdStr);
+            } catch (NumberFormatException ignored) {}
+        }
+        if (existingImageIds != null) {
+            for (String imageIdStr : existingImageIds) {
+                try {
+                    int imageId = Integer.parseInt(imageIdStr);
+                    ProductImage image = productImageDAO.getImageById(imageId);
+                    if (image != null && image.getIsDeleted() == 0) {
+                        // Chỉ cập nhật isMain cho ảnh chưa bị xóa mềm
+                        if (imageId == mainImageId) {
+                            image.setMain(1);
+                        } else {
+                            image.setMain(0);
+                        }
+                        productImageDAO.updateDisplayOrderAndMain(image);
+                    }
+                } catch (Exception e) {
+                    // Log lỗi nếu cần
+                }
+            }
+        }
 
         // ===== FINAL RESPONSE =====
         if (productSuccess && productDetailSuccess && attributeSuccess) {
@@ -702,8 +773,7 @@ if (!imageUploadSuccess) {
         ProductDetail productDetail = productDetailDAO.getProductDetailByProductId(id);
         List<ProductImage> productImage = productImageDAO.getImagesByProductId(id);
         List<ProductAttributeValue> listProductAttributeValueByPID = productAttributeValueDAO.getProductAttributeValuesByProductId(id);
-        ProductAttribute productAttribute = productAttributeDAO.getProductAttributeById(id);
-        request.setAttribute("productAttribute", productAttribute);
+        
         request.setAttribute("listProductAttributeValueByPID", listProductAttributeValueByPID);
         request.setAttribute("productImages", productImage);
         request.setAttribute("productDetail", productDetail);
@@ -712,4 +782,34 @@ if (!imageUploadSuccess) {
         RequestDispatcher dispatcher = request.getRequestDispatcher("admin/product-view.jsp");
         dispatcher.forward(request, response);
     }
+
+    // Khôi phục ảnh đã xóa mềm
+    private void restoreImage(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int imageId = Integer.parseInt(request.getParameter("imageId"));
+            int productId = Integer.parseInt(request.getParameter("productId"));
+            
+            boolean success = productImageDAO.restoreImage(imageId);
+            
+            if (success) {
+                request.getSession().setAttribute("successMessage", "Khôi phục ảnh thành công!");
+            } else {
+                request.getSession().setAttribute("errorMessage", "Không thể khôi phục ảnh!");
+            }
+            
+            // Chuyển hướng về trang edit product
+            response.sendRedirect("products?action=edit&id=" + productId);
+            
+        } catch (NumberFormatException e) {
+            request.getSession().setAttribute("errorMessage", "ID ảnh không hợp lệ!");
+            response.sendRedirect("products");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("errorMessage", "Đã xảy ra lỗi: " + e.getMessage());
+            response.sendRedirect("products");
+        }
+    }
+
+
 }

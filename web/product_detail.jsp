@@ -1438,14 +1438,27 @@
           imageModal.show();
         }
 
-        /* Script for Cart Functions */
         function addToCart(event, productId) {
             if (event) event.preventDefault();
             
             // Lấy số lượng từ input
-            var quantityInput = document.querySelector('.qty-input input[name="qty"]');
-            var quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-
+             var quantityInput = document.querySelector('.qty-input input[name="qty"]');
+    var min = parseInt(quantityInput.getAttribute('data-min_value')) || 1;
+    var max = parseInt(quantityInput.getAttribute('data-max_value')) || 9999;
+    var quantity = parseInt(quantityInput.value);
+    
+    if (isNaN(quantity) || quantity < min) {
+        quantityInput.value = min;
+        showMessage('Số lượng tối thiểu là ' + min, 'error');
+        return;
+    }
+    if (quantity > max) {
+        quantityInput.value = max;
+        showMessage('Chỉ còn tối đa ' + max + ' sản phẩm trong kho.', 'error');
+        return;
+    }
+    
+    
             var formData = new FormData();
             formData.append('action', 'add');
             formData.append('productId', productId);
@@ -1498,6 +1511,25 @@
                 cartCounter.textContent = count;
             }
         }
+        // Giới hạn số lượng >= 1 khi nhập hoặc rời khỏi ô input
+$(document).on('input blur', '.qty-input input[name="qty"]', function() {
+    var min = parseInt($(this).attr('data-min_value')) || 1;
+    var max = parseInt($(this).attr('data-max_value')) || 9999;
+    var value = parseInt($(this).val());
+    if (isNaN(value) || value < min) {
+        $(this).val(min);
+    }
+    if (value > max) {
+        $(this).val(max);
+    }
+});
+
+// Ngăn nhập ký tự không phải số (nên dùng type="number" nếu được)
+$(document).on('keypress', '.qty-input input[name="qty"]', function(e) {
+    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+        return false;
+    }
+});
     </script>
 </body>
 

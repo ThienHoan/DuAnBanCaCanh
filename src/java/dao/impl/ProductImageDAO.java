@@ -246,7 +246,100 @@ public class ProductImageDAO {
     }
     return false;
 }
-    
+
+    // Xóa cứng ảnh (dùng cho ảnh phụ)
+    public boolean hardDeleteImage(int imageId) {
+        String query = "DELETE FROM Product_images WHERE image_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, imageId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return false;
+    }
+
+    // Khôi phục ảnh đã xóa mềm (dùng cho ảnh chính)
+    public boolean restoreImage(int imageId) {
+        String query = "UPDATE Product_images SET is_deleted = 0 WHERE image_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, imageId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return false;
+    }
+
+    // Lấy tất cả ảnh đã xóa mềm theo product_id
+    public List<ProductImage> getDeletedImagesByProductId(int productId) {
+        List<ProductImage> images = new ArrayList<>();
+        String query = "SELECT image_id, product_id, image_url, is_main, display_order, is_deleted " +
+               "FROM Product_images WHERE product_id = ? AND is_deleted = 1 ORDER BY display_order";
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, productId);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductImage image = new ProductImage(
+                        rs.getInt("image_id"),
+                        rs.getInt("product_id"),
+                        rs.getString("image_url"),
+                        rs.getInt("is_main"),
+                        rs.getInt("display_order"),
+                        rs.getInt("is_deleted")
+                );
+                images.add(image);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+
+        return images;
+    }
+
+    // Lấy ảnh chính đã xóa mềm theo product_id
+    public ProductImage getDeletedMainImageByProductId(int productId) {
+        String query = "SELECT image_id, product_id, image_url, is_main, display_order, is_deleted " +
+                       "FROM Product_images WHERE product_id = ? AND is_main = 1 AND is_deleted = 1";
+
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, productId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new ProductImage(
+                        rs.getInt("image_id"),
+                        rs.getInt("product_id"),
+                        rs.getString("image_url"),
+                        rs.getInt("is_main"),
+                        rs.getInt("display_order"),
+                        rs.getInt("is_deleted")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+
+        return null;
+    }
 
     // Đóng tài nguyên
     private void closeResources() {
@@ -257,5 +350,31 @@ public class ProductImageDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // Lấy ProductImage theo imageId
+    public ProductImage getImageById(int imageId) {
+        String query = "SELECT * FROM Product_images WHERE image_id = ?";
+        try {
+            conn = new DBContext().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setInt(1, imageId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                ProductImage image = new ProductImage();
+                image.setImageId(rs.getInt("image_id"));
+                image.setProductId(rs.getInt("product_id"));
+                image.setImageUrl(rs.getString("image_url"));
+                image.setMain(rs.getInt("is_main"));
+                image.setDisplayOrder(rs.getInt("display_order"));
+                image.setDeleted(rs.getInt("is_deleted"));
+                return image;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources();
+        }
+        return null;
     }
 }

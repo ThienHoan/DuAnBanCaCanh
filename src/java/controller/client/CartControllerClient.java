@@ -162,41 +162,65 @@ public class CartControllerClient extends HttpServlet {
     }
 
     private void handleUpdateQuantity(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws IOException, SQLException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        throws IOException, SQLException {
+    response.setContentType("application/json");
+    response.setCharacterEncoding("UTF-8");
 
-        int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
-        int quantity = Integer.parseInt(request.getParameter("quantity"));
-        boolean success = cartDAO.updateCartItemQuantity(cartItemId, quantity);
-
-        Cart cart = cartDAO.getOrCreateCartByUserId(userId);
-        double itemTotal = 0;
-
-        // Lấy tổng tiền của item vừa cập nhật
-        for (CartItem item : cartDAO.getCartItemsByCartId(cart.getCartId())) {
-            if (item.getCartItemId() == cartItemId) {
-                itemTotal = item.getTotalPrice();
-                break;
-            }
+    int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
+    int quantity = Integer.parseInt(request.getParameter("quantity"));
+    
+    // Lấy thông tin cartItem để biết productId
+    Cart cart = cartDAO.getOrCreateCartByUserId(userId);
+    List<CartItem> cartItems = cartDAO.getCartItemsByCartId(cart.getCartId());
+    int productId = -1;
+    
+    for (CartItem item : cartItems) {
+        if (item.getCartItemId() == cartItemId) {
+            productId = item.getProductId();
+            break;
         }
+    }
+    
+    if (productId == -1) {
+        response.getWriter().write("{\"success\": false, \"message\": \"Không tìm thấy sản phẩm trong giỏ hàng!\"}");
+        return;
+    }
+    
+    // Kiểm tra tồn kho
+    int stockQuantity = productDAO.getProductStockQuantity(productId);
+    
+    if (quantity > stockQuantity) {
+        response.getWriter().write("{\"success\": false, \"message\": \"Số lượng yêu cầu vượt quá tồn kho! (Còn " + stockQuantity + " sản phẩm trong kho)\"}");
+        return;
+    }
+    
+    boolean success = cartDAO.updateCartItemQuantity(cartItemId, quantity);
 
-        double cartTotal = cartDAO.getCartTotal(cart.getCartId());
-        int itemCount = cartDAO.getCartItemCount(cart.getCartId());
+    double itemTotal = 0;
 
-        String jsonResponse;
-        if (success) {
-            jsonResponse = "{\"success\": true, \"message\": \"Cập nhật thành công!\", "
-                    + "\"itemTotal\": " + itemTotal + ", "
-                    + "\"cartTotal\": " + cartTotal + ", "
-                    + "\"itemCount\": " + itemCount + "}";
-        } else {
-            jsonResponse = "{\"success\": false, \"message\": \"Có lỗi xảy ra khi cập nhật!\"}";
+    // Lấy tổng tiền của item vừa cập nhật
+    for (CartItem item : cartDAO.getCartItemsByCartId(cart.getCartId())) {
+        if (item.getCartItemId() == cartItemId) {
+            itemTotal = item.getTotalPrice();
+            break;
         }
-
-        response.getWriter().write(jsonResponse);
     }
 
+    double cartTotal = cartDAO.getCartTotal(cart.getCartId());
+    int itemCount = cartDAO.getCartItemCount(cart.getCartId());
+
+    String jsonResponse;
+    if (success) {
+        jsonResponse = "{\"success\": true, \"message\": \"Cập nhật thành công!\", "
+                + "\"itemTotal\": " + itemTotal + ", "
+                + "\"cartTotal\": " + cartTotal + ", "
+                + "\"itemCount\": " + itemCount + "}";
+    } else {
+        jsonResponse = "{\"success\": false, \"message\": \"Có lỗi xảy ra khi cập nhật!\"}";
+    }
+
+    response.getWriter().write(jsonResponse);
+}
     private void handleRemoveItem(HttpServletRequest request, HttpServletResponse response, int userId)
             throws IOException, SQLException {
         response.setContentType("application/json");
@@ -221,8 +245,6 @@ public class CartControllerClient extends HttpServlet {
         response.getWriter().write(jsonResponse);
     }
 
-    
-    
     private void handleClearCart(HttpServletRequest request, HttpServletResponse response, int userId)
             throws IOException, SQLException {
         response.setContentType("application/json");

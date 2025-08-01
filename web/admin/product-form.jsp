@@ -536,12 +536,14 @@
                         font-weight: normal;
                         padding-left: 15px;
                     }
-
-                    /* Style cho option được chọn */
-                    select option:checked {
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
+                    select{
+                       background: plum; 
                     }
+                    /* Style cho option được chọn */
+                   
+select option:hover {
+    background: #c7d2fe;
+}
                     .select-wrapper {
                         position: relative;
                     }
@@ -854,6 +856,8 @@
             display: block; /* Đảm bảo ảnh hiển thị đúng */
         }
 
+
+
         /* Đặc biệt cho ảnh chính - tự động theo kích thước ảnh */
         .main-image-preview .image-container img {
             width: auto;
@@ -870,14 +874,40 @@
         }
 
         .main-badge {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
+            background: #fff;
+            color: #666;
+            padding: 2px 8px;
             font-size: 12px;
-            font-weight: 600;
-            align-self: flex-start;
-            margin-bottom: 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        /* Styles cho ảnh đã lưu trữ */
+        .archived-image {
+            opacity: 0.6;
+            border: 2px dashed #ccc;
+            background: #f8f9fa;
+        }
+
+        .archived-image:hover {
+            opacity: 0.8;
+            border-color: #6c757d;
+        }
+
+        .archived-badge {
+            background: rgba(255, 255, 255, 0.9);
+            color: #6c757d;
+            padding: 2px 8px;
+            font-size: 12px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border: 1px solid #6c757d;
+        }
+
+        .archived-image .image-container img {
+            filter: grayscale(30%);
         }
 
         .form-control {
@@ -1061,7 +1091,32 @@
     border-color: red !important;
     background-color: #fff5f5;
 }
+select optgroup {
+    font-weight: bold;
+    color: #667eea;
+    background-color: #f8f9ff;
+    padding: 8px 12px;
+}
+
+select optgroup option {
+    font-weight: normal;
+    color: #333;
+    padding-left: 20px;
+    background-color: white;
+}
+
+select optgroup option:hover {
+    background-color: #667eea;
+    color: white;
+}
+
+select option:checked,
+select optgroup option:checked {
+    background: #e0e7ff;
+    color: #222;
+}
     </style>
+    
             </head>
             <body>
                 <div class="main-container">
@@ -1107,6 +1162,24 @@
                         </div>
                     </c:if>
 
+                    <!-- Success Messages -->
+                    <c:if test="${not empty sessionScope.successMessage}">
+                        <div class="alert alert-success fade-in">
+                            <i class="fas fa-check-circle me-2"></i>
+                            ${sessionScope.successMessage}
+                        </div>
+                        <% session.removeAttribute("successMessage"); %>
+                    </c:if>
+
+                    <!-- Error Messages from Session -->
+                    <c:if test="${not empty sessionScope.errorMessage}">
+                        <div class="alert alert-danger fade-in">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            ${sessionScope.errorMessage}
+                        </div>
+                        <% session.removeAttribute("errorMessage"); %>
+                    </c:if>
+
                     <!-- Basic Information Card -->
                     <div class="form-card fade-in">
                         <div class="form-card-header">
@@ -1136,35 +1209,28 @@
     <div class="select-wrapper">
         <i class="select-icon fas fa-layer-group"></i>
         <select class="form-control has-icon" id="categoryId" name="categoryId" required>
+            <option value="">-- Chọn danh mục --</option>
             <c:forEach var="category" items="${listCategory}">
                 <c:choose>
                     <c:when test="${category.parentId == category.categoryId}">
-                        <!-- Parent Category -->
-                        <option value="${category.categoryId}" 
-                                class="parent-category"
-                                ${product.categoryId == category.categoryId ? 'selected' : ''}>
-                            🐠  ${category.name}
-                        </option>
+                        <!-- Parent Category - Disabled -->
+                        <optgroup label="🐠 ${category.name}">
+                            <c:forEach var="childCategory" items="${listCategory}">
+                                <c:if test="${childCategory.parentId == category.categoryId && childCategory.categoryId != category.categoryId}">
+                                    <option value="${childCategory.categoryId}" 
+                                            ${product.categoryId == childCategory.categoryId ? 'selected' : ''}>
+                                        🐟 ${childCategory.name}
+                                    </option>
+                                </c:if>
+                            </c:forEach>
+                        </optgroup>
                     </c:when>
-                    <c:otherwise>
-                        <!-- Child Category with Parent Name -->
-                        <c:forEach var="parentCategory" items="${listCategory}">
-                            <c:if test="${parentCategory.categoryId == category.parentId}">
-                                <option value="${category.categoryId}" 
-                                        class="child-category"
-                                        ${product.categoryId == category.categoryId ? 'selected' : ''}>
-                                        🐟 ${category.name} - Thuộc: ${parentCategory.name}
-                                </option>
-                            </c:if>
-                        </c:forEach>
-                    </c:otherwise>
                 </c:choose>
             </c:forEach>
         </select>
     </div>
-    <small class="form-text">Chọn danh mục phù hợp cho sản phẩm</small>
+    <small class="form-text">Chỉ chọn danh mục con, không chọn danh mục cha</small>
 </div>
-
 
 
                                     <!-- SKU -->
@@ -1287,7 +1353,7 @@
                     </div>
 
                     <!-- Fish Details Card -->
-                    <div class="form-card fade-in">
+                    <div class="form-card fade-in" id="fishDetailsCard">
     <div class="form-card-header">
         <i class="fas fa-fish"></i>
         <h5>Thông tin chi tiết cá cảnh</h5>
@@ -1421,7 +1487,7 @@
 </div>
          
 <!-- Product Attributes Card -->
-<div class="form-card fade-in">
+<div class="form-card fade-in" id="productAttributesCard">
     <div class="form-card-header">
         <i class="fas fa-tags"></i>
         <h5>Thuộc tính sản phẩm</h5>
@@ -1489,22 +1555,65 @@
                     <div class="image-preview ${image.isMain == 1 ? 'main-image-preview' : ''}">
                         <div class="image-container">
                             <img src="${pageContext.request.contextPath}/${image.imageUrl}" alt="Ảnh sản phẩm">
+                            <c:if test="${image.isMain == 1}">
+                                <div class="main-badge">Ảnh chính</div>
+                            </c:if>
                         </div>
                         <input type="hidden" name="existingImageIds" value="${image.imageId}" />
-                        <c:if test="${image.isMain == 1}">
-                            <div class="main-badge">Ảnh chính</div>
-                            <input type="radio" name="mainImageId" value="${image.imageId}" checked />
-                        </c:if>
                         <label>Thứ tự hiển thị:</label>
-                        <input type="number" name="displayOrders[${image.imageId}]" value="${image.displayOrder}" class="form-control form-control-sm order-input" />
+                        <input type="number" value="${image.displayOrder}" class="form-control form-control-sm order-input" readonly style="background:#eee;cursor:not-allowed;" tabindex="-1" />
                         <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="deleteImageIds[]" value="${image.imageId}" id="delete_${image.imageId}">
-                            <label class="form-check-label text-danger" for="delete_${image.imageId}">Xóa ảnh này</label>
+                            <c:choose>
+                                <c:when test="${image.isMain == 1}">
+                                    <input class="form-check-input" type="checkbox" name="deleteImageIds[]" value="${image.imageId}" id="delete_${image.imageId}">
+                                    <label class="form-check-label text-warning" for="delete_${image.imageId}">
+                                        <i class="fas fa-archive"></i> Lưu trữ ảnh chính
+                                    </label>
+                                </c:when>
+                                <c:otherwise>
+                                    <input class="form-check-input" type="checkbox" name="deleteImageIds[]" value="${image.imageId}" id="delete_${image.imageId}">
+                                    <label class="form-check-label text-danger" for="delete_${image.imageId}">
+                                        <i class="fas fa-trash"></i> Xóa ảnh phụ
+                                    </label>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </c:forEach>
             </div>
         </c:if>
+
+        <!-- Hiển thị ảnh đã lưu trữ (xóa mềm) -->
+        <c:if test="${not empty deletedImages}">
+            <div class="section-title mt-4">
+                <i class="fas fa-archive"></i> Ảnh đã lưu trữ
+            </div>
+            <div class="image-grid">
+                <c:forEach var="image" items="${deletedImages}">
+                    <div class="image-preview archived-image ${image.isMain == 1 ? 'main-image-preview' : ''}">
+                        <div class="image-container">
+                            <img src="${pageContext.request.contextPath}/${image.imageUrl}" alt="Ảnh đã lưu trữ">
+                            <c:if test="${image.isMain == 1}">
+                                <div class="archived-badge">Đã lưu trữ</div>
+                            </c:if>
+                        </div>
+                        <label>Thứ tự hiển thị:</label>
+                        <input type="number" value="${image.displayOrder}" class="form-control form-control-sm order-input" readonly style="background:#eee;cursor:not-allowed;" tabindex="-1" />
+                                         <c:if test="${image.isMain == 1}">
+                            <div class="mt-2">
+                                <a href="products?action=restoreImage&imageId=${image.imageId}&productId=${product.productId}" 
+                                   class="btn btn-success btn-sm" 
+                                   onclick="return confirm('Bạn có chắc chắn muốn khôi phục ảnh chính này?')">
+                                    <i class="fas fa-undo"></i> Khôi phục
+                                </a>
+                            </div>
+                        </c:if>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:if>
+
+
 
         <!-- Tải ảnh mới -->
         <div class="upload-section mt-4">
@@ -1526,11 +1635,11 @@
             </ul>
             <div class="tab-content border rounded p-3 mt-2">
                 <div class="tab-pane fade show active" id="uploadMain" role="tabpanel">
-                    <div class="image-upload-area text-center" onclick="document.getElementById('subImages').click()">
+                    <div class="image-upload-area text-center" onclick="document.getElementById('mainImage').click()">
                                                             <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                                             <p class="text-muted">Kéo thả hoặc click để chọn ảnh chính</p>
-                                                            <input type="file" class="d-none" id="subImages" name="subImages" accept="image/*" multiple onchange="showSubFilesName()">
-                                                            <div id="subImagesName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
+                                                            <input type="file" class="d-none" id="mainImage" name="mainImage" accept="image/*" onchange="showMainImageName()">
+                                                            <div id="mainImageName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
                                                         </div>
                 </div>
                 <div class="tab-pane fade" id="linkMain" role="tabpanel">
@@ -1557,17 +1666,19 @@
                         <i class="fas fa-images fa-2x mb-2"></i>
                         <p class="text-muted">Chọn nhiều ảnh phụ</p>
                         <input type="file" class="d-none" id="additionalImages" name="additionalImages" multiple accept="image/*">
+                        <div id="additionalImagesName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="linkAdditional" role="tabpanel">
-                    <div class="image-upload-area text-center" onclick="document.getElementById('subImages').click()">
+                    <div class="image-upload-area text-center" onclick="document.getElementById('mainImage').click()">
                                                             <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                                             <p class="text-muted">Kéo thả hoặc click để chọn ảnh phụ</p>
-                                                            <input type="file" class="d-none" id="subImages" name="subImages" accept="image/*" multiple onchange="showSubFilesName()">
-                                                            <div id="subImagesName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
+                                                            <input type="file" class="d-none" id="mainImage" name="mainImage" accept="image/*" multiple onchange="showSubFilesName()">
+                                                            <div id="mainImageName" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
                                                         </div>
                     
-                    <textarea name="additionalImageUrls" class="form-control" rows="4" placeholder="https://img1.jpg\nhttps://img2.jpg"></textarea>
+                    <textarea name="additionalImageUrls" class="form-control" rows="4" placeholder="https://img1.jpg\nhttps://img2.jpg" id="additionalImageUrls"></textarea>
+                    <div id="additionalImageUrlsCount" style="margin-top:8px;font-size:15px;color:#007bff;"></div>
                 </div>
             </div>
         </div>
@@ -1609,6 +1720,20 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <!--        imge-->
 <script>
+    document.getElementById('categoryId').addEventListener('change', function() {
+    const selectedValue = this.value;
+    const selectedOption = this.options[this.selectedIndex];
+    
+    // Kiểm tra nếu chọn category cha (có parentId == categoryId)
+    if (selectedOption && selectedOption.getAttribute('data-is-parent') === 'true') {
+        alert('Không được chọn danh mục cha! Vui lòng chọn danh mục con.');
+        this.value = '';
+        return false;
+    }
+    
+    // Xử lý ẩn/hiện các bảng dựa trên category
+    toggleSectionsByCategory(selectedValue);
+});
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
     form.addEventListener("submit", function (e) {
@@ -1634,6 +1759,112 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Thứ tự hiển thị (Display Order) không được trùng nhau.");
         }
     });
+    
+    // Kiểm tra category khi trang load
+    checkCategoryOnLoad();
+});
+
+// Hàm xử lý ẩn/hiện các bảng dựa trên category
+function toggleSectionsByCategory(categoryId) {
+    const fishDetailsCard = document.getElementById('fishDetailsCard');
+    const productAttributesCard = document.getElementById('productAttributesCard');
+    
+    // Danh sách category ID của cá cảnh (bao gồm cả category cha và con)
+    const fishCategoryIds = [1, 3, 4, 5]; // Cá cảnh, Cá nước lợ, Cá nước mặn, Cá nước ngọt
+    
+    // Danh sách category ID của phụ kiện & thiết bị
+    const equipmentCategoryIds = [2, 6, 7, 8]; // Phụ kiện & Thiết bị, Thức ăn, Hồ kính & bể nuôi, Hệ thống lọc & xử lý nước
+    
+    if (fishCategoryIds.includes(parseInt(categoryId))) {
+        // Hiển thị cả hai bảng cho category cá cảnh
+        fishDetailsCard.style.display = 'block';
+        productAttributesCard.style.display = 'block';
+        
+        // Thêm required cho các trường quan trọng trong Product Attributes
+        const attributeInputs = productAttributesCard.querySelectorAll('input[name^="attributeValues["]');
+        attributeInputs.forEach(input => {
+            input.required = true;
+        });
+        
+        // Thêm required cho các trường quan trọng trong Fish Details
+        const requiredFields = ['origin', 'size', 'waterTemperature', 'waterPh', 'scientificName', 'commonName'];
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.required = true;
+            }
+        });
+        
+        console.log('Hiển thị bảng Product Attributes và Fish Details cho category cá cảnh');
+        
+    } else if (equipmentCategoryIds.includes(parseInt(categoryId))) {
+        // Ẩn cả hai bảng cho category phụ kiện & thiết bị
+        fishDetailsCard.style.display = 'none';
+        productAttributesCard.style.display = 'none';
+        
+        // Bỏ required cho các trường trong Product Attributes
+        const attributeInputs = productAttributesCard.querySelectorAll('input[name^="attributeValues["]');
+        attributeInputs.forEach(input => {
+            input.required = false;
+        });
+        
+        // Bỏ required cho các trường trong Fish Details
+        const fishDetailFields = ['origin', 'size', 'waterTemperature', 'waterPh', 'lifespan', 'scientificName', 'commonName', 'waterType', 'careLevel', 'breedingDifficulty', 'diet', 'compatibility'];
+        fishDetailFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.required = false;
+            }
+        });
+        
+        // Hiển thị thông báo cho người dùng
+       
+        
+        console.log('Ẩn bảng Product Attributes và Fish Details cho category phụ kiện & thiết bị');
+        
+    } else {
+        // Trường hợp không xác định được category
+        fishDetailsCard.style.display = 'block';
+        productAttributesCard.style.display = 'block';
+        console.log('Category không xác định, hiển thị mặc định');
+    }
+}
+
+// Hàm kiểm tra category khi trang load
+function checkCategoryOnLoad() {
+    const categorySelect = document.getElementById('categoryId');
+    if (categorySelect && categorySelect.value) {
+        toggleSectionsByCategory(categorySelect.value);
+    }
+}
+
+function showMainImageName() {
+    var input = document.getElementById('mainImage');
+    var nameDiv = document.getElementById('mainImageName');
+    if (input.files && input.files.length > 0) {
+        nameDiv.textContent = input.files[0].name;
+    } else {
+        nameDiv.textContent = '';
+    }
+}
+
+document.getElementById('additionalImages').addEventListener('change', function() {
+    var nameDiv = document.getElementById('additionalImagesName');
+    if (this.files && this.files.length > 0) {
+        nameDiv.textContent = this.files.length + ' ảnh đã chọn';
+    } else {
+        nameDiv.textContent = '';
+    }
+});
+
+document.getElementById('additionalImageUrls').addEventListener('input', function() {
+    var countDiv = document.getElementById('additionalImageUrlsCount');
+    var lines = this.value.split('\n').filter(line => line.trim() !== '');
+    if (lines.length > 0) {
+        countDiv.textContent = lines.length + ' link đã nhập';
+    } else {
+        countDiv.textContent = '';
+    }
 });
 
 </script>
@@ -1774,7 +2005,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show`;
+    notification.className = alert alert-${type} alert-dismissible fade show;
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -1815,7 +2046,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                                     // Add smooth scrolling for form sections
                                                     document.querySelectorAll('.form-card').forEach((card, index) => {
-                                                        card.style.animationDelay = `${index * 0.1}s`;
+                                                        card.style.animationDelay = ${index * 0.1}s;
                                                     });
                                                 });
 

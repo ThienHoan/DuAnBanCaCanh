@@ -1962,6 +1962,40 @@ public List<Product> getProductsByCategoryId(Integer categoryId) {
         return 0;
     }
 }
+       public boolean batchUpdateInventory(List<Object[]> inventoryUpdates) {
+        if (inventoryUpdates == null || inventoryUpdates.isEmpty()) {
+            return true;
+        }
+        try (Connection conn = DBContext.getConnection()) {
+            String updateSql = "UPDATE Products SET quantity = ? WHERE product_id = ? AND quantity >= ?";
+            try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                conn.setAutoCommit(false);
+                int successCount = 0;
+                for (Object[] update : inventoryUpdates) {
+                    int newQuantity = (Integer) update[0];
+                    int productId = (Integer) update[1];
+                    int requiredQuantity = (Integer) update[2];
+                    ps.setInt(1, newQuantity);
+                    ps.setInt(2, productId);
+                    ps.setInt(3, requiredQuantity);
+                    int rowsAffected = ps.executeUpdate();
+                    if (rowsAffected > 0) {
+                        successCount++;
+                    }
+                }
+                if (successCount == inventoryUpdates.size()) {
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, "Lỗi khi batch update inventory: " + e.getMessage(), e);
+            return false;
+        }
+    }
     
     public Map<Integer, Product> getProductsByIds(List<Integer> productIds) {
         Map<Integer, Product> productsMap = new HashMap<>();

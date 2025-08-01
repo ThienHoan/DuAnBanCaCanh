@@ -858,4 +858,18 @@ public class OrderDAOImpl {
         }
         return "Sản phẩm #" + productId;
     }
+    public boolean updatePaymentStatusWithTransactionId(int orderId, String status, String transactionId) {
+        String updatePaymentSql = "UPDATE Payments SET status = ?, transaction_id = ? WHERE order_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(updatePaymentSql)) {
+            ps.setString(1, status);
+            ps.setString(2, transactionId);
+            ps.setInt(3, orderId);
+            int rowsAffected = ps.executeUpdate();
+            LOGGER.log(Level.INFO, "Cập nhật trạng thái thanh toán với transaction_id: " + rowsAffected + " hàng bị ảnh hưởng");
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Lỗi khi cập nhật trạng thái thanh toán với transaction_id: " + e.getMessage(), e);
+            return false;
+        }
+    }
 } 

@@ -18,8 +18,13 @@ import model.entity.pOrder.OrderItem;
 import java.util.List;
 import utils.InventoryLogUtil;
 
+/**
+ * Controller for handling VNPay payment callback
+ * Processes payment verification, order creation, inventory management, and status updates
+ */
 public class VNPayReturnController extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(VNPayReturnController.class.getName());
+    
     private OrderDAOImpl orderDAO;
     private CouponDAO couponDAO;
     private ProductDAO productDAO;
@@ -36,35 +41,30 @@ public class VNPayReturnController extends HttpServlet {
         HttpSession session = request.getSession();
         
         try {
-            // Lấy thông tin đơn hàng đang chờ từ session
             @SuppressWarnings("unchecked")
             Map<String, Object> pendingOrder = (Map<String, Object>) session.getAttribute("PENDING_ORDER");
             
             if (pendingOrder == null) {
-                session.setAttribute("ERROR_MESSAGE", "Không tìm thấy thông tin đơn hàng.");
+                session.setAttribute("ERROR_MESSAGE", "Order information not found.");
                 response.sendRedirect("cartClient");
                 return;
             }
             
-            // Lấy thông tin từ VNPay
             String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
             String vnp_TransactionStatus = request.getParameter("vnp_TransactionStatus");
             String vnp_TransactionNo = request.getParameter("vnp_TransactionNo");
             String vnp_OrderInfo = request.getParameter("vnp_OrderInfo");
             String vnp_Amount = request.getParameter("vnp_Amount");
             
-            // Log thông tin VNPay để debug
             LOGGER.info("VNPay Response - ResponseCode: " + vnp_ResponseCode + 
                       ", TransactionStatus: " + vnp_TransactionStatus + 
                       ", TransactionNo: " + vnp_TransactionNo + 
                       ", OrderInfo: " + vnp_OrderInfo + 
                       ", Amount: " + vnp_Amount);
             
-            // Kiểm tra kết quả thanh toán
             boolean paymentSuccess = "00".equals(vnp_ResponseCode) && "00".equals(vnp_TransactionStatus);
             
             if (paymentSuccess) {
-                // Tạo đơn hàng
                 int userId = (int) pendingOrder.get("userId");
                 int cartId = (int) pendingOrder.get("cartId");
                 String orderNumber = (String) pendingOrder.get("orderNumber");
@@ -74,24 +74,15 @@ public class VNPayReturnController extends HttpServlet {
                 BigDecimal discountAmount = (BigDecimal) pendingOrder.get("discountAmount");
                 
                 try {
-                    // Tạo đơn hàng
                     int orderId = orderDAO.createOrder(userId, cartId, orderNumber, addressId, paymentMethod, notes, discountAmount);
                     
-                    // Cập nhật thông tin thanh toán
                     orderDAO.updatePaymentStatus(orderId, "paid");
                     
-                    // Cập nhật trạng thái thanh toán trong bảng Payments
-                    String updatePaymentSql = "UPDATE Payments SET status = 'completed', transaction_id = ? WHERE order_id = ?";
-                    try (java.sql.Connection conn = utils.db.DBContext.getConnection();
-                         java.sql.PreparedStatement ps = conn.prepareStatement(updatePaymentSql)) {
-                        ps.setString(1, vnp_TransactionNo);
-                        ps.setInt(2, orderId);
-                        ps.executeUpdate();
-                    } catch (Exception ex) {
-                        LOGGER.log(Level.WARNING, "Không thể cập nhật trạng thái thanh toán: " + ex.getMessage(), ex);
+                    boolean paymentUpdateSuccess = orderDAO.updatePaymentStatusWithTransactionId(orderId, "completed", vnp_TransactionNo);
+                    if (!paymentUpdateSuccess) {
+                        LOGGER.log(Level.WARNING, "Could not update payment status with transaction_id: " + vnp_TransactionNo);
                     }
                     
-                    // === BẮT ĐẦU: Bổ sung logic trừ kho ===
                     List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
                     List<Object[]> inventoryUpdates = new java.util.ArrayList<>();
                     for (OrderItem item : orderItems) {
@@ -100,48 +91,21 @@ public class VNPayReturnController extends HttpServlet {
                         int currentQuantity = productDAO.getProductQuantity(productId);
                         int newQuantity = currentQuantity - requiredQuantity;
                         if (newQuantity < 0) {
-                            session.setAttribute("ERROR_MESSAGE", "Sản phẩm '" + item.getProductName() + "' không đủ tồn kho.");
+                            session.setAttribute("ERROR_MESSAGE", "Product '" + item.getProductName() + "' out of stock.");
                             response.sendRedirect("cartClient");
                             return;
                         }
                         inventoryUpdates.add(new Object[]{newQuantity, productId, requiredQuantity});
                     }
                     if (!inventoryUpdates.isEmpty()) {
-                        try (java.sql.Connection conn = utils.db.DBContext.getConnection()) {
-                            String updateSql = "UPDATE Products SET quantity = ? WHERE product_id = ? AND quantity >= ?";
-                            try (java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                                conn.setAutoCommit(false);
-                                int successCount = 0;
-                                for (Object[] update : inventoryUpdates) {
-                                    int newQuantity = (Integer) update[0];
-                                    int productId = (Integer) update[1];
-                                    int requiredQuantity = (Integer) update[2];
-                                    ps.setInt(1, newQuantity);
-                                    ps.setInt(2, productId);
-                                    ps.setInt(3, requiredQuantity);
-                                    int rowsAffected = ps.executeUpdate();
-                                    if (rowsAffected > 0) {
-                                        successCount++;
-                                    }
-                                }
-                                if (successCount == inventoryUpdates.size()) {
-                                    conn.commit();
-                                } else {
-                                    conn.rollback();
-                                    session.setAttribute("ERROR_MESSAGE", "Có lỗi khi cập nhật tồn kho. Đơn hàng chưa được xử lý.");
-                                    response.sendRedirect("cartClient");
-                                    return;
-                                }
-                            }
-                        } catch (Exception e) {
-                            session.setAttribute("ERROR_MESSAGE", "Lỗi khi cập nhật tồn kho: " + e.getMessage());
+                        boolean inventorySuccess = productDAO.batchUpdateInventory(inventoryUpdates);
+                        if (!inventorySuccess) {
+                            session.setAttribute("ERROR_MESSAGE", "Error updating inventory. Order not processed.");
                             response.sendRedirect("cartClient");
                             return;
                         }
                     }
-                    // === KẾT THÚC: Bổ sung logic trừ kho ===
                     
-                    // Add a log entry to notify that payment was completed and inventory has been updated
                     try {
                         String logSql = "INSERT INTO System_logs (log_type, message, reference_id, reference_type, created_at) " +
                                        "VALUES (?, ?, ?, ?, GETDATE())";
@@ -154,38 +118,34 @@ public class VNPayReturnController extends HttpServlet {
                             ps.executeUpdate();
                         }
                     } catch (Exception ex) {
-                        LOGGER.log(Level.WARNING, "Không thể ghi log hệ thống: " + ex.getMessage(), ex);
+                        LOGGER.log(Level.WARNING, "Could not write system log: " + ex.getMessage(), ex);
                     }
                     
-                    // Record coupon usage if coupon was applied
                     if (pendingOrder.containsKey("couponId")) {
                         int couponId = (int) pendingOrder.get("couponId");
                         couponDAO.recordCouponUsage(couponId, userId, orderId, discountAmount);
                     }
                     
-                    // Xóa thông tin đơn hàng đang chờ và mã giảm giá
                     session.removeAttribute("PENDING_ORDER");
                     session.removeAttribute("COUPON");
                     
-                    // Chuyển hướng đến trang xác nhận đơn hàng
                     request.getRequestDispatcher("order-confirmation.jsp?orderId=" + orderId).forward(request, response);
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Lỗi khi tạo đơn hàng: " + e.getMessage(), e);
-                    session.setAttribute("ERROR_MESSAGE", "Có lỗi xảy ra khi tạo đơn hàng: " + e.getMessage());
+                    LOGGER.log(Level.SEVERE, "Error creating order: " + e.getMessage(), e);
+                    session.setAttribute("ERROR_MESSAGE", "An error occurred while creating order: " + e.getMessage());
                     response.sendRedirect("checkout");
                 }
             } else {
-                // Thanh toán thất bại
                 if ("24".equals(vnp_ResponseCode)) {
-                    session.setAttribute("ERROR_MESSAGE", "Đã hủy thanh toán thành công.");
+                    session.setAttribute("ERROR_MESSAGE", "Payment cancelled successfully.");
                 } else {
-                session.setAttribute("ERROR_MESSAGE", "Thanh toán thất bại. Mã lỗi: " + vnp_ResponseCode);
+                    session.setAttribute("ERROR_MESSAGE", "Payment failed. Error code: " + vnp_ResponseCode);
                 }
                 response.sendRedirect("checkout");
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Lỗi xử lý kết quả thanh toán VNPay: " + e.getMessage(), e);
-            session.setAttribute("ERROR_MESSAGE", "Có lỗi xảy ra khi xử lý kết quả thanh toán: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error processing VNPay payment result: " + e.getMessage(), e);
+            session.setAttribute("ERROR_MESSAGE", "An error occurred while processing payment result: " + e.getMessage());
             response.sendRedirect("checkout");
         }
     }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -144,6 +145,7 @@
         </style>
     </head>
     <body>
+        
         <div class="container-fluid">
             <!-- Check if product exists -->
             <c:if test="${empty product}">
@@ -441,165 +443,190 @@
                             </div>
                         </div>
 
-                        <div class="card info-card">
-                            <div class="card-header">
-                                <i class="fas fa-info-circle"></i> Thông Tin Chi Tiết Cá Cảnh
+                        <!-- Thông Tin Chi Tiết Cá Cảnh - Chỉ hiển thị cho category cá cảnh -->
+                        <c:set var="isFishCategory" value="false" />
+                        <c:set var="isEquipmentCategory" value="false" />
+                        <!-- Kiểm tra category cha -->
+                        <c:forEach var="category" items="${categorys}">
+                            <c:if test="${category.categoryId == product.categoryId}">
+                                <c:if test="${category.parentId != null && category.categoryId != category.parentId}">
+                                    <c:forEach var="parentCategory" items="${categorys}">
+                                        <c:if test="${parentCategory.categoryId == category.parentId}">
+                                            <c:if test="${parentCategory.categoryId == 2}">
+                                                <c:set var="isEquipmentCategory" value="true" />
+                                            </c:if>
+                                            <c:if test="${parentCategory.categoryId == 1}">
+                                                <c:set var="isFishCategory" value="true" />
+                                            </c:if>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:if>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${isFishCategory && !isEquipmentCategory}">
+                            <div class="card info-card">
+                                <div class="card-header">
+                                    <i class="fas fa-info-circle"></i> Thông Tin Chi Tiết Cá Cảnh
+                                </div>
+                                <div class="card-body">
+                                    <c:choose>
+                                        <c:when test="${not empty productDetail}">
+                                            <ul class="feature-list">
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-flask"></i> Tên khoa học:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.scientificName ? productDetail.scientificName : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-signature"></i> Tên phổ biến:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.commonName ? productDetail.commonName : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-globe-americas"></i> Nguồn gốc:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.origin ? productDetail.origin : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-ruler"></i> Kích thước:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.size ? productDetail.size : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-hourglass-half"></i> Tuổi thọ:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.lifespan ? productDetail.lifespan : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-water"></i> Loại nước:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.waterType ? productDetail.waterType : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-thermometer-half"></i> Nhiệt độ nước:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.waterTemperature ? productDetail.waterTemperature : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-vial"></i> Độ pH:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.waterPh ? productDetail.waterPh : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-drumstick-bite"></i> Chế độ ăn:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.diet ? productDetail.diet : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-baby"></i> Độ khó sinh sản:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.breedingDifficulty ? productDetail.breedingDifficulty : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-hand-holding-water"></i> Mức độ chăm sóc:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.careLevel ? productDetail.careLevel : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <span class="feature-label">
+                                                        <i class="fas fa-fish"></i> Tương thích:
+                                                    </span>
+                                                    <span class="feature-value">
+                                                        ${not empty productDetail.compatibility ? productDetail.compatibility : '<em class="text-muted">Chưa có thông tin</em>'}
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="text-center text-muted py-4">
+                                                <i class="fas fa-fish fa-3x mb-3"></i>
+                                                <p class="font-italic">Chưa có thông tin chi tiết cho sản phẩm này</p>
+                                                <a href="products?action=edit&id=${product.productId}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-plus"></i> Thêm thông tin chi tiết
+                                                </a>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <c:choose>
-                                    <c:when test="${not empty productDetail}">
-                                        <ul class="feature-list">
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-flask"></i> Tên khoa học:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.scientificName ? productDetail.scientificName : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-signature"></i> Tên phổ biến:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.commonName ? productDetail.commonName : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-globe-americas"></i> Nguồn gốc:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.origin ? productDetail.origin : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-ruler"></i> Kích thước:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.size ? productDetail.size : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-hourglass-half"></i> Tuổi thọ:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.lifespan ? productDetail.lifespan : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-water"></i> Loại nước:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.waterType ? productDetail.waterType : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-thermometer-half"></i> Nhiệt độ nước:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.waterTemperature ? productDetail.waterTemperature : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-vial"></i> Độ pH:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.waterPh ? productDetail.waterPh : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-drumstick-bite"></i> Chế độ ăn:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.diet ? productDetail.diet : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-baby"></i> Độ khó sinh sản:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.breedingDifficulty ? productDetail.breedingDifficulty : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-hand-holding-water"></i> Mức độ chăm sóc:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.careLevel ? productDetail.careLevel : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <span class="feature-label">
-                                                    <i class="fas fa-fish"></i> Tương thích:
-                                                </span>
-                                                <span class="feature-value">
-                                                    ${not empty productDetail.compatibility ? productDetail.compatibility : '<em class="text-muted">Chưa có thông tin</em>'}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="text-center text-muted py-4">
-                                            <i class="fas fa-fish fa-3x mb-3"></i>
-                                            <p class="font-italic">Chưa có thông tin chi tiết cho sản phẩm này</p>
-                                            <a href="products?action=edit&id=${product.productId}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-plus"></i> Thêm thông tin chi tiết
-                                            </a>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
+                            <!-- Thuộc Tính Sản Phẩm - Chỉ hiển thị cho category cá cảnh -->
+                            <div class="card info-card">
+                                <div class="card-header">
+                                    <i class="fas fa-list-alt"></i> Thuộc Tính Sản Phẩm
+                                </div>
+                                <div class="card-body p-2">
+                                    <c:choose>
+                                        <c:when test="${not empty listProductAttributeValueByPID}">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered mb-0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th style="width: 50%;">Tên Thuộc Tính</th>
+                                                            <th style="width: 50%;">Giá Trị</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <c:forEach var="attributeValue" items="${listProductAttributeValueByPID}">
+                                                            <tr>
+                                                                <td>
+                                                                    <i class="fas fa-tag"></i>
+                                                                    <c:choose>
+                                                                        <c:when test="${attributeValue.attributeId == 1}">màu sắc</c:when>
+                                                                        <c:otherwise>kích thước</c:otherwise>
+                                                                    </c:choose>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge badge-info">${attributeValue.value}</span>
+                                                                </td>
+                                                            </tr>
+                                                        </c:forEach>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="text-center text-muted py-2" style="font-size: 0.95em;">
+                                                <i class="fas fa-info-circle"></i>
+                                                Chưa có thuộc tính nào cho sản phẩm này
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="card info-card">
-    <div class="card-header">
-        <i class="fas fa-list-alt"></i> Thuộc Tính Sản Phẩm
-    </div>
-    <div class="card-body p-2">
-        <c:choose>
-            <c:when test="${not empty listProductAttributeValueByPID}">
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th style="width: 50%;">Tên Thuộc Tính</th>
-                                <th style="width: 50%;">Giá Trị</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="attributeValue" items="${listProductAttributeValueByPID}">
-                                <tr>
-                                    <td>
-                                        <i class="fas fa-tag"></i> 
-                                        ${productAttribute.name}
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-info">${attributeValue.value}</span>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="text-center text-muted py-2" style="font-size: 0.95em;">
-                    <i class="fas fa-info-circle"></i>
-                    Chưa có thuộc tính nào cho sản phẩm này
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </div>
-</div>
+                        </c:if>
 
                         <!-- Timeline -->
                         <div class="card info-card">
@@ -679,7 +706,7 @@
                                     <i class="fas fa-edit"></i> Chỉnh sửa
                                 </a>
                                 <button type="button" class="btn btn-danger btn-lg" 
-                                        onclick="confirmDelete(${product.productId}, '${product.name}')">
+                                        onclick="confirmDelete(${product.productId}, &quot;${fn:replace(product.name, '\'', '\\\'')}&quot;)">
                                     <i class="fas fa-trash"></i> Xóa sản phẩm
                                 </button>
                                 <a href="products?action=new" class="btn btn-primary btn-lg">
