@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Biolife - Organic Food</title>
+    <title>FISH SHOP</title>
     <link href="https://fonts.googleapis.com/css?family=Cairo:400,600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400i,700i" rel="stylesheet">
@@ -21,9 +21,20 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main-color04.css">
     <style>
-        .hero-background {
-            background-image: url('${pageContext.request.contextPath}/assets/images/about-us/bn01.jpg');
-        }
+    .hero-background {
+    background-image: url('https://tepbac.com/upload/news/ge_image/2023/10/c%C3%A1%20c%E1%BA%A3nh_1698649470.jpg');
+    background-size: cover;            /* Phủ kín vùng nền, giữ tỉ lệ */
+    background-position: center center;/* Căn giữa ảnh */
+    background-repeat: no-repeat;      /* Không lặp lại ảnh */
+    background-attachment: scroll;     /* Không cố định ảnh khi cuộn */
+    min-height: 310px;                 /* Chiều cao hợp lý cho banner */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;                      /* Nếu có text, dễ đọc hơn */
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6); /* Tăng độ tương phản chữ */
+}
+
         .category-sidebar {
             padding: 15px;
             border: 1px solid #eee;
@@ -462,7 +473,7 @@
             cursor: pointer;
             color: #666;
             padding: 0;
-            margin-left: auto;
+            margin-left: auto;  
         }
     </style>
 </head>
@@ -535,45 +546,53 @@
                         <div class="discount-section">
                             <h3>Special Offers</h3>
                         <div class="discount-slider">
-                                    <c:forEach var="product" items="${discountedProducts}">
-                                        <div class="product-item">
-                                            <c:set var="mainImage" value="${discountedProductImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
-                                            <c:choose>
-                                                <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
-                                                <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
-                                                         alt="${product.name}" 
-                                                         onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.png';" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                <div class="image-placeholder">
-                                                    No Image<br>Available
-                                                </div>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        <h4>${product.name}</h4>
-                                                                                        <p class="price">
-                                                <c:choose>
-                                                    <c:when test="${not empty product.salePrice}">
-                                                        <span class="original-price" style="text-decoration: line-through; color: #999; margin-right: 5px;"><fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND</span>
-                                                        <span class="sale-price" style="color: #ff0000; text-decoration: none;"><fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </p>
-                                        <form action="cartClient" method="post" class="discount-cart-form">
-                                            <input type="hidden" name="action" value="add"/>
-                                            <input type="hidden" name="productId" value="${product.productId}"/>
-                                            <input type="hidden" name="categoryId" value="${categoryId}"/>
-                                            <input type="hidden" name="redirectToCart" value="false"/>
-                                            <div class="discount-cart-inputs">
-                                                <input type="number" name="quantity" value="1" min="1" class="discount-quantity"/>
-                                                <button type="submit" class="discount-add-btn">Add to Cart</button>
-                                            </div>
-                                        </form>
-                                        </div>
-                                    </c:forEach>
+                              <c:forEach var="product" items="${discountedProducts}">
+    <div class="product-item">
+        <c:set var="mainImage" value="${discountedProductImagesMap[product.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
+        
+        <c:choose>
+            <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
+                <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
+                     alt="${product.name}" 
+                     onerror="this.onerror=null; this.src='https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220';" />
+            </c:when>
+            <c:otherwise>
+                <img src="https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220" 
+                     alt="No Image Available" 
+                     style="max-width: 100%; height: auto;" />
+            </c:otherwise>
+        </c:choose>
+
+        <h4>${product.name}</h4>
+        <p class="price">
+            <c:choose>
+                <c:when test="${not empty product.salePrice}">
+                    <span class="original-price" style="text-decoration: line-through; color: #999; margin-right: 5px;">
+                        <fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                    </span>
+                    <span class="sale-price" style="color: #ff0000;">
+                        <fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                    </span>
+                </c:when>
+                <c:otherwise>
+                    <fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                </c:otherwise>
+            </c:choose>
+        </p>
+
+        <form action="cartClient" method="post" class="discount-cart-form">
+            <input type="hidden" name="action" value="add"/>
+            <input type="hidden" name="productId" value="${product.productId}"/>
+            <input type="hidden" name="categoryId" value="${categoryId}"/>
+            <input type="hidden" name="redirectToCart" value="false"/>
+            <div class="discount-cart-inputs">
+                <input type="number" name="quantity" value="1" min="1" class="discount-quantity"/>
+                <button type="submit" class="discount-add-btn">Add to Cart</button>
+            </div>
+        </form>
+    </div>
+</c:forEach>
+
                             </div>
                         </div>
                     </c:if>
@@ -618,20 +637,19 @@
                                         <c:set var="mainImage" value="${productImagesMap[firstProduct.productId].stream().filter(img -> img.isMain == 1).findFirst().orElse(null)}"/>
                                         <div class="product-image-container">
                                             <c:choose>
-                                                <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
-                                                    <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
-                                                         class="product-image product-image-${fn:replace(productName, ' ', '-')}"
-                                                         onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                                                    <div class="image-placeholder" style="display: none;">
-                                                        No Image<br>Available
-                                                    </div>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <div class="image-placeholder">
-                                                        No Image<br>Available
-                                                    </div>
-                                                </c:otherwise>
-                                            </c:choose>
+    <c:when test="${not empty mainImage and not empty mainImage.imageUrl}">
+        <img src="${pageContext.request.contextPath}/${mainImage.imageUrl}" 
+             alt="${product.name}"
+             class="product-image product-image-${fn:replace(productName, ' ', '-')}"
+             onerror="this.onerror=null; this.src='https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220';" />
+    </c:when>
+    <c:otherwise>
+        <img src="https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220" 
+             alt="No Image Available"
+             class="product-image product-image-default" />
+    </c:otherwise>
+</c:choose>
+
                                             
                                         </div>
                                         <div class="product-info">

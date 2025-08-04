@@ -28,260 +28,296 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/main-color.css">
     <style>
-        .checkout-page {
-            padding: 50px 0;
-        }
-        .checkout-title {
-            margin-bottom: 30px;
-        }
-        .checkout-section {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-        .checkout-section h4 {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .form-control {
-            border-radius: 5px;
-            height: 45px;
-            border: 1px solid #ddd;
-            color: #333;
-            background-color: #fff;
-        }
-        .form-control:focus {
-            border-color: #5ec6fa;
-            box-shadow: 0 0 0 0.2rem rgba(94, 198, 250, 0.25);
-        }
-        /* Reset select styles */
-        select {
-            -webkit-appearance: menulist !important;
-            -moz-appearance: menulist !important;
-            appearance: menulist !important;
-            background-image: none !important;
-            background-color: #ffffff !important;
-            color: #333 !important;
-            border: 1px solid #ddd !important;
-            padding: 5px 10px !important;
-            cursor: pointer !important;
-        }
-        select.form-control {
-            background-color: #ffffff;
-            color: #333;
-            font-weight: 500;
-            appearance: auto;
-            -webkit-appearance: menulist;
-            -moz-appearance: menulist;
-            padding-right: 25px;
-        }
-        select.form-control option {
-            background-color: #ffffff;
-            color: #333;
-            padding: 10px;
-        }
-        /* Thêm CSS để đảm bảo văn bản hiển thị rõ ràng */
-        #addressId {
-            color: #333 !important;
-            background-color: #fff !important;
-            font-weight: normal !important;
-            text-align: left !important;
-            padding: 8px 12px !important;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        #addressId option {
-            color: #333 !important;
-            background-color: #fff !important;
-            padding: 8px !important;
-        }
-        /* Ẩn các phần tử không cần thiết */
-        .nice-select-dropdown, .list, .nice-select:after {
-            display: none !important;
-        }
-        .nice-select {
-            display: none !important;
-        }
-        /* Ẩn ô vuông nhỏ bên dưới */
-        #addressId + div, 
-        .nice-select + div,
-        .form-group > div:not(.row):not(.form-control):not(#new_address_fields) {
-            display: none !important;
-        }
-        .payment-methods {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .payment-method {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .payment-method:hover {
-            border-color: #5ec6fa;
-        }
-        .payment-method.active {
-            border-color: #5ec6fa;
-            background-color: rgba(94, 198, 250, 0.05);
-        }
-        .payment-method input[type="radio"] {
-            margin-right: 10px;
-        }
-        .payment-method-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .payment-method-description {
-            color: #666;
-            font-size: 14px;
-        }
-        .order-summary {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .order-summary-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .order-summary-item:last-child {
-            border-bottom: none;
-        }
-        .order-summary-item.total {
-            font-weight: 700;
-            font-size: 18px;
-            border-top: 2px solid #ddd;
-            border-bottom: none;
-            padding-top: 15px;
-            margin-top: 15px;
-        }
-        .btn-checkout {
-            background-color: #5ec6fa;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-checkout:hover {
-            background-color: #36a2eb;
-        }
-        .product-item {
-            display: flex;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .product-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-right: 15px;
-        }
-        .product-details {
-            flex: 1;
-        }
-        .product-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .product-price {
-            color: #5ec6fa;
-            font-weight: 600;
-        }
-        .product-quantity {
-            color: #666;
-            font-size: 14px;
-        }
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .product-attributes {
-            margin-top: 5px;
-            font-size: 13px;
-            color: #666;
-        }
-        .attribute-item {
-            display: inline-block;
-            margin-right: 10px;
-            background-color: #f5f5f5;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-        .new-address-fields, #new_address_fields {
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        .coupon-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .coupon-form {
-            display: flex;
-            gap: 10px;
-        }
-        .coupon-input {
-            flex: 1;
-        }
-        .btn-apply-coupon {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-apply-coupon:hover {
-            background-color: #5a6268;
-        }
-        .coupon-applied {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #d4edda;
-            color: #155724;
-            border-radius: 5px;
-        }
+      /* ============================== */
+/*       GENERAL WRAPPER         */
+/* ============================== */
+.checkout-page {
+    padding: 50px 0;
+}
+.checkout-title {
+    margin-bottom: 30px;
+}
+
+/* ============================== */
+/*        CHECKOUT SECTIONS      */
+/* ============================== */
+.checkout-section {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+.checkout-section h4 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+/* ============================== */
+/*          FORM STYLING         */
+/* ============================== */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+.form-control {
+    border-radius: 5px;
+    height: 45px;
+    border: 1px solid #ddd;
+    color: #333;
+    background-color: #fff;
+}
+.form-control:focus {
+    border-color: #5ec6fa;
+    box-shadow: 0 0 0 0.2rem rgba(94,198,250,0.25);
+}
+
+/* === SELECT FIXES === */
+select {
+    appearance: menulist !important;
+    background-image: none !important;
+    background-color: #fff !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+    padding: 5px 10px !important;
+    cursor: pointer !important;
+}
+select.form-control {
+    font-weight: 500;
+    padding-right: 25px;
+}
+select.form-control option {
+    background-color: #fff;
+    color: #333;
+    padding: 10px;
+}
+
+/* === Address Select === */
+#addressId {
+    color: #333 !important;
+    background-color: #fff !important;
+    font-weight: normal !important;
+    text-align: left !important;
+    padding: 8px 12px !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+#addressId option {
+    color: #333 !important;
+    background-color: #fff !important;
+    padding: 8px !important;
+}
+
+/* === Hide Unwanted Custom Elements === */
+.nice-select-dropdown, .list, .nice-select:after,
+.nice-select,
+#addressId + div,
+.nice-select + div,
+.form-group > div:not(.row):not(.form-control):not(#new_address_fields) {
+    display: none !important;
+}
+
+/* ============================== */
+/*         PAYMENT METHOD        */
+/* ============================== */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.payment-method {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.payment-method:hover {
+    border-color: #5ec6fa;
+}
+.payment-method.active {
+    border-color: #5ec6fa;
+    background-color: rgba(94,198,250,0.05);
+}
+.payment-method input[type="radio"] {
+    margin-right: 10px;
+}
+.payment-method-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.payment-method-description {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ============================== */
+/*         ORDER SUMMARY         */
+/* ============================== */
+.order-summary {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+}
+.order-summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.order-summary-item:last-child {
+    border-bottom: none;
+}
+.order-summary-item.total {
+    font-weight: 700;
+    font-size: 18px;
+    border-top: 2px solid #ddd;
+    padding-top: 15px;
+    margin-top: 15px;
+    border-bottom: none;
+}
+
+/* ============================== */
+/*       BUTTON – CHECKOUT       */
+/* ============================== */
+.btn-checkout {
+    background-color: #5ec6fa;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-checkout:hover {
+    background-color: #36a2eb;
+}
+
+/* ============================== */
+/*         PRODUCT LIST          */
+/* ============================== */
+.product-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+.product-details {
+    flex: 1;
+}
+.product-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.product-price {
+    font-weight: 600;
+    color: #5ec6fa;
+}
+.product-quantity {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ============================== */
+/*        PRODUCT ATTRIBUTES     */
+/* ============================== */
+.product-attributes {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #666;
+}
+.attribute-item {
+    display: inline-block;
+    margin-right: 10px;
+    background-color: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* ============================== */
+/*      ADDRESS – NEW FIELD      */
+/* ============================== */
+.new-address-fields,
+#new_address_fields {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+/* ============================== */
+/*         COUPON SECTION        */
+/* ============================== */
+.coupon-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+.coupon-form {
+    display: flex;
+    gap: 10px;
+}
+.coupon-input {
+    flex: 1;
+}
+.btn-apply-coupon {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-apply-coupon:hover {
+    background-color: #5a6268;
+}
+.coupon-applied {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 5px;
+}
+
+/* ============================== */
+/*        ALERT STYLING          */
+/* ============================== */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
         
     </style>
 </head>

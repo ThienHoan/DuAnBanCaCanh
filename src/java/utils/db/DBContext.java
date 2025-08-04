@@ -9,7 +9,7 @@ public class DBContext {
     public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=fishshopp";
     public static String userDB = "sa";
-    public static String passDB = "123456";
+    public static String passDB = "sa";
       public static Connection getConnection() {
         Connection con = null;
         

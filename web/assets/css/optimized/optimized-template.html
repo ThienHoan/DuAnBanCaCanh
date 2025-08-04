@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Shop - CSS Tối Ưu</title>
+    
+    <!-- Critical CSS - Inline for above-the-fold content -->
+    <style>
+        /* Critical CSS content will be here */
+    </style>
+    
+    <!-- Preload important resources -->
+    <link rel="preload" href="critical.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="critical.min.css"></noscript>
+    
+    <!-- Load non-critical CSS asynchronously -->
+    <link rel="preload" href="main.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="main.min.css"></noscript>
+    
+    <link rel="preload" href="components.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="components.min.css"></noscript>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../images/favicon.png">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-area">
+        <div class="header-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <span>Hotline: 0123 456 789</span>
+                    </div>
+                    <div class="col text-right">
+                        <a href="../login.jsp">Đăng nhập</a> | 
+                        <a href="../register.jsp">Đăng ký</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-middle">
+            <div class="container">
+                <div class="row align-center">
+                    <div class="col">
+                        <img src="../images/logo.png" alt="Fish Shop" class="logo">
+                    </div>
+                    
+                    <div class="col">
+                        <div class="search-container">
+                            <form class="search-form">
+                                <input type="text" class="search-input" placeholder="Tìm kiếm sản phẩm...">
+                                <button type="submit" class="search-btn">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="col">
+                        <nav>
+                            <ul class="nav-menu">
+                                <li><a href="../home.jsp">Trang chủ</a></li>
+                                <li><a href="../category1.jsp">Sản phẩm</a></li>
+                                <li><a href="../blog.jsp">Blog</a></li>
+                                <li><a href="../contact_us.jsp">Liên hệ</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                    <div class="col">
+                        <a href="../cart.jsp" class="cart-icon">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="cart-badge">3</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Cá Cảnh Chất Lượng</h1>
+                    <p class="hero-subtitle">Khám phá bộ sưu tập cá cảnh đẹp nhất</p>
+                    <a href="../category1.jsp" class="btn btn-primary">Mua ngay</a>
+                </div>
+            </section>
+
+            <!-- Products Grid -->
+            <section class="products-section">
+                <h2 class="section-title">Sản phẩm nổi bật</h2>
+                <div class="products-grid">
+                    <!-- Product Card Example -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="../images/products/betta_halfmoon_1.jpg" alt="Cá Betta">
+                            <div class="product-badges">
+                                <span class="product-badge badge-new">Mới</span>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">
+                                <a href="../product_detail.jsp">Cá Betta Halfmoon</a>
+                            </h3>
+                            <div class="product-price">
+                                <span class="current-price">150,000đ</span>
+                                <span class="old-price">200,000đ</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="btn-add-cart">Thêm vào giỏ</button>
+                                <button class="btn-wishlist">
+                                    <i class="fa fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- More product cards... -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Về chúng tôi</h3>
+                    <ul>
+                        <li><a href="#">Giới thiệu</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                        <li><a href="#">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Hỗ trợ</h3>
+                    <ul>
+                        <li><a href="#">Hướng dẫn mua hàng</a></li>
+                        <li><a href="#">Chính sách bảo hành</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <ul>
+                        <li>Điện thoại: 0123 456 789</li>
+                        <li>Email: info@fishshop.com</li>
+                        <li>Địa chỉ: 123 Đường ABC, Quận 1, TP.HCM</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Fish Shop. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Load CSS asynchronously
+        function loadCSS(href) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = href;
+            document.head.appendChild(link);
+        }
+
+        // Load non-critical CSS after page load
+        window.addEventListener('load', function() {
+            loadCSS('main.min.css');
+            loadCSS('components.min.css');
+        });
+    </script>
+</body>
+</html> 

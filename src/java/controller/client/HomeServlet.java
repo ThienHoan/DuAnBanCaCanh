@@ -104,11 +104,14 @@ public class HomeServlet extends HttpServlet {
                         LOGGER.info("Added featured product: " + product.getName() + " (ID: " + product.getProductId() + ")");
                         LOGGER.info("Added featured product to display: " + product.getName() + " (ID: " + product.getProductId() + ")");
                         
-                        // Get main image
+                                                                    // Get main image
                         try {
                             ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
-                            if (mainImage != null) {
+                            if (mainImage != null && mainImage.getImageUrl() != null && !mainImage.getImageUrl().trim().isEmpty()) {
                                 productImages.put(product.getProductId(), mainImage.getImageUrl());
+                                LOGGER.info("Loaded image for featured product " + product.getProductId() + ": " + mainImage.getImageUrl());
+                            } else {
+                                LOGGER.warning("No main image found for featured product " + product.getProductId());
                             }
                         } catch (Exception e) {
                             LOGGER.log(Level.WARNING, "Error loading image for featured product " + product.getProductId(), e);
@@ -172,8 +175,11 @@ public class HomeServlet extends HttpServlet {
                     // Get main image
                     try {
                         ProductImage mainImage = imageDAO.getMainImageByProductId(product.getProductId());
-                        if (mainImage != null) {
+                        if (mainImage != null && mainImage.getImageUrl() != null && !mainImage.getImageUrl().trim().isEmpty()) {
                             onSaleProductImages.put(product.getProductId(), mainImage.getImageUrl());
+                            LOGGER.info("Loaded image for sale product " + product.getProductId() + ": " + mainImage.getImageUrl());
+                        } else {
+                            LOGGER.warning("No main image found for sale product " + product.getProductId());
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING, "Error loading image for sale product " + product.getProductId(), e);

@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Biolife - Organic Food</title>
+        <title>FISH SHOP</title>
         <link href="https://fonts.googleapis.com/css?family=Cairo:400,600,700&amp;display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Poppins:600&amp;display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400i,700i" rel="stylesheet">
@@ -24,75 +24,87 @@
         <link rel="stylesheet" href="assets/css/product-gridd.css">
 
         <!-- Custom styles for user display -->
-        <style>
-        /* Badges for bestseller products */
-        .badges {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-        .sale-badge {
-            background-color: #e73918;
-            color: white;
-            padding: 5px 8px;
-            border-radius: 3px;
+      <style>
+    /* === Badges for featured or sale products === */
+    .badges {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+
+    .sale-badge {
+        background-color: #e73918; /* đỏ cam nổi bật */
+        color: #fff;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* === User greeting styling === */
+    .user-greeting {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333;
+    }
+
+    .user-greeting strong {
+        font-weight: 600;
+        color: #7fad39; /* màu xanh chủ đạo */
+    }
+
+    .user-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* === Navigation menu color fix === */
+    .header-top .horizontal-menu li a,
+    .header-top .horizontal-menu li span {
+        color: #000;
+        transition: color 0.3s ease;
+    }
+
+    /* === Login link hover effect === */
+    .login-link {
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .login-link:hover {
+        color: #7fad39; /* xanh lá chủ đạo */
+    }
+
+    /* === Font rendering improvement === */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* === Mobile-specific user info === */
+    .user-mobile-info {
+        border-left: 3px solid #7fad39;
+        padding-left: 8px;
+        margin-top: 6px;
+    }
+
+    /* === Responsive tweaks === */
+    @media (max-width: 768px) {
+        .user-greeting {
             font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-            .user-greeting {
-                font-size: 14px !important;
-                line-height: 1.5 !important;
-            }
 
-            .user-greeting strong {
-                font-weight: 600 !important;
-                color: #fff !important;
-            }
+        .sale-badge {
+            font-size: 11px;
+            padding: 4px 6px;
+        }
+    }
+</style>
 
-            .user-info {
-                display: inline-flex !important;
-                align-items: center !important;
-            }
-
-            .header-top .horizontal-menu li a,
-            .header-top .horizontal-menu li span {
-                color: black !important;
-
-            }
-
-            .login-link {
-                transition: all 0.3s ease !important;
-            }
-
-            .login-link:hover {
-                color: #7fad39 !important;
-            }
-
-            /* Ensure proper font rendering */
-            * {
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-
-            /* Mobile user info styling */
-            .user-mobile-info {
-                border-left: 3px solid #7fad39;
-            }
-
-            /* Fix Vietnamese characters display */
-
-
-            /* Responsive adjustments */
-            @media (max-width: 768px) {
-                .user-greeting {
-                    font-size: 12px !important;
-                }
-            }
-        </style>
     </head>
     <body class="biolife-body">
 
@@ -151,9 +163,9 @@
                                                 </li>
                                                 <li class="menu-item menu-item-has-children has-child">
                                                     <a href="ai-agent.jsp" class="menu-name" data-title="Cá cảnh"><i class="biolife-icon icon-fish"></i>Tư Vấn Bởi AI</a>
-                                                    
+
                                                 </li>
-                                                
+
                                             </ul>
                                         </div>
                                     </div>
@@ -166,56 +178,60 @@
                                             <div class="slide-contain slider-opt04__layout01">
                                                 <div class="media"></div>
                                                 <div class="text-content">
-                                                    <i class="first-line">Pomegranate</i>
-                                                    <h3 class="second-line">Fresh Juice 100% Organic</h3>
-                                                    <p class="third-line">A blend of freshly squeezed green apple & fruits</p>
-                                                    <p class="buttons">
-                                                        <a href="#" class="btn btn-bold">Shop now</a>
-                                                        <a href="#" class="btn btn-thin">View lookbook</a>
-                                                    </p>
-                                                </div>
+    <i class="first-line">FISH SHOP </i>
+    <h3 class="second-line">Cá Cảnh Đẹp - Đa Dạng Chủng Loại</h3>
+    <p class="third-line">Khám phá bộ sưu tập cá cảnh đầy màu sắc & sinh động cho bể nhà bạn</p>
+    <p class="buttons">
+        <a href="#" class="btn btn-bold">Mua ngay</a>
+        <a href="#" class="btn btn-thin">Xem bộ sưu tập</a>
+    </p>
+</div>
+
                                             </div>
                                         </li>
                                         <li>
                                             <div class="slide-contain slider-opt04__layout01">
                                                 <div class="media"></div>
                                                 <div class="text-content">
-                                                    <i class="first-line">Pomegranate</i>
-                                                    <h3 class="second-line">Fresh Juice 100% Organic</h3>
-                                                    <p class="third-line">A blend of freshly squeezed green apple & fruits</p>
-                                                    <p class="buttons">
-                                                        <a href="#" class="btn btn-bold">Shop now</a>
-                                                        <a href="#" class="btn btn-thin">View lookbook</a>
-                                                    </p>
-                                                </div>
+    <i class="first-line">FISH SHOP</i>
+    <h3 class="second-line">Cá Cảnh Đẹp - Đa Dạng Chủng Loại</h3>
+    <p class="third-line">Khám phá bộ sưu tập cá cảnh đầy màu sắc & sinh động cho bể nhà bạn</p>
+    <p class="buttons">
+        <a href="#" class="btn btn-bold">Mua ngay</a>
+        <a href="#" class="btn btn-thin">Xem bộ sưu tập</a>
+    </p>
+</div>
+
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="slide-contain slider-opt04__layout01">
+                                                <div class="media"></div>
+                                              <div class="text-content">
+    <i class="first-line">FISH SHOP</i>
+    <h3 class="second-line">Cá Cảnh Đẹp - Đa Dạng Chủng Loại</h3>
+    <p class="third-line">Khám phá bộ sưu tập cá cảnh đầy màu sắc & sinh động cho bể nhà bạn</p>
+    <p class="buttons">
+        <a href="#" class="btn btn-bold">Mua ngay</a>
+        <a href="#" class="btn btn-thin">Xem bộ sưu tập</a>
+    </p>
+</div>
+
                                             </div>
                                         </li>
                                         <li>
                                             <div class="slide-contain slider-opt04__layout01">
                                                 <div class="media"></div>
                                                 <div class="text-content">
-                                                    <i class="first-line">Pomegranate</i>
-                                                    <h3 class="second-line">Fresh Juice 100% Organic</h3>
-                                                    <p class="third-line">A blend of freshly squeezed green apple & fruits</p>
+                                                    <i class="first-line">FISH SHOP</i>
+                                                    <h3 class="second-line">Cá Cảnh Đẹp - Đa Dạng Chủng Loại</h3>
+                                                    <p class="third-line">Khám phá bộ sưu tập cá cảnh đầy màu sắc & sinh động cho bể nhà bạn</p>
                                                     <p class="buttons">
-                                                        <a href="#" class="btn btn-bold">Shop now</a>
-                                                        <a href="#" class="btn btn-thin">View lookbook</a>
+                                                        <a href="#" class="btn btn-bold">Mua ngay</a>
+                                                        <a href="#" class="btn btn-thin">Xem bộ sưu tập</a>
                                                     </p>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="slide-contain slider-opt04__layout01">
-                                                <div class="media"></div>
-                                                <div class="text-content">
-                                                    <i class="first-line">Pomegranate</i>
-                                                    <h3 class="second-line">Fresh Juice 100% Organic</h3>
-                                                    <p class="third-line">A blend of freshly squeezed green apple & fruits</p>
-                                                    <p class="buttons">
-                                                        <a href="#" class="btn btn-bold">Shop now</a>
-                                                        <a href="#" class="btn btn-thin">View lookbook</a>
-                                                    </p>
-                                                </div>
+
                                             </div>
                                         </li>
                                     </ul>
@@ -235,9 +251,10 @@
                                                 <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style02-child.png" width="231" height="208" alt=""></a>
                                             </div>
                                             <div class="text-content">
-                                                <span class="text1">Sumer Fruit</span>
-                                                <b class="text2">100% Pure Natural Fruit Juice</b>
+                                                <span class="text1">Cá Cảnh</span>
+                                                <b class="text2">Đa Dạng Chủng Loại </b>
                                             </div>
+
                                         </div>
                                     </div>
                                 </li>
@@ -247,11 +264,12 @@
                                             <div class="media">
                                                 <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style03-child.png" width="218" height="205" alt=""></a>
                                             </div>
-                                            <div class="text-content">
-                                                <span class="text1">California</span>
-                                                <b class="text2">Fresh Fruit</b>
-                                                <span class="text3">Association</span>
-                                            </div>
+<div class="text-content">
+    <span class="text1">Cá Cảnh </span>
+    <b class="text2">Đẹp - Khỏe </b>
+    <span class="text3">Phục Vụ Toàn Quốc</span>
+</div>
+
                                         </div>
                                     </div>
                                 </li>
@@ -262,9 +280,10 @@
                                                 <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style04-child.png" width="160" height="206" alt=""></a>
                                             </div>
                                             <div class="text-content">
-                                                <span class="text1">Naturally fresh taste</span>
-                                                <p class="text2">With <span>25% Off</span> All Teas</p>
-                                            </div>
+    <span class="text1">Thế Giới Cá Cảnh Tươi Đẹp</span>
+    <p class="text2">Giảm giá <span>25%</span> tất cả cá cảnh tuần này!</p>
+</div>
+
                                         </div>
                                     </div>
                                 </li>
@@ -405,10 +424,11 @@
                                                                 <a href="product-detail?id=${product.productId}" class="link-to-product">                                                                
                                                                     <c:choose>
                                                                         <c:when test="${not empty productImages[product.productId]}">
-                                                                            <img src="${productImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                                                                            <img src="${productImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail"
+                                                                                 onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.jpg';" />
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                                                                            <img src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No Image" width="270" height="270" class="product-thumnail" />
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                 </a>
@@ -575,10 +595,11 @@
                                                                 <a href="product-detail?id=${product.productId}" class="link-to-product">
                                                                     <c:choose>
                                                                         <c:when test="${not empty onSaleProductImages[product.productId]}">
-                                                                            <img src="${onSaleProductImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                                                                            <img src="${onSaleProductImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail"
+                                                                                 onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.jpg';" />
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                                                                            <img src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No Image" width="270" height="270" class="product-thumnail" />
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                 </a>
@@ -668,7 +689,7 @@
                                     </div>
                                 </div>
                                 <div class="text-content">
-                                    <b class="first-line">Special discount<br>for all fruit products</b>
+<b class="first-line">Ưu đãi đặc biệt<br>cho tất cả sản phẩm cá cảnh</b>
                                     <div class="biolife-countdown" data-datetime="2020/01/18 00:00:00"></div>
                                     <p class="buttons">
                                         <a href="home" class="btn btn-bold green-btn">See Offer Now!</a>
@@ -681,214 +702,153 @@
 
                 <!--Block 06: Advance-Box-->
                 <div class="container z-index-20 xs-margin-top-80px sm-margin-top-0">
-                <div class="row">
+                    <div class="row">
 
-                    <div class="col-lg-4 sm-margin-top-80px ">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
-                                <div class="biolife-banner style-05 biolife-banner__style-05">
-                                    <div class="banner-contain">
-                                        <div class="media">
-                                            <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style05.png" width="197" height="230" alt=""></a>
-                                        </div>
-                                        <div class="text-content">
-                                            <b class="text1">Mid June Royal Lee cherries</b>
-                                            <b class="text-pr"><span>Only:</span>₫8.00</b>
-                                            <a href="#" class="btn btn-shopnow">shop now</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12 xs-margin-top-30px sm-margin-top-0 lg-margin-top-30px">
-                                <div class="biolife-banner style-06 biolife-banner__style-06">
-                                    <div class="banner-contain">
-                                        <div class="media">
-                                            <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style06.png" width="214" height="230" alt=""></a>
-                                        </div>
-                                        <div class="text-content">
-                                            <b class="text1">California</b>
-                                            <b class="text2">Peaches</b>
-                                            <b class="text-pr"><span>Only:</span>₫8.00</b>
-                                            <a href="#" class="btn btn-shopnow">shop now</a>
+                        <div class="col-lg-4 sm-margin-top-80px ">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12">
+                                    <div class="biolife-banner style-05 biolife-banner__style-05">
+                                        <div class="banner-contain">
+                                            <div class="media">
+                                                <a href="#" class="bn-link"><img src="assets/images/products/guppy-rainbow-main.jpg" width="197" height="230" alt=""></a>
+                                            </div>
+                                            <div class="text-content">
+                                                <b class="text1">Cá Guppy Rainbow</b>
+
+                                                <a href="#" class="btn btn-shopnow">shop now</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12 xs-margin-top-30px sm-margin-top-0 lg-margin-top-30px">
-                                <div class="biolife-banner style-07 biolife-banner__style-07">
-                                    <div class="banner-contain">
-                                        <div class="media">
-                                            <a href="#" class="bn-link"><img src="assets/images/home-04/bn_style07.png" width="204" height="230" alt=""></a>
+                                <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12 xs-margin-top-30px sm-margin-top-0 lg-margin-top-30px">
+                                    <div class="biolife-banner style-06 biolife-banner__style-06">
+                                        <div class="banner-contain">
+                                            <div class="media">
+                                                <a href="#" class="bn-link"><img src="assets/images/home-04/cat-thumb04.jpg" width="214" height="230" alt=""></a>
+                                            </div>
+                                            <div class="text-content">
+                                                <b class="text1">California</b>
+                                                <b class="text2">Peaches</b>
+                                                <b class="text-pr"><span>Only:</span>₫8.00</b>
+                                                <a href="#" class="btn btn-shopnow">shop now</a>
+                                            </div>
                                         </div>
-                                        <div class="text-content">
-                                            <b class="text1">Grapes</b>
-                                            <span class="text2">Make the plate</span>
-                                            <b class="text-pr"><span>Only:</span>₫18.00</b>
-                                            <a href="#" class="btn btn-shopnow">shop now</a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-4 col-sm-4 col-xs-12 xs-margin-top-30px sm-margin-top-0 lg-margin-top-30px">
+                                    <div class="biolife-banner style-07 biolife-banner__style-07">
+                                        <div class="banner-contain">
+                                            <div class="media">
+                                                <a href="#" class="bn-link"><img src="assets/images/products/hailea-v60-airpump-main.jpg" width="204" height="230" alt=""></a>
+                                            </div>
+                                            <div class="text-content">
+                                                <b class="text1">Grapes</b>
+                                                <span class="text2">Make the plate</span>
+                                                <b class="text-pr"><span>Only:</span>₫18.00</b>
+                                                <a href="#" class="btn btn-shopnow">shop now</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-8 sm-margin-top-84px">
-                        <div class="advance-product-box">
-                            <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny lg-margin-bottom-26px-im">
-                                <h3 class="title">Những Sản Phẩm Được Mua Nhiều Nhất</h3>
-                                <p class="subtitle">Sản phẩm bán chạy nhất (trên 5 sản phẩm đã bán)</p>
-                            </div>
-                            <ul class="products-list biolife-carousel nav-top-right nav-main-color nav-none-on-mobile eq-height-contain" data-slick='{"rows":2 ,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":0,"slidesToShow":3, "slidesToScroll":3, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 3, "slidesToScroll":3}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesToScroll":3, "slidesMargin": 20}},{"breakpoint":768, "settings":{ "slidesToShow": 2, "slidesToScroll":2, "slidesMargin": 15}}]}'>
-                                <c:choose>
-                                    <c:when test="${not empty bestsellerProducts}">
-                                        <c:forEach var="product" items="${bestsellerProducts}" varStatus="status" begin="0" end="9">
-                                <li class="product-item">
-                                    <div class="contain-product layout-default">
-                                        <div class="product-thumb">
-                                                        <a href="product-detail?id=${product.productId}" class="link-to-product">
+                        <div class="col-lg-8 sm-margin-top-84px">
+                            <div class="advance-product-box">
+                                <div class="biolife-title-box bold-style biolife-title-box__bold-style mobile-tiny lg-margin-bottom-26px-im">
+                                    <h3 class="title">Những Sản Phẩm Được Mua Nhiều Nhất</h3>
+                                    <p class="subtitle">Sản phẩm bán chạy nhất (trên 5 sản phẩm đã bán)</p>
+                                </div>
+                                <ul class="products-list biolife-carousel nav-top-right nav-main-color nav-none-on-mobile eq-height-contain" data-slick='{"rows":2 ,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":0,"slidesToShow":3, "slidesToScroll":3, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 3, "slidesToScroll":3}},{"breakpoint":992, "settings":{ "slidesToShow": 3, "slidesToScroll":3, "slidesMargin": 20}},{"breakpoint":768, "settings":{ "slidesToShow": 2, "slidesToScroll":2, "slidesMargin": 15}}]}'>
+                                    <c:choose>
+                                        <c:when test="${not empty bestsellerProducts}">
+                                            <c:forEach var="product" items="${bestsellerProducts}" varStatus="status" begin="0" end="9">
+                                                <li class="product-item">
+                                                    <div class="contain-product layout-default">
+                                                        <div class="product-thumb">
+                                                            <a href="product-detail?id=${product.productId}" class="link-to-product">
+                                                                <c:choose>
+                                                                    <c:when test="${not empty bestsellerProductImages[product.productId]}">
+                                                                        <img src="${bestsellerProductImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </a>
+                                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                                                <c:if test="${product.soldQuantity > 0}">
+                                                                <div class="badges">
+                                                                    <span class="sale-badge">${product.soldQuantity} đã bán</span>
+                                                                </div>
+                                                            </c:if>
+                                                        </div>
+                                                        <div class="info">
                                                             <c:choose>
-                                                                <c:when test="${not empty bestsellerProductImages[product.productId]}">
-                                                                    <img src="${bestsellerProductImages[product.productId]}" alt="${product.name}" width="270" height="270" class="product-thumnail">
+                                                                <c:when test="${not empty bestsellerProductCategories[product.productId]}">
+                                                                    <b class="categories">${bestsellerProductCategories[product.productId].name}</b>
                                                                 </c:when>
                                                                 <c:otherwise>
-                                                                    <img src="assets/images/products/p-01.jpg" alt="No Image" width="270" height="270" class="product-thumnail">
+                                                                    <b class="categories">Cá cảnh</b>
                                                                 </c:otherwise>
                                                             </c:choose>
-                                            </a>
-                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                                        <c:if test="${product.soldQuantity > 0}">
-                                                            <div class="badges">
-                                                                <span class="sale-badge">${product.soldQuantity} đã bán</span>
-                                        </div>
-                                                        </c:if>
-                                        </div>
-                                        <div class="info">
-                                                        <c:choose>
-                                                            <c:when test="${not empty bestsellerProductCategories[product.productId]}">
-                                                                <b class="categories">${bestsellerProductCategories[product.productId].name}</b>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <b class="categories">Cá cảnh</b>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                        <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
-                                                        <div class="price">
-                                                            <c:choose>
-                                                                <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
-                                                                    <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0"/></span></ins>
-                                                                    <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></del>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></ins>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                            </div>
-                                            <div class="slide-down-box">
-                                                            <p class="message">Sản phẩm chất lượng cao được chọn lọc kỹ càng.</p>
-                                                <div class="buttons">
-                                                                <a href="#" class="btn wishlist-btn" onclick="addToWishlist(event, '${product.productId}')"><i class="fa fa-heart" aria-hidden="true"></i></a>
-                                                                <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(event, '${product.productId}')"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>thêm vào giỏ hàng</a>
-                                                    <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                                                            <h4 class="product-title"><a href="product-detail?id=${product.productId}" class="pr-name">${product.name}</a></h4>
+                                                            <div class="price">
+                                                                <c:choose>
+                                                                    <c:when test="${not empty product.salePrice and product.salePrice gt 0}">
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.salePrice}" pattern="#,##0"/></span></ins>
+                                                                        <del><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></del>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span><fmt:formatNumber value="${product.price}" pattern="#,##0"/></span></ins>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </div>
+                                                            <div class="slide-down-box">
+                                                                <p class="message">Sản phẩm chất lượng cao được chọn lọc kỹ càng.</p>
+                                                                <div class="buttons">
+                                                                    <a href="#" class="btn wishlist-btn" onclick="addToWishlist(event, '${product.productId}')"><i class="fa fa-heart" aria-hidden="true"></i></a>
+                                                                    <a href="#" class="btn add-to-cart-btn" data-product-id="${product.productId}" onclick="addToCart(event, '${product.productId}')"><i class="fa fa-cart-arrow-down" aria-hidden="true"></i>thêm vào giỏ hàng</a>
+                                                                    <a href="#" class="btn compare-btn"><i class="fa fa-random" aria-hidden="true"></i></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="product-item">
+                                                <div class="contain-product layout-default">
+                                                    <div class="product-thumb">
+                                                        <a href="#" class="link-to-product">
+                                                            <img src="assets/images/products/p-19.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
+                                                        </a>
+                                                        <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
+                                                    </div>
+                                                    <div class="info">
+                                                        <b class="categories">Cá cảnh</b>
+                                                        <h4 class="product-title"><a href="#" class="pr-name">Chưa có sản phẩm bán chạy</a></h4>
+                                                        <div class="price ">
+                                                            <ins><span class="price-amount"><span class="currencySymbol">₫</span>0</span></ins>
+                                                        </div>
+                                                        <div class="slide-down-box">
+                                                            <p class="message">Chưa có sản phẩm nào bán được trên 5 sản phẩm.</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                        </c:forEach>
-                                    </c:when>
-                                    <c:otherwise>
-                                <li class="product-item">
-                                    <div class="contain-product layout-default">
-                                        <div class="product-thumb">
-                                            <a href="#" class="link-to-product">
-                                                        <img src="assets/images/products/p-19.jpg" alt="Vegetables" width="270" height="270" class="product-thumnail">
-                                            </a>
-                                            <a class="lookup btn_call_quickview" href="#"><i class="biolife-icon icon-search"></i></a>
-                                        </div>
-                                        <div class="info">
-                                                    <b class="categories">Cá cảnh</b>
-                                                    <h4 class="product-title"><a href="#" class="pr-name">Chưa có sản phẩm bán chạy</a></h4>
-                                            <div class="price ">
-                                                        <ins><span class="price-amount"><span class="currencySymbol">₫</span>0</span></ins>
-                                            </div>
-                                            <div class="slide-down-box">
-                                                        <p class="message">Chưa có sản phẩm nào bán được trên 5 sản phẩm.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                    </c:otherwise>
-                                </c:choose>
-                            </ul>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
-            </div>
 
                 <!--Block 07: Brands-->
-                <div class="brand-slide background-fafafa xs-margin-top-50px sm-margin-top-80px sm-margin-bottom-73px">
-                    <div class="container">
-                        <ul class="biolife-carousel nav-center-bold nav-none-on-mobile" data-slick='{"rows":1,"arrows":true,"dots":false,"infinite":false,"speed":400,"slidesMargin":30,"slidesToShow":4, "responsive":[{"breakpoint":1200, "settings":{ "slidesToShow": 4}},{"breakpoint":992, "settings":{ "slidesToShow": 3}},{"breakpoint":768, "settings":{ "slidesToShow": 2}},{"breakpoint": 550, "settings":{ "slidesToShow": 1}}]}'>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-01.jpg" width="214" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-02.jpg" width="214" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-03.jpg" width="153" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-04.jpg" width="224" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-01.jpg" width="214" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-02.jpg" width="214" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-03.jpg" width="153" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="biolife-brd-container">
-                                    <a href="#" class="link">
-                                        <figure><img src="assets/images/home-03/brd-04.jpg" width="224" height="163" alt=""></figure>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+
                 <!--Block 08: Products-->
                 <div class="container">
                     <div class="row">
@@ -964,7 +924,7 @@
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <!-- Featured Products -->
                         <div class="col-sm-6 col-md-4 col-xs-12">
                             <div class="advance-product-box">
@@ -981,10 +941,11 @@
                                                             <a href="product-detail?id=${product.productId}" class="link-to-product">
                                                                 <c:choose>
                                                                     <c:when test="${not empty productImages[product.productId]}">
-                                                                        <img src="${productImages[product.productId]}" alt="${product.name}" width="80" height="80" class="product-thumnail">
+                                                                        <img src="${productImages[product.productId]}" alt="${product.name}" width="80" height="80" class="product-thumnail"
+                                                                             onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.jpg';" />
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <img src="assets/images/no-image.jpg" alt="No Image" width="80" height="80" class="product-thumnail">
+                                                                        <img src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No Image" width="80" height="80" class="product-thumnail" />
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </a>
@@ -1054,10 +1015,11 @@
                                                             <a href="product-detail?id=${product.productId}" class="link-to-product">
                                                                 <c:choose>
                                                                     <c:when test="${not empty onSaleProductImages[product.productId]}">
-                                                                        <img src="${onSaleProductImages[product.productId]}" alt="${product.name}" width="80" height="80" class="product-thumnail">
+                                                                        <img src="${onSaleProductImages[product.productId]}" alt="${product.name}" width="80" height="80" class="product-thumnail"
+                                                                             onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/no-image.jpg';" />
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <img src="assets/images/no-image.jpg" alt="No Image" width="80" height="80" class="product-thumnail">
+                                                                        <img src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No Image" width="80" height="80" class="product-thumnail" />
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </a>
@@ -1310,100 +1272,100 @@
 
         <!--    ==scrip cho addto cart==-->
         <script>
-                                    function addToCart(event, productId) {
-                                        if (event)
-                                            event.preventDefault();
+                                                                    function addToCart(event, productId) {
+                                                                        if (event)
+                                                                            event.preventDefault();
 
-                                        var formData = new FormData();
-                                        formData.append('action', 'add');
-                                        formData.append('productId', productId);
-                                        formData.append('quantity', 1);
+                                                                        var formData = new FormData();
+                                                                        formData.append('action', 'add');
+                                                                        formData.append('productId', productId);
+                                                                        formData.append('quantity', 1);
 
-                                        fetch('cartClient', {// Đúng url servlet!
-                                            method: 'POST',
-                                            body: formData
-                                        })
-                                                .then(response => response.json())
-                                                .then(data => {
-                                                    if (data.success) {
-                                                        showMessage(data.message, 'success');
-                                                        updateCartCount(data.itemCount);
-                                                    } else {
-                                                        showMessage(data.message, 'error');
-                                                    }
-                                                })
-                                                .catch(error => {
-                                                    console.error('Error:', error);
-                                                    showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
-                                                });
-                                    }
+                                                                        fetch('cartClient', {// Đúng url servlet!
+                                                                            method: 'POST',
+                                                                            body: formData
+                                                                        })
+                                                                                .then(response => response.json())
+                                                                                .then(data => {
+                                                                                    if (data.success) {
+                                                                                        showMessage(data.message, 'success');
+                                                                                        updateCartCount(data.itemCount);
+                                                                                    } else {
+                                                                                        showMessage(data.message, 'error');
+                                                                                    }
+                                                                                })
+                                                                                .catch(error => {
+                                                                                    console.error('Error:', error);
+                                                                                    showMessage('Có lỗi xảy ra khi thêm sản phẩm!', 'error');
+                                                                                });
+                                                                    }
 
-                                    function addToWishlist(event, productId) {
-                                        if (event)
-                                            event.preventDefault();
+                                                                    function addToWishlist(event, productId) {
+                                                                        if (event)
+                                                                            event.preventDefault();
 
-                                        var formData = new FormData();
-                                        formData.append('action', 'toggle');
-                                        formData.append('productId', productId);
+                                                                        var formData = new FormData();
+                                                                        formData.append('action', 'toggle');
+                                                                        formData.append('productId', productId);
 
-                                        fetch('wishlist', {
-                                            method: 'POST',
-                                            body: formData
-                                        })
-                                                .then(response => response.json())
-                                                .then(data => {
-                                                    if (data.success) {
-                                                        showMessage(data.message, 'success');
-                                                        // Update wishlist button state
-                                                        var button = event.target.closest('.wishlist-btn');
-                                                        if (button) {
-                                                            var icon = button.querySelector('i');
-                                                            if (data.added) {
-                                                                icon.style.color = '#ff6b6b'; // Red color for added
-                                                                button.setAttribute('title', 'Remove from wishlist');
-                                                            } else {
-                                                                icon.style.color = ''; // Default color
-                                                                button.setAttribute('title', 'Add to wishlist');
-                                                            }
-                                                        }
-                                                    } else {
-                                                        showMessage(data.message, 'error');
-                                                    }
-                                                })
-                                                .catch(error => {
-                                                    console.error('Error:', error);
-                                                    showMessage('Có lỗi xảy ra với wishlist!', 'error');
-                                                });
-                                    }
+                                                                        fetch('wishlist', {
+                                                                            method: 'POST',
+                                                                            body: formData
+                                                                        })
+                                                                                .then(response => response.json())
+                                                                                .then(data => {
+                                                                                    if (data.success) {
+                                                                                        showMessage(data.message, 'success');
+                                                                                        // Update wishlist button state
+                                                                                        var button = event.target.closest('.wishlist-btn');
+                                                                                        if (button) {
+                                                                                            var icon = button.querySelector('i');
+                                                                                            if (data.added) {
+                                                                                                icon.style.color = '#ff6b6b'; // Red color for added
+                                                                                                button.setAttribute('title', 'Remove from wishlist');
+                                                                                            } else {
+                                                                                                icon.style.color = ''; // Default color
+                                                                                                button.setAttribute('title', 'Add to wishlist');
+                                                                                            }
+                                                                                        }
+                                                                                    } else {
+                                                                                        showMessage(data.message, 'error');
+                                                                                    }
+                                                                                })
+                                                                                .catch(error => {
+                                                                                    console.error('Error:', error);
+                                                                                    showMessage('Có lỗi xảy ra với wishlist!', 'error');
+                                                                                });
+                                                                    }
 
-                                    function showMessage(message, type) {
-                                        // Create message element
-                                        var messageDiv = document.createElement('div');
-                                        messageDiv.className = 'alert alert-' + type;
-                                        messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
+                                                                    function showMessage(message, type) {
+                                                                        // Create message element
+                                                                        var messageDiv = document.createElement('div');
+                                                                        messageDiv.className = 'alert alert-' + type;
+                                                                        messageDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 5px; color: white; font-weight: bold;';
 
-                                        if (type === 'success') {
-                                            messageDiv.style.backgroundColor = '#28a745';
-                                        } else {
-                                            messageDiv.style.backgroundColor = '#dc3545';
-                                        }
+                                                                        if (type === 'success') {
+                                                                            messageDiv.style.backgroundColor = '#28a745';
+                                                                        } else {
+                                                                            messageDiv.style.backgroundColor = '#dc3545';
+                                                                        }
 
-                                        messageDiv.textContent = message;
-                                        document.body.appendChild(messageDiv);
+                                                                        messageDiv.textContent = message;
+                                                                        document.body.appendChild(messageDiv);
 
-                                        // Remove message after 3 seconds
-                                        setTimeout(function () {
-                                            document.body.removeChild(messageDiv);
-                                        }, 3000);
-                                    }
+                                                                        // Remove message after 3 seconds
+                                                                        setTimeout(function () {
+                                                                            document.body.removeChild(messageDiv);
+                                                                        }, 3000);
+                                                                    }
 
-                                    function updateCartCount(count) {
-                                        // Update cart counter if you have one
-                                        var cartCounter = document.querySelector('.cart-counter');
-                                        if (cartCounter) {
-                                            cartCounter.textContent = count;
-                                        }
-                                    }
+                                                                    function updateCartCount(count) {
+                                                                        // Update cart counter if you have one
+                                                                        var cartCounter = document.querySelector('.cart-counter');
+                                                                        if (cartCounter) {
+                                                                            cartCounter.textContent = count;
+                                                                        }
+                                                                    }
         </script>
     </body>
 

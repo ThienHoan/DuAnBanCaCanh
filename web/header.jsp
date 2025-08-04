@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -56,10 +55,10 @@
                                     <li><a href="${pageContext.request.contextPath}/profile?action=change-password"><i class="fa fa-key"></i>Đổi mật khẩu</a></li>
                                     <li><a href="${pageContext.request.contextPath}/wishlist"><i class="fa fa-heart"></i>Danh sách yêu thích</a></li>
                                     <li><a href="${pageContext.request.contextPath}/order"><i class="fa fa-shopping-bag"></i>Đơn mua</a></li>
-                                    <c:if test="${sessionScope.user.role == 'admin'}">
+                                        <c:if test="${sessionScope.user.role == 'admin'}">
                                         <li class="divider"></li>
                                         <li><a href="admin-dashboard"><i class="fa fa-cog"></i>Admin Dashboard</a></li>
-                                    </c:if>
+                                        </c:if>
                                     <li class="divider"></li>
                                     <li><a href="logout"><i class="fa fa-sign-out"></i>Đăng Xuất</a></li>
                                 </ul>
@@ -93,7 +92,7 @@
                             <li class="menu-item menu-item-has-children has-child">
                                 <a href="${pageContext.request.contextPath}/category" class="menu-name" data-title="Product">Sản Phẩm</a>
                                 <ul class="sub-menu">
-                                    
+
                                     <li class="parent"><a href="CategoryServlet?categoryId=0">Tất Cả Các Sản Phẩm</a></li>
                                     <li class="menu-item menu-item-has-children has-child">
                                         <a href="CategoryServlet?categoryId=1&isParent=true" class="menu-name" data-title="Cá cảnh">Cá cảnh</a>
@@ -103,7 +102,7 @@
                                             <li class="menu-item"><a href="CategoryServlet?categoryId=5">Cá nước mặn</a></li>
                                         </ul>
                                     </li>
-                                    
+
                                     <li class="menu-item menu-item-has-children has-child">
                                         <a href="CategoryServlet?categoryId=2&isParent=true" class="menu-name" data-title="Thiết bị và thực phẩm">Thiết bị và thực phẩm</a>
                                         <ul class="sub-menu">
@@ -134,12 +133,12 @@
                                                         <c:when test="${not empty headerLatestPosts}">
                                                             <c:forEach var="post" items="${headerLatestPosts}" varStatus="status">
                                                                 <li><a href="${pageContext.request.contextPath}/blog-detail?id=${post.postId}">${post.title}</a></li>
-                                                            </c:forEach>
-                                                        </c:when>
-                                                        <c:otherwise>
+                                                                </c:forEach>
+                                                            </c:when>
+                                                            <c:otherwise>
                                                             <li><a href="${pageContext.request.contextPath}/blog">Xem tất cả bài viết</a></li>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                 </ul>
                                             </div>
                                         </div>
@@ -240,13 +239,13 @@
                                 </form>
                             </div>
                         </div>                        
-                        
+
                         <div class="minicart-block">
                             <div class="minicart-contain">
                                 <a href="javascript:void(0)" class="link-to">
                                     <span class="icon-qty-combine">
                                         <i class="icon-cart-mini biolife-icon"></i>
-                                        
+
                                     </span>
                                     <a href="cartClient"><span class="title">Giỏ hàng của tôi</span></a>
 
@@ -267,239 +266,239 @@
 
 <!-- Wishlist JavaScript -->
 <c:if test="${not empty sessionScope.user}">
-<script>
-    // Set context path for JavaScript
-    window.contextPath = '${pageContext.request.contextPath}';
-    
-    // Wait for jQuery to be available
-    function initProfileFeatures() {
-        if (typeof jQuery === 'undefined') {
-            setTimeout(initProfileFeatures, 100);
-            return;
-        }
-        
-        // Load wishlist count when page loads
-        $(document).ready(function() {
-            loadWishlistCount();
-            initAccountDropdown();
-        });
-    }
-    
-    // Start initialization
-    initProfileFeatures();
-      function loadWishlistCount() {
-        try {
-            $.ajax({
-                url: '${pageContext.request.contextPath}/wishlist?action=count',
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    updateWishlistCount(response.count);
-                },
-                error: function() {
-                    // Silently fail for wishlist count
-                    console.log('Could not load wishlist count');
-                }
-            });
-        } catch (e) {
-            console.log('Error in loadWishlistCount:', e);
-        }
-    }
-    
-    function updateWishlistCount(count) {
-        try {
-            const badge = $('.wishlist-count-badge');
-            if (count > 0) {
-                badge.text(count).show();
-            } else {
-                badge.hide();
+    <script>
+        // Set context path for JavaScript
+        window.contextPath = '${pageContext.request.contextPath}';
+
+        // Wait for jQuery to be available
+        function initProfileFeatures() {
+            if (typeof jQuery === 'undefined') {
+                setTimeout(initProfileFeatures, 100);
+                return;
             }
-        } catch (e) {
-            console.log('Error in updateWishlistCount:', e);
-        }
-    }
-    
-    function initAccountDropdown() {
-        try {
-            // Toggle dropdown on click
-            $('.dropdown-toggle').on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const dropdown = $(this).closest('.dropdown-account');
-                const isOpen = dropdown.hasClass('open');
-                
-                // Close all dropdowns
-                $('.dropdown-account').removeClass('open');
-                
-                // Toggle current dropdown
-                if (!isOpen) {
-                    dropdown.addClass('open');
-                }
+
+            // Load wishlist count when page loads
+            $(document).ready(function () {
+                loadWishlistCount();
+                initAccountDropdown();
             });
-            
-            // Close dropdown when clicking outside
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('.dropdown-account').length) {
+        }
+
+        // Start initialization
+        initProfileFeatures();
+        function loadWishlistCount() {
+            try {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/wishlist?action=count',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        updateWishlistCount(response.count);
+                    },
+                    error: function () {
+                        // Silently fail for wishlist count
+                        console.log('Could not load wishlist count');
+                    }
+                });
+            } catch (e) {
+                console.log('Error in loadWishlistCount:', e);
+            }
+        }
+
+        function updateWishlistCount(count) {
+            try {
+                const badge = $('.wishlist-count-badge');
+                if (count > 0) {
+                    badge.text(count).show();
+                } else {
+                    badge.hide();
+                }
+            } catch (e) {
+                console.log('Error in updateWishlistCount:', e);
+            }
+        }
+
+        function initAccountDropdown() {
+            try {
+                // Toggle dropdown on click
+                $('.dropdown-toggle').on('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const dropdown = $(this).closest('.dropdown-account');
+                    const isOpen = dropdown.hasClass('open');
+
+                    // Close all dropdowns
                     $('.dropdown-account').removeClass('open');
-                }
-            });
-            
-            // Prevent dropdown from closing when clicking inside menu
-            $('.dropdown-menu').on('click', function(e) {
-                e.stopPropagation();
-            });
-        } catch (e) {
-            console.log('Error in initAccountDropdown:', e);
+
+                    // Toggle current dropdown
+                    if (!isOpen) {
+                        dropdown.addClass('open');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                $(document).on('click', function (e) {
+                    if (!$(e.target).closest('.dropdown-account').length) {
+                        $('.dropdown-account').removeClass('open');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside menu
+                $('.dropdown-menu').on('click', function (e) {
+                    e.stopPropagation();
+                });
+            } catch (e) {
+                console.log('Error in initAccountDropdown:', e);
+            }
         }
-    }
-</script>
+    </script>
 
-<style>
-/* CSS bảo vệ nhẹ cho header - chỉ bảo vệ dropdown và z-index */
-#header {
-    position: relative;
-    z-index: 999;
-}
+    <style>
+        /* CSS bảo vệ nhẹ cho header - chỉ bảo vệ dropdown và z-index */
+        #header {
+            position: relative;
+            z-index: 999;
+        }
 
-/* Account Dropdown Styles */
-#header .dropdown-account {
-    position: relative;
-    display: inline-block;
-}
+        /* Account Dropdown Styles */
+        #header .dropdown-account {
+            position: relative;
+            display: inline-block;
+        }
 
-#header .dropdown-toggle {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+        #header .dropdown-toggle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-#header .dropdown-toggle:hover {
-    opacity: 0.8;
-}
+        #header .dropdown-toggle:hover {
+            opacity: 0.8;
+        }
 
-#header .dropdown-menu {
-    position: absolute !important;
-    top: 100% !important;
-    right: 0 !important;
-    background: white !important;
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
-    min-width: 220px !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transform: translateY(-10px) !important;
-    transition: all 0.3s ease !important;
-    z-index: 10000 !important;
-    margin-top: 10px !important;
-    list-style: none !important;
-    padding: 0 !important;
-}
+        #header .dropdown-menu {
+            position: absolute !important;
+            top: 100% !important;
+            right: 0 !important;
+            background: white !important;
+            border: 1px solid #e0e0e0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            min-width: 220px !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-10px) !important;
+            transition: all 0.3s ease !important;
+            z-index: 10000 !important;
+            margin-top: 10px !important;
+            list-style: none !important;
+            padding: 0 !important;
+        }
 
-#header .dropdown-account.open .dropdown-menu {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(0) !important;
-}
+        #header .dropdown-account.open .dropdown-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
 
-#header .dropdown-menu::before {
-    content: '' !important;
-    position: absolute !important;
-    top: -6px !important;
-    right: 20px !important;
-    width: 12px !important;
-    height: 12px !important;
-    background: white !important;
-    border-left: 1px solid #e0e0e0 !important;
-    border-top: 1px solid #e0e0e0 !important;
-    transform: rotate(45deg) !important;
-}
+        #header .dropdown-menu::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -6px !important;
+            right: 20px !important;
+            width: 12px !important;
+            height: 12px !important;
+            background: white !important;
+            border-left: 1px solid #e0e0e0 !important;
+            border-top: 1px solid #e0e0e0 !important;
+            transform: rotate(45deg) !important;
+        }
 
-#header .dropdown-menu li {
-    list-style: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
+        #header .dropdown-menu li {
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
 
-#header .dropdown-menu li a {
-    display: block !important;
-    padding: 12px 20px !important;
-    color: #333 !important;
-    text-decoration: none !important;
-    font-size: 14px !important;
-    font-weight: 400 !important;
-    transition: all 0.3s ease !important;
-    border-bottom: 1px solid #f5f5f5 !important;
-}
+        #header .dropdown-menu li a {
+            display: block !important;
+            padding: 12px 20px !important;
+            color: #333 !important;
+            text-decoration: none !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            transition: all 0.3s ease !important;
+            border-bottom: 1px solid #f5f5f5 !important;
+        }
 
-#header .dropdown-menu li:last-child a {
-    border-bottom: none !important;
-}
+        #header .dropdown-menu li:last-child a {
+            border-bottom: none !important;
+        }
 
-#header .dropdown-menu li a:hover {
-    background: #f8f9fa !important;
-    color: #73814B !important;
-    transform: translateX(3px) !important;
-}
+        #header .dropdown-menu li a:hover {
+            background: #f8f9fa !important;
+            color: #73814B !important;
+            transform: translateX(3px) !important;
+        }
 
-#header .dropdown-menu li a i {
-    margin-right: 10px !important;
-    width: 16px !important;
-    text-align: center !important;
-    color: #666 !important;
-}
+        #header .dropdown-menu li a i {
+            margin-right: 10px !important;
+            width: 16px !important;
+            text-align: center !important;
+            color: #666 !important;
+        }
 
-#header .dropdown-menu li a:hover i {
-    color: #73814B !important;
-}
+        #header .dropdown-menu li a:hover i {
+            color: #73814B !important;
+        }
 
-#header .dropdown-menu .divider {
-    height: 1px !important;
-    background: #e0e0e0 !important;
-    margin: 5px 0 !important;
-    border: none !important;
-}
+        #header .dropdown-menu .divider {
+            height: 1px !important;
+            background: #e0e0e0 !important;
+            margin: 5px 0 !important;
+            border: none !important;
+        }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-    #header .dropdown-account {
-        position: static;
-    }
-    
-    #header .dropdown-menu {
-        position: fixed !important;
-        top: 60px !important;
-        right: 10px !important;
-        left: 10px !important;
-        min-width: auto !important;
-        max-width: none !important;
-    }
-    
-    #header .dropdown-menu::before {
-        display: none !important;
-    }
-}
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            #header .dropdown-account {
+                position: static;
+            }
 
-@media (max-width: 480px) {
-    #header .dropdown-menu {
-        right: 5px !important;
-        left: 5px !important;
-    }
-    
-    #header .dropdown-menu li a {
-        padding: 15px 20px !important;
-        font-size: 16px !important;
-    }
-}
+            #header .dropdown-menu {
+                position: fixed !important;
+                top: 60px !important;
+                right: 10px !important;
+                left: 10px !important;
+                min-width: auto !important;
+                max-width: none !important;
+            }
 
-/* Smooth animations */
-#header .dropdown-toggle .fa-chevron-down {
-    transition: transform 0.3s ease;
-}
+            #header .dropdown-menu::before {
+                display: none !important;
+            }
+        }
 
-#header .dropdown-account.open .dropdown-toggle .fa-chevron-down {
-    transform: rotate(180deg);
-}
-</style>
+        @media (max-width: 480px) {
+            #header .dropdown-menu {
+                right: 5px !important;
+                left: 5px !important;
+            }
+
+            #header .dropdown-menu li a {
+                padding: 15px 20px !important;
+                font-size: 16px !important;
+            }
+        }
+
+        /* Smooth animations */
+        #header .dropdown-toggle .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        #header .dropdown-account.open .dropdown-toggle .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+    </style>
 </style>
 </c:if>
