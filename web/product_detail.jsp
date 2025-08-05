@@ -1335,6 +1335,28 @@
             // Manually initialize tabs
             $('.biolife-tab-contain').biolife_tab();
             
+            // Check if there's a tab parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            
+            // If tab=review, activate the review tab
+            if (tabParam === 'review') {
+                // Remove active class from all tabs
+                $('.tab-element').removeClass('active');
+                $('.tab-contain').removeClass('active');
+                
+                // Add active class to review tab
+                $('.tab-element:has(a[href="#tab_5th"])').addClass('active');
+                $('#tab_5th').addClass('active');
+                
+                // Scroll to review section
+                setTimeout(() => {
+                    $('html, body').animate({
+                        scrollTop: $('#tab_5th').offset().top - 100
+                    }, 500);
+                }, 100);
+            }
+            
             // Fix for tab navigation - add click handlers
             $('.tab-element a').on('click', function(e) {
                 e.preventDefault();
