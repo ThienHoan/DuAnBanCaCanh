@@ -205,6 +205,48 @@
         .btn-action:hover {
             opacity: 0.9;
         }
+        
+        /* Review button styles */
+        .btn-review {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            background-color: #ffc107;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-review:hover {
+            background-color: #ffb300;
+            transform: translateY(-1px);
+        }
+        
+        .btn-review:disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-review.reviewed {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-review.reviewed:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-review.loading {
+            background-color: #e0e0e0;
+            color: #999;
+            cursor: wait;
+        }
     </style>
 </head>
 <body class="biolife-body">
@@ -332,10 +374,11 @@
                                 <table class="items-table">
                                     <thead>
                                         <tr>
-                                            <th style="width: 60%">Sản phẩm</th>
+                                            <th style="width: 50%">Sản phẩm</th>
                                             <th style="width: 15%">Giá</th>
                                             <th style="width: 10%">Số lượng</th>
                                             <th style="width: 15%">Thành tiền</th>
+                                            <th style="width: 10%">Đánh giá</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -359,6 +402,14 @@
                                                 <td><fmt:formatNumber value="${item.unitPrice}" type="currency" currencySymbol="₫" maxFractionDigits="2"/></td>
                                                 <td>${item.quantity}</td>
                                                 <td><fmt:formatNumber value="${item.subtotal}" type="currency" currencySymbol="₫" maxFractionDigits="2"/></td>
+                                                <td>
+                                                    <button class="btn-review" 
+                                                            data-product-id="${item.productId}" 
+                                                            data-product-name="${item.productName}"
+                                                            onclick="handleReviewClick(this, ${item.productId})">
+                                                        <i class="fa fa-star"></i> Đánh giá
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -506,5 +557,67 @@
     <script src="${pageContext.request.contextPath}/assets/js/slick.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/biolife.framework.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/functions.js"></script>
+    
+    <script>
+        // Khởi tạo trạng thái review khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderId = ${order.orderId};
+            loadReviewStatus(orderId);
+        });
+        
+        // Hàm load trạng thái review cho tất cả sản phẩm
+        function loadReviewStatus(orderId) {
+            fetch('${pageContext.request.contextPath}/order-review-status?orderId=' + orderId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateReviewButtons(data.reviewStatusList);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading review status:', error);
+                });
+        }
+        
+        // Hàm cập nhật trạng thái các nút review
+        function updateReviewButtons(reviewStatusList) {
+            reviewStatusList.forEach(status => {
+                const button = document.querySelector(`button[data-product-id="${status.productId}"]`);
+                if (button) {
+                    button.textContent = status.reviewButtonText;
+                    button.className = 'btn-review ' + status.reviewButtonStatus;
+                    
+                    if (status.reviewButtonStatus === 'disabled') {
+                        button.disabled = true;
+                    } else {
+                        button.disabled = false;
+                    }
+                }
+            });
+        }
+        
+        // Hàm xử lý khi click nút review
+        function handleReviewClick(button, productId) {
+            // Kiểm tra trạng thái nút
+            if (button.classList.contains('reviewed')) {
+                alert('Bạn đã đánh giá sản phẩm này rồi!');
+                return;
+            }
+            
+            if (button.classList.contains('disabled')) {
+                alert('Bạn cần mua và nhận sản phẩm này trước khi có thể đánh giá.');
+                return;
+            }
+            
+            // Thêm class loading
+            button.classList.add('loading');
+            button.textContent = 'Đang tải...';
+            
+            // Chuyển hướng đến trang product detail với tab review
+            setTimeout(() => {
+                window.location.href = '${pageContext.request.contextPath}/product-detail?id=' + productId + '&tab=review';
+            }, 500);
+        }
+    </script>
 </body>
 </html>

@@ -29,303 +29,269 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/main-color.css">
     <style>
-        /* ============================= */
-/*        FEATURE TABLE         */
-/* ============================= */
-.feature-table th {
-    width: 40%;
-    font-weight: 600;
-}
-
-.attribute-list {
-    margin-bottom: 0;
-}
-.attribute-list li {
-    padding: 8px 0;
-    border-bottom: 1px solid #e9ecef;
-}
-.attribute-list li:last-child {
-    border-bottom: none;
-}
-.feature-label {
-    color: #666;
-    font-weight: 600;
-}
-
-/* ============================= */
-/*         RATING SUMMARY       */
-/* ============================= */
-.rating-summary-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    margin-bottom: 30px;
-}
-
-.rating-info {
-    background: #fff;
-    border-radius: 12px;
-    padding: 26px 28px;
-    margin-bottom: 30px;
-    width: 100%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.25s ease, transform 0.25s;
-}
-.rating-info:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-.rating-info .index,
-.rating-info .rating {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.rating-info .options {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-.rating-info .options li {
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.detail-for {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-}
-
-.option-name {
-    min-width: 80px;
-    font-weight: 500;
-    color: #6c757d;
-}
-
-.progres {
-    flex: 1;
-    margin: 0 14px;
-}
-
-.line-100percent {
-    width: 100%;
-    height: 8px;
-    background: #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.percent {
-    height: 100%;
-    display: block;
-    background: linear-gradient(90deg, #ffb400, #ff8c00);
-    transition: width 0.5s ease;
-    border-radius: 4px;
-}
-
-.number {
-    min-width: 40px;
-    text-align: right;
-    font-weight: 600;
-}
-
-/* ============================= */
-/*         RESPONSIVE           */
-/* ============================= */
-@media (max-width: 768px) {
-    .rating-summary-wrapper {
-        flex-direction: column;
-    }
-
-    .rating-info {
-        padding: 20px;
-    }
-
-    .option-name {
-        min-width: 60px;
-    }
-}
-
-/* ============================= */
-/*             TABS             */
-/* ============================= */
-.tab-content {
-    padding: 20px;
-}
-
-.specification-item {
-    margin-bottom: 10px;
-}
-
-.spec-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.product-tabs .tab-head .tab-element {
-    cursor: pointer;
-}
-
-.product-tabs .tab-content .tab-contain {
-    display: none;
-}
-.product-tabs .tab-content .tab-contain.active {
-    display: block;
-}
-
-/* ============================= */
-/*            BADGES            */
-/* ============================= */
-.badge {
-    font-size: 90%;
-    font-weight: 500;
-}
-.badge-success {
-    background-color: #28a745;
-    color: white;
-}
-.badge-warning {
-    background-color: #ffc107;
-    color: #212529;
-}
-.badge-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-/* ============================= */
-/*         PRODUCT META         */
-/* ============================= */
-.product-meta {
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-}
-.meta-label {
-    font-weight: 600;
-    margin-right: 10px;
-    color: #666;
-}
-.meta-value {
-    color: #333;
-}
-
-/* ============================= */
-/*       CARD & ALERT BOXES     */
-/* ============================= */
-.card {
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.card-header {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    padding: 12px 15px;
-}
-.alert {
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-/* ============================= */
-/*          STOCK INFO          */
-/* ============================= */
-.stock-info-detailed {
-    padding: 5px;
-}
-
-/* ============================= */
-/*     PRODUCT VARIANT STYLE    */
-/* ============================= */
-.product-variants {
-    margin: 15px 0 20px;
-}
-
-.variant-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-.variant-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-right: 10px;
-}
-
-.variant-options {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-/* Color option */
-.color-option {
+        .feature-table th {
+            width: 40%;
+            font-weight: 600;
+        }
+        .attribute-list {
+            margin-bottom: 0;
+        }
+        .attribute-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .attribute-list li:last-child {
+            border-bottom: none;
+        }
+        .feature-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        /* Rating Summary Styles */
+        .rating-summary-wrapper {
+            display: flex;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .rating-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 26px 28px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+            transition: box-shadow .25s ease, transform .25s;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .rating-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.12);
+        }
+        
+        .rating-info .index {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .rating-info .rating {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .rating-info .options {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        
+        .rating-info .options li {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .detail-for {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+        
+        .option-name {
+            min-width: 80px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+        
+        .progres {
+            flex: 1;
+            margin: 0 14px;
+        }
+        
+        .line-100percent {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .percent {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg,#ffb400,#ff8c00);
+            transition: width .5s ease;
+            border-radius: 4px;
+        }
+        
+        .number {
+            min-width: 40px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-summary-wrapper {
+                flex-direction: column;
+            }
+            
+            .rating-info {
+                padding: 20px;
+            }
+            
+            .option-name {
+                min-width: 60px;
+            }
+        }
+        
+        .tab-content {
+            padding: 20px;
+        }
+        .specification-item {
+            margin-bottom: 10px;
+        }
+        .spec-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Fixed styles for tabs */
+        .product-tabs .tab-head .tab-element {
+            cursor: pointer;
+        }
+        .product-tabs .tab-content .tab-contain {
+            display: none;
+        }
+        .product-tabs .tab-content .tab-contain.active {
+            display: block;
+        }
+        
+        /* New styles for enhanced product details */
+        .badge {
+            font-size: 90%;
+            font-weight: 500;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .product-meta {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .meta-label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #666;
+        }
+        .meta-value {
+            color: #333;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 12px 15px;
+        }
+        .alert {
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .stock-info-detailed {
+            padding: 5px;
+        }
+        
+        /* Product variant styles */
+        .product-variants {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+               .variant-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .variant-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-right: 10px;
+        }
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .color-option {
+    width: auto;
+    height: auto;
     padding: 5px 10px;
     border-radius: 4px;
     margin-right: 10px;
     margin-bottom: 10px;
     cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
     color: #333;
     background-color: #f8f9fa !important;
     border: 1px solid #ddd;
-    transition: transform 0.2s, border-color 0.2s;
     display: inline-block;
     text-align: center;
 }
-.color-option:hover {
-    transform: scale(1.1);
-    border-color: #7FAF51 !important;
-}
-.color-option.active {
-    border: 2px solid #00CAFF !important;
-}
-
-/* Size / Generic option */
-.size-option,
-.generic-option {
-    padding: 5px 15px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-}
-.size-option:hover,
-.generic-option:hover {
-    border-color: #e73918 !important;
-    color: #e73918 !important;
-}
-.size-option.active,
-.generic-option.active {
-    border-color: #e73918 !important;
-    color: #e73918 !important;
-    font-weight: bold;
-}
-
-/* ============================= */
-/*        UTILITY CLASSES       */
-/* ============================= */
-.d-flex {
-    display: flex;
-}
-.flex-wrap {
-    flex-wrap: wrap;
-}
-.mt-4 {
-    margin-top: 1.5rem;
-}
-.mb-3 {
-    margin-bottom: 1rem;
-}
-
+         .color-option:hover {
+            transform: scale(1.1);
+            border-color: #7FAF51 !important;
+        }
+        .color-option.active {
+            border: 2px solid #00CAFF !important;
+        }
+        .size-option, .generic-option {
+            padding: 5px 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .size-option:hover, .generic-option:hover {
+            border-color: #e73918 !important;
+            color: #e73918 !important;
+        }
+        .size-option.active, .generic-option.active {
+            border-color: #e73918 !important;
+            color: #e73918 !important;
+            font-weight: bold;
+        }
+        .d-flex {
+            display: flex;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body class="biolife-body">
@@ -372,28 +338,16 @@
                 <div class="sumary-product single-layout">
                     <div class="media">
                         <!-- Main Images Slider -->
-                       <ul class="biolife-carousel slider-for" data-slick='{"arrows":false,"dots":false,"slidesMargin":30,"slidesToShow":1,"slidesToScroll":1,"fade":true,"asNavFor":".slider-nav"}'>
-    <c:choose>
-        <c:when test="${not empty productImages}">
-            <c:forEach var="image" items="${productImages}">
-                <li>
-                    <img src="${pageContext.request.contextPath}/${image.imageUrl}" 
-                         alt="${product.name}" 
-                         width="500" height="500"
-                         onerror="this.onerror=null; this.src='https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220';" />
-                </li>
-            </c:forEach>
-        </c:when>
-        <c:otherwise>
-            <li>
-                <img src="https://tse2.mm.bing.net/th/id/OIP.qdc-CtLJAdGGopPqU1L_TAHaEv?pid=Api&amp;P=0&amp;h=220" 
-                     alt="No Image Available" 
-                     width="500" height="500" />
-            </li>
-        </c:otherwise>
-    </c:choose>
-</ul>
-
+                        <ul class="biolife-carousel slider-for" data-slick='{"arrows":false,"dots":false,"slidesMargin":30,"slidesToShow":1,"slidesToScroll":1,"fade":true,"asNavFor":".slider-nav"}'>
+                            <c:if test="${not empty productImages}">
+                                <c:forEach var="image" items="${productImages}">
+                                    <li><img src="${image.imageUrl}" alt="${product.name}" width="500" height="500"></li>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${empty productImages}">
+                                <li><img src="assets/images/products/p-05.jpg" alt="Default Product" width="500" height="500"></li>
+                            </c:if>
+                        </ul>
                         <!-- Thumbnail Navigation -->
                         <ul class="biolife-carousel slider-nav" data-slick='{"arrows":false,"dots":false,"centerMode":false,"focusOnSelect":true,"slidesMargin":10,"slidesToShow":4,"slidesToScroll":1,"asNavFor":".slider-for"}'>
                             <c:if test="${not empty productImages}">
@@ -1380,6 +1334,28 @@
         $(document).ready(function() {
             // Manually initialize tabs
             $('.biolife-tab-contain').biolife_tab();
+            
+            // Check if there's a tab parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            
+            // If tab=review, activate the review tab
+            if (tabParam === 'review') {
+                // Remove active class from all tabs
+                $('.tab-element').removeClass('active');
+                $('.tab-contain').removeClass('active');
+                
+                // Add active class to review tab
+                $('.tab-element:has(a[href="#tab_5th"])').addClass('active');
+                $('#tab_5th').addClass('active');
+                
+                // Scroll to review section
+                setTimeout(() => {
+                    $('html, body').animate({
+                        scrollTop: $('#tab_5th').offset().top - 100
+                    }, 500);
+                }, 100);
+            }
             
             // Fix for tab navigation - add click handlers
             $('.tab-element a').on('click', function(e) {
