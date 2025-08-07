@@ -2,7 +2,6 @@ package controller.client;
 
 import dao.impl.OrderDAOImpl;
 import dao.impl.AddressDAO;
-import dao.impl.InventoryLogDAOImpl;
 import dao.impl.ProductDAO;
 import dao.impl.CartDAO;
 import jakarta.servlet.ServletException;
@@ -13,21 +12,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.entity.User;
 import model.entity.Address;
-import model.entity.Product;
-import model.entity.InventoryLog;
 import model.entity.pOrder.Order;
 import model.entity.pOrder.OrderItem;
-import model.entity.pOrder.Payment;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
 
 /**
  * Servlet for managing orders for both admin and customers
@@ -105,9 +97,6 @@ public class OrderServlet extends HttpServlet {
                 break;
             case "confirm-shipped":
                 confirmShipped(request, response, user);
-                break;
-            case "updateStatus":
-                updateOrderStatus(request, response, user);
                 break;
             case "confirm-order":
                 confirmOrder(request, response, user);
@@ -310,11 +299,7 @@ public class OrderServlet extends HttpServlet {
             boolean success = orderDAO.updateOrderStatus(orderId, "shipping");
             
             if (success) {
-                if ("cod".equalsIgnoreCase(order.getPaymentMethod())) {
-                    addInventoryLogsForShipping(orderId);
-                } else {
-                    LOGGER.info("Order VNPay was already deducted when paid, only log shipping confirmation for orderId=" + orderId);
-                }
+                
                 response.sendRedirect("order?message=Order marked as shipped successfully");
             } else {
                 response.sendRedirect("order?error=Failed to mark order as shipped");
@@ -328,214 +313,7 @@ public class OrderServlet extends HttpServlet {
         }
     }
     
-    /**
-     * Add inventory logs and update inventory when order is confirmed for shipping
-     * Optimized with batch processing and async execution for COD orders
-     */
-    private void addInventoryLogsForShipping(int orderId) {
-        new Thread(() -> {
-            try {
-                LOGGER.log(Level.INFO, "Starting inventory processing for order #" + orderId);
-                
-                List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
-                if (orderItems == null || orderItems.isEmpty()) {
-                    LOGGER.log(Level.WARNING, "No products found for order #" + orderId);
-                    return;
-                }
-                
-                List<Integer> productIds = orderItems.stream()
-                    .map(OrderItem::getProductId)
-                    .distinct()
-                    .collect(java.util.stream.Collectors.toList());
-                
-                Map<Integer, Product> productsMap = getProductsByIds(productIds);
-                
-                Set<Integer> existingProductIds = getExistingInventoryLogProductIds(orderId, "order_shipped");
-                
-                List<InventoryLog> logsToInsert = new ArrayList<>();
-                List<Object[]> inventoryUpdates = new ArrayList<>();
-                
-                for (OrderItem item : orderItems) {
-                    Product product = productsMap.get(item.getProductId());
-                    if (product != null && !existingProductIds.contains(item.getProductId())) {
-                        if (product.getQuantity() >= item.getQuantity()) {
-                            int oldQuantity = product.getQuantity();
-                            int newQuantity = oldQuantity - item.getQuantity();
-                            
-                            inventoryUpdates.add(new Object[]{
-                                newQuantity,
-                                item.getProductId(),
-                                item.getQuantity()
-                            });
-                            
-                            InventoryLog inventoryLog = new InventoryLog(
-                                item.getProductId(),
-                                oldQuantity,
-                                newQuantity,
-                                "decrease",
-                                "Order #" + orderId + " - Shipping confirmed: " + item.getProductName(),
-                                orderId,
-                                "order_shipped"
-                            );
-                            logsToInsert.add(inventoryLog);
-                            
-                            LOGGER.log(Level.INFO, "Preparing inventory update for product " + item.getProductId() + 
-                                     ": " + oldQuantity + " -> " + newQuantity);
-                        } else {
-                            LOGGER.log(Level.WARNING, "Not enough stock for product " + item.getProductId() + 
-                                     " (required: " + item.getQuantity() + ", available: " + product.getQuantity() + ")");
-                        }
-                    }
-                }
-                
-                if (!inventoryUpdates.isEmpty()) {
-                    boolean inventorySuccess = productDAO.batchUpdateInventory(inventoryUpdates);
-                    if (!inventorySuccess) {
-                        LOGGER.log(Level.SEVERE, "Could not update inventory for order #" + orderId);
-                        return;
-                    }
-                }
-                
-                if (!logsToInsert.isEmpty()) {
-                    boolean batchSuccess = batchInsertInventoryLogs(logsToInsert);
-                    if (batchSuccess) {
-                        LOGGER.log(Level.INFO, "Inventory updated and " + logsToInsert.size() + " inventory logs added for order #" + orderId);
-                    } else {
-                        LOGGER.log(Level.WARNING, "Could not add inventory logs for order #" + orderId);
-                    }
-                } else {
-                    LOGGER.log(Level.INFO, "No inventory update needed for order #" + orderId + " (logs already exist)");
-                }
-                
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error processing inventory for order #" + orderId + ": " + e.getMessage(), e);
-            }
-        }).start();
-    }
-    
-    /**
-     * Add inventory logs and update inventory when admin confirms order
-     * Optimized with batch processing and async execution
-     */
-    private void addInventoryLogsForOrderConfirmation(int orderId) {
-        new Thread(() -> {
-            try {
-                LOGGER.log(Level.INFO, "Starting inventory processing for order #" + orderId + " when confirmed");
-                
-                List<OrderItem> orderItems = orderDAO.getOrderItemsWithDetails(orderId);
-                if (orderItems == null || orderItems.isEmpty()) {
-                    LOGGER.log(Level.WARNING, "No products found for order #" + orderId);
-                    return;
-                }
-                
-                List<Integer> productIds = orderItems.stream()
-                    .map(OrderItem::getProductId)
-                    .distinct()
-                    .collect(java.util.stream.Collectors.toList());
-                
-                Map<Integer, Product> productsMap = getProductsByIds(productIds);
-                
-                Set<Integer> existingProductIds = getExistingInventoryLogProductIds(orderId, "order_confirmed");
-                
-                List<InventoryLog> logsToInsert = new ArrayList<>();
-                List<Object[]> inventoryUpdates = new ArrayList<>();
-                
-                for (OrderItem item : orderItems) {
-                    Product product = productsMap.get(item.getProductId());
-                    if (product != null && !existingProductIds.contains(item.getProductId())) {
-                        if (product.getQuantity() >= item.getQuantity()) {
-                            int oldQuantity = product.getQuantity();
-                            int newQuantity = oldQuantity - item.getQuantity();
-                            
-                            inventoryUpdates.add(new Object[]{
-                                newQuantity,
-                                item.getProductId(),
-                                item.getQuantity()
-                            });
-                            
-                            InventoryLog inventoryLog = new InventoryLog(
-                                item.getProductId(),
-                                oldQuantity,
-                                newQuantity,
-                                "decrease",
-                                "Order #" + orderId + " - Admin confirmed order: " + item.getProductName(),
-                                orderId,
-                                "order_confirmed"
-                            );
-                            logsToInsert.add(inventoryLog);
-                            
-                            LOGGER.log(Level.INFO, "Preparing inventory update for product " + item.getProductId() + 
-                                     ": " + oldQuantity + " -> " + newQuantity + " (confirmed order)");
-                        } else {
-                            LOGGER.log(Level.WARNING, "Not enough stock for product " + item.getProductId() + 
-                                     " (required: " + item.getQuantity() + ", available: " + product.getQuantity() + ")");
-                        }
-                    }
-                }
-                
-                if (!inventoryUpdates.isEmpty()) {
-                    boolean inventorySuccess = productDAO.batchUpdateInventory(inventoryUpdates);
-                    if (!inventorySuccess) {
-                        LOGGER.log(Level.SEVERE, "Could not update inventory for order #" + orderId);
-                        return;
-                    }
-                }
-                
-                if (!logsToInsert.isEmpty()) {
-                    boolean batchSuccess = batchInsertInventoryLogs(logsToInsert);
-                    if (batchSuccess) {
-                        LOGGER.log(Level.INFO, "Inventory updated and " + logsToInsert.size() + " inventory logs added for order #" + orderId + " (confirmed)");
-                    } else {
-                        LOGGER.log(Level.WARNING, "Could not add inventory logs for order #" + orderId);
-                    }
-                } else {
-                    LOGGER.log(Level.INFO, "No inventory update needed for order #" + orderId + " (logs already exist)");
-                }
-                
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error processing inventory for order #" + orderId + ": " + e.getMessage(), e);
-            }
-        }).start();
-    }
-    
-    private Map<Integer, Product> getProductsByIds(List<Integer> productIds) {
-        try {
-            return productDAO.getProductsByIds(productIds);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error fetching product details: " + e.getMessage(), e);
-            return new HashMap<>();
-        }
-    }
-    
-    private Set<Integer> getExistingInventoryLogProductIds(int orderId, String referenceType) {
-        try {
-            InventoryLogDAOImpl inventoryLogDAO = new InventoryLogDAOImpl();
-            return inventoryLogDAO.getExistingInventoryLogProductIds(orderId, referenceType);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error checking existing inventory logs: " + e.getMessage(), e);
-            return new HashSet<>();
-        }
-    }
-    
-
-    
-    private boolean batchInsertInventoryLogs(List<InventoryLog> logs) {
-        if (logs.isEmpty()) {
-            return true;
-        }
-        
-        try {
-            InventoryLogDAOImpl inventoryLogDAO = new InventoryLogDAOImpl();
-            return inventoryLogDAO.batchInsertInventoryLogs(logs);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error batch inserting inventory logs: " + e.getMessage(), e);
-            return false;
-        }
-    }
-
-    /**
-     * Confirm order receipt (customer)
-     */
+  
     private void confirmReceived(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         
@@ -676,9 +454,7 @@ public class OrderServlet extends HttpServlet {
             
             boolean success = orderDAO.updateOrderStatus(orderId, "confirmed");
             
-            if (success) {
-                addInventoryLogsForOrderConfirmation(orderId);
-                
+            if (success) {       
                 response.sendRedirect("order?message=Order confirmed successfully");
             } else {
                 response.sendRedirect("order?error=Failed to confirm order");
@@ -724,16 +500,16 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
-            LOGGER.log(java.util.logging.Level.INFO, "Marking order as refunded: " + orderId);
+            LOGGER.log(java.util.logging.Level.INFO, "Marking order as refunded: {0}", orderId);
             
             try {
                 boolean success = orderDAO.markPaymentRefunded(orderId);
                 
                 if (success) {
-                    LOGGER.log(java.util.logging.Level.INFO, "Marked refund successfully for order: " + orderId);
+                    LOGGER.log(java.util.logging.Level.INFO, "Marked refund successfully for order: {0}", orderId);
                     response.sendRedirect("order?message=Order marked as refunded successfully");
                 } else {
-                    LOGGER.log(java.util.logging.Level.WARNING, "Could not mark order as refunded: " + orderId);
+                    LOGGER.log(java.util.logging.Level.WARNING, "Could not mark order as refunded: {0}", orderId);
                     response.sendRedirect("order?error=Failed to mark order as refunded");
                 }
             } catch (Exception e) {
@@ -743,37 +519,6 @@ public class OrderServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             response.sendRedirect("order?error=Invalid order ID");
-        }
-    }
-
-    /**
-     * Update order status (admin only)
-     * Called when admin changes order status from order detail page
-     */
-    private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response, User user)
-        throws ServletException, IOException {
-    HttpSession session = request.getSession();
-    if (user == null || !"admin".equals(user.getRole())) {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to perform this operation");
-        return;
-    }
-    try {
-        int orderId = Integer.parseInt(request.getParameter("orderId"));
-        String status = request.getParameter("status");
-        String returnUrl = request.getParameter("returnUrl");
-        if (returnUrl == null || returnUrl.isEmpty()) {
-            returnUrl = "order?orderId=" + orderId;
-        }
-        boolean updated = orderDAO.updateOrderStatus(orderId, status);
-        if (updated) {
-            session.setAttribute("SUCCESS_MESSAGE", "Order status updated to " + status);
-        } else {
-            session.setAttribute("ERROR_MESSAGE", "Could not update order status");
-        }
-        response.sendRedirect(returnUrl);
-    } catch (Exception e) {
-        session.setAttribute("ERROR_MESSAGE", "Error: " + e.getMessage());
-        response.sendRedirect("order");
         }
     }
 
@@ -796,14 +541,14 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
-            // Kiểm tra quyền truy cập
+
             if (!"admin".equals(user.getRole()) && order.getUserId() != user.getUserId()) {
                 session.setAttribute("ERROR_MESSAGE", "Bạn không có quyền truy cập đơn hàng này.");
                 response.sendRedirect("order");
                 return;
             }
             
-            // Lấy danh sách sản phẩm từ đơn hàng
+        
             List<OrderItem> orderItems = orderDAO.getOrderItemsById(orderId);
             
             if (orderItems.isEmpty()) {
@@ -812,17 +557,17 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
             
-            // Thêm từng sản phẩm vào giỏ hàng
+       
             int addedCount = 0;
             int skippedCount = 0;
             
             for (OrderItem item : orderItems) {
                 try {
-                    // Kiểm tra tồn kho
+            
                     int stockQuantity = productDAO.getProductStockQuantity(item.getProductId());
                     
                     if (stockQuantity > 0) {
-                        // Thêm vào giỏ hàng với số lượng tối đa có thể
+                   
                         int quantityToAdd = Math.min(item.getQuantity(), stockQuantity);
                         boolean success = cartDAO.addItemToCartByUserId(user.getUserId(), item.getProductId(), quantityToAdd);
                         
@@ -840,7 +585,7 @@ public class OrderServlet extends HttpServlet {
                 }
             }
             
-            // Chuyển hướng trực tiếp đến giỏ hàng
+ 
             response.sendRedirect("cartClient");
             
         } catch (NumberFormatException e) {

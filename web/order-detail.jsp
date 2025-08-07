@@ -448,7 +448,7 @@
                             </a>
                             
                             <!-- Các nút hành động cho khách hàng -->
-                            <c:if test="${sessionScope.user.role != 'admin'}">
+                            
                                 <!-- Nút hủy đơn hàng (chỉ cho đơn hàng chưa xác nhận hoặc đã xác nhận) -->
                                 <c:if test="${order.status == 'pending' || order.status == 'confirmed'}">
                                     <form action="${pageContext.request.contextPath}/order" method="post" style="display:inline;">
@@ -479,7 +479,7 @@
                                         <i class="fa fa-shopping-cart"></i> Mua lại
                                     </button>
                                 </form>
-                            </c:if>
+                            
                             
                             <!-- Các nút hành động cho admin -->
                             <c:if test="${sessionScope.user.role == 'admin'}">
@@ -516,16 +516,7 @@
                                     </form>
                                 </c:if>
                                 
-                                <!-- Nút hủy đơn hàng -->
-                                <c:if test="${order.status == 'pending' || order.status == 'confirmed' || order.status == 'processing'}">
-                                    <form action="${pageContext.request.contextPath}/order" method="post" style="display:inline;">
-                                        <input type="hidden" name="action" value="cancel">
-                                        <input type="hidden" name="id" value="${order.orderId}">
-                                        <button type="submit" class="btn-action btn-cancel" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
-                                            <i class="fa fa-times"></i> Hủy đơn hàng
-                                        </button>
-                                    </form>
-                                </c:if>
+
                                 
                                 <!-- Nút đánh dấu đã hoàn tiền (chỉ cho đơn hàng VNPay đã hủy và chưa hoàn tiền) -->
                                 <c:if test="${order.status == 'cancelled' && order.paymentMethod == 'e-wallet' && order.paymentStatus == 'paid' && !isPaymentRefunded}">

@@ -568,14 +568,14 @@
             <c:choose>
                 <c:when test="${not empty product.salePrice}">
                     <span class="original-price" style="text-decoration: line-through; color: #999; margin-right: 5px;">
-                        <fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                        ₫<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/>
                     </span>
                     <span class="sale-price" style="color: #ff0000;">
-                        <fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                        ₫<fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/>
                     </span>
                 </c:when>
                 <c:otherwise>
-                    <fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND
+                    ₫<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/>
                 </c:otherwise>
             </c:choose>
         </p>
@@ -681,11 +681,11 @@
                                             <p class="product-price">
                                                 <c:choose>
                                                     <c:when test="${not empty firstProduct.salePrice}">
-                                                        <del class="original-price-${fn:replace(productName, ' ', '-')}" style="text-decoration: line-through; color: #999; margin-right: 5px;"><fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND</del>
-                                                        <span class="sale-price-${fn:replace(productName, ' ', '-')}" style="color: #ff0000; text-decoration: none;"><fmt:formatNumber value="${firstProduct.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND</span>
+                                                        <del class="original-price-${fn:replace(productName, ' ', '-')}" style="text-decoration: line-through; color: #999; margin-right: 5px;">₫<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/></del>
+                                                        <span class="sale-price-${fn:replace(productName, ' ', '-')}" style="color: #ff0000; text-decoration: none;">₫<fmt:formatNumber value="${firstProduct.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/></span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="regular-price-${fn:replace(productName, ' ', '-')}"><fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND</span>
+                                                        <span class="regular-price-${fn:replace(productName, ' ', '-')}">₫<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/></span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </p>
@@ -988,11 +988,11 @@
                             // Update prices
                             <c:choose>
                                 <c:when test="${not empty firstProduct.salePrice}">
-                                                                                        $('.original-price-' + productNameId).html('<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
-                                                    $('.sale-price-' + productNameId).html('<fmt:formatNumber value="${firstProduct.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
+                                                                                        $('.original-price-' + productNameId).html('₫<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
+                                                    $('.sale-price-' + productNameId).html('₫<fmt:formatNumber value="${firstProduct.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
                                 </c:when>
                                 <c:otherwise>
-                                                                                        $('.regular-price-' + productNameId).html('<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
+                                                                                        $('.regular-price-' + productNameId).html('₫<fmt:formatNumber value="${firstProduct.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
                                 </c:otherwise>
                             </c:choose>
                             
@@ -1067,11 +1067,11 @@
                                     // Update prices
                                     <c:choose>
                                         <c:when test="${not empty product.salePrice}">
-                                            $('.original-price-' + productNameId).html('<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
-                                            $('.sale-price-' + productNameId).html('<fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
+                                            $('.original-price-' + productNameId).html('₫<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
+                                            $('.sale-price-' + productNameId).html('₫<fmt:formatNumber value="${product.salePrice}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
                                         </c:when>
                                         <c:otherwise>
-                                            $('.regular-price-' + productNameId).html('<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> VND');
+                                            $('.regular-price-' + productNameId).html('₫<fmt:formatNumber value="${product.price}" type="number" minFractionDigits="0" maxFractionDigits="0"/> ');
                                         </c:otherwise>
                                     </c:choose>
                                     

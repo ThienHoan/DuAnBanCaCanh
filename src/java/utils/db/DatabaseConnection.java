@@ -1,3 +1,4 @@
+
 package utils.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -5,13 +6,13 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DBContext {
-public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=fishshopp";
+public class DatabaseConnection {
+
+    public static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    public static String dbURL = "jdbc:sqlserver://localhost:1433;databaseName=fishshopp";
     public static String userDB = "sa";
     public static String passDB = "123456";
-
-    public static Connection getConnection() {
+      public static Connection getConnection() {
         Connection con = null;
         
         try {

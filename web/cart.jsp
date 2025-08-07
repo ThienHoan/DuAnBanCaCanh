@@ -282,7 +282,7 @@
                         </div>
                         <div class="subtotal-line">
                             <b class="stt-name">Phí giao hàng</b>
-                            <span class="stt-price">0 ₫</span>
+                            <span class="stt-price">20000 ₫</span>
                         </div>
                         <div class="tax-fee">
                             <p class="title">Thuế và phí dự kiến</p>
