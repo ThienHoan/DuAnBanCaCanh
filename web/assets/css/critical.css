@@ -1,0 +1,223 @@
+/* Critical CSS - Above the fold content */
+/* This file contains only essential styles for initial page load */
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    line-height: 24px;
+    color: #666666;
+    overflow-x: hidden;
+}
+
+/* Header styles */
+.header-area {
+    position: relative;
+    z-index: 1000;
+}
+
+.header-top {
+    background: #f8f9fa;
+    padding: 8px 0;
+}
+
+.header-middle {
+    padding: 20px 0;
+    background: #fff;
+}
+
+/* Navigation */
+.primary-menu > ul > li > a {
+    color: #333;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.primary-menu > ul > li > a:hover {
+    color: #7fad39;
+}
+
+/* Logo */
+.biolife-logo {
+    max-width: 200px;
+    height: auto;
+}
+
+/* Search bar */
+.header-search-bar .input-text {
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 10px 20px;
+    width: 100%;
+    transition: border-color 0.3s ease;
+}
+
+.header-search-bar .input-text:focus {
+    border-color: #7fad39;
+    outline: none;
+}
+
+/* Cart icon */
+.biolife-cart-info .icon-qty-combine {
+    position: relative;
+    display: inline-block;
+}
+
+.biolife-cart-info .qty {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e73918;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hero section */
+.main-slide {
+    margin-bottom: 30px;
+}
+
+.slide-contain {
+    position: relative;
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Product grid */
+.products-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.contain-product {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contain-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+/* Product image */
+.product-thumb {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-thumb img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.contain-product:hover .product-thumb img {
+    transform: scale(1.05);
+}
+
+/* Product info */
+.product-info {
+    padding: 15px;
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.product-title a:hover {
+    color: #7fad39;
+}
+
+/* Price */
+.price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.price-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #7fad39;
+}
+
+.price del {
+    color: #999;
+    font-size: 14px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #7fad39;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #6a9a2e;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .products-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .slide-contain {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-middle {
+        padding: 15px 0;
+    }
+} 
