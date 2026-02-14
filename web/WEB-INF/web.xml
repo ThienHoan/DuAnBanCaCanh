@@ -1,11 +1,565 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+    <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>filter.CharacterEncodingFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+    
+    <!-- Servlet cho đăng nhập -->
     <servlet>
-        <servlet-name>alo</servlet-name>
-        <servlet-class>controller.admin.alo</servlet-class>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>controller.client.LoginServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>alo</servlet-name>
-        <url-pattern>/alo</url-pattern>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
+    
+    <!-- Servlet cho đăng ký -->
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>controller.client.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Servlet cho đăng xuất -->
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>controller.client.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Servlet cho Google OAuth -->
+    <servlet>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <servlet-class>controller.client.GoogleLoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/auth/google</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/googlecallback</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/auth/google/callback</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test servlet cho Google callback -->
+    <servlet>
+        <servlet-name>GoogleTestServlet</servlet-name>
+        <servlet-class>controller.client.GoogleTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GoogleTestServlet</servlet-name>
+        <url-pattern>/auth/google/test</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test servlet -->
+    <servlet>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>controller.client.TestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/test</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Home servlet -->
+    <servlet>
+        <servlet-name>HomeServlet</servlet-name>
+        <servlet-class>controller.client.HomeServlet</servlet-class>
+    </servlet>    <servlet-mapping>
+        <servlet-name>HomeServlet</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Static resources mapping -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/assets/*</url-pattern>
+    </servlet-mapping>
+      <!-- Default servlet for static resources -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.js</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.png</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpeg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.gif</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.ico</url-pattern>
+    </servlet-mapping>
+    <!-- Font files -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.woff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.woff2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.ttf</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.eot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.svg</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Admin Dashboard servlet -->
+    <!-- Đã xóa định nghĩa AdminDashboardServlet vì đã có annotation @WebServlet trong class -->
+    
+    <!-- Client Dashboard servlet -->
+    <servlet>
+        <servlet-name>DashboardController</servlet-name>
+        <servlet-class>controller.client.DashboardController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardController</servlet-name>
+        <url-pattern>/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <!-- Client Dashboard servlet -->
+    <servlet>
+        <servlet-name>ProductServlet</servlet-name>
+        <servlet-class>controller.admin.ProductServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductServlet</servlet-name>
+        <url-pattern>/products</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Forgot Password servlet -->
+    <servlet>
+        <servlet-name>ForgotPasswordServlet</servlet-name>
+        <servlet-class>controller.client.ForgotPasswordServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ForgotPasswordServlet</servlet-name>
+        <url-pattern>/forgot-password</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Reset Password servlet -->
+    <servlet>
+        <servlet-name>ResetPasswordServlet</servlet-name>
+        <servlet-class>controller.client.ResetPasswordServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResetPasswordServlet</servlet-name>
+        <url-pattern>/reset-password</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Admin User Management servlet -->
+    <servlet>
+        <servlet-name>AdminUserController</servlet-name>
+        <servlet-class>controller.admin.AdminUserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminUserController</servlet-name>
+        <url-pattern>/admin-users</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Admin Blog Controller servlet -->
+    <servlet>
+        <servlet-name>AdminBlogController</servlet-name>
+        <servlet-class>controller.admin.AdminBlogController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blogs</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-form</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-categories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminBlogController</servlet-name>
+        <url-pattern>/admin-blog-action</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Admin Category Controller servlet -->
+    <servlet>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <servlet-class>controller.admin.AdminCategoryController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <url-pattern>/admin-categories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminCategoryController</servlet-name>
+        <url-pattern>/admin-category-action</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Header Data Filter - Load blog data for header on all pages -->
+    <filter>
+        <filter-name>HeaderDataFilter</filter-name>
+        <filter-class>filter.HeaderDataFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HeaderDataFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Authentication Filter -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Role-based Filter for Admin pages -->
+    <filter>
+        <filter-name>RoleBasedFilter</filter-name>
+        <filter-class>filter.RoleBasedFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RoleBasedFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Test User servlet -->
+    <servlet>
+        <servlet-name>TestUserServlet</servlet-name>
+        <servlet-class>controller.test.TestUserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestUserServlet</servlet-name>
+        <url-pattern>/test-user</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Reset Identity servlet -->
+    <servlet>
+        <servlet-name>ResetIdentityServlet</servlet-name>
+        <servlet-class>controller.test.ResetIdentityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResetIdentityServlet</servlet-name>
+        <url-pattern>/admin/reset-identity</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Reset All Identity servlet -->
+    <servlet>
+        <servlet-name>ResetAllIdentityServlet</servlet-name>
+        <servlet-class>controller.admin.ResetAllIdentityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResetAllIdentityServlet</servlet-name>
+        <url-pattern>/admin/reset-all-identity</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Order Management servlet -->
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>controller.client.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/order</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test Blog Category servlet -->
+    <servlet>
+        <servlet-name>TestBlogCategoryServlet</servlet-name>
+        <servlet-class>controller.test.TestBlogCategoryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestBlogCategoryServlet</servlet-name>
+        <url-pattern>/test-blog-category</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Cart servlet -->
+    <servlet>
+        <servlet-name>CartControllerClient</servlet-name>
+        <servlet-class>controller.client.CartControllerClient</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CartControllerClient</servlet-name>
+        <url-pattern>/cartClient</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartControllerClient</servlet-name>
+        <url-pattern>/cart</url-pattern>
+    </servlet-mapping>
+    
+    <!-- VNPay Return Controller -->
+    <servlet>
+        <servlet-name>VNPayReturnController</servlet-name>
+        <servlet-class>controller.client.VNPayReturnController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VNPayReturnController</servlet-name>
+        <url-pattern>/vnpay-return</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Checkout Controller -->
+    <servlet>
+        <servlet-name>CheckoutController</servlet-name>
+        <servlet-class>controller.client.CheckoutController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckoutController</servlet-name>
+        <url-pattern>/checkout</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Apply Coupon Controller -->
+    <servlet>
+        <servlet-name>ApplyCouponController</servlet-name>
+        <servlet-class>controller.client.ApplyCouponController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ApplyCouponController</servlet-name>
+        <url-pattern>/apply-coupon</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Category Servlet -->
+    <servlet>
+        <servlet-name>CategoryServlet</servlet-name>
+        <servlet-class>controller.client.CategoryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/category</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/CategoryServlet</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Wishlist servlet -->
+    <servlet>
+        <servlet-name>WishlistController</servlet-name>
+        <servlet-class>controller.client.WishlistController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WishlistController</servlet-name>
+        <url-pattern>/wishlist</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Profile servlet -->
+    <servlet>
+        <servlet-name>ProfileController</servlet-name>
+        <servlet-class>controller.client.ProfileController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfileController</servlet-name>
+        <url-pattern>/profile</url-pattern>
+    </servlet-mapping>
+    
+    <!-- File upload servlet - Cấu hình bằng Annotation -->
+    
+      <!-- Trang chủ mặc định -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>home.jsp</welcome-file>
+    </welcome-file-list>
+      <!-- MIME type mappings cho các file đặc biệt -->
+    <mime-mapping>
+        <extension>glb</extension>
+        <mime-type>model/gltf-binary</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>gltf</extension>
+        <mime-type>model/gltf+json</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>bin</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+    
+    <!-- Font MIME types -->
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>font/woff</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>woff2</extension>
+        <mime-type>font/woff2</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>font/ttf</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+    
+    <mime-mapping>
+        <extension>svg</extension>
+        <mime-type>image/svg+xml</mime-type>
+    </mime-mapping>
+    
+    <!-- Error pages -->
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.jsp</location>
+    </error-page>
+    
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <!-- Session Configuration -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    
+    <!-- AI Agent servlet - ĐÃ SỬA LỖI -->
+    <servlet>
+        <servlet-name>AIAgentServlet</servlet-name>
+        <!-- THAY ĐỔI DUY NHẤT Ở ĐÂY -->
+        <servlet-class>controller.client.AIAgentServlet</servlet-class> 
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AIAgentServlet</servlet-name>
+        <url-pattern>/ai-agent</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Review Controller servlet -->
+    <servlet>
+        <servlet-name>ReviewController</servlet-name>
+        <servlet-class>controller.client.ReviewController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReviewController</servlet-name>
+        <url-pattern>/review</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReviewController</servlet-name>
+        <url-pattern>/submit-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Product Detail With Review servlet -->
+    <servlet>
+        <servlet-name>ProductDetailWithReviewServlet</servlet-name>
+        <servlet-class>controller.client.ProductDetailWithReviewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductDetailWithReviewServlet</servlet-name>
+        <url-pattern>/product-detail-with-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Test Review Servlet -->
+    <servlet>
+        <servlet-name>TestReviewServlet</servlet-name>
+        <servlet-class>controller.client.TestReviewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestReviewServlet</servlet-name>
+        <url-pattern>/test-review</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Product Detail Servlet (Original) -->
+    <servlet>
+        <servlet-name>ProductDetailServlet</servlet-name>
+        <servlet-class>controller.client.ProductDetailServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductDetailServlet</servlet-name>
+        <url-pattern>/product-detail</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Simple Test Servlet -->
+    <servlet>
+        <servlet-name>SimpleTestServlet</servlet-name>
+        <servlet-class>controller.client.SimpleTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SimpleTestServlet</servlet-name>
+        <url-pattern>/simple-test</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Review Controller Simple -->
+    <servlet>
+        <servlet-name>ReviewControllerSimple</servlet-name>
+        <servlet-class>controller.client.ReviewControllerSimple</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReviewControllerSimple</servlet-name>
+        <url-pattern>/review-simple</url-pattern>
+    </servlet-mapping>
+    
+    <!-- SePay Webhook Controller -->
+    <servlet>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <servlet-class>controller.client.SePayWebhookController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <url-pattern>/sepay-webhook</url-pattern>
+    </servlet-mapping>
+    <!-- Thêm mapping cho URL tuyệt đối -->
+    <servlet-mapping>
+        <servlet-name>SePayWebhookController</servlet-name>
+        <url-pattern>/DuAnBanCaCanh/sepay-webhook</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Ngrok Config Controller -->
+    <servlet>
+        <servlet-name>NgrokConfigController</servlet-name>
+        <servlet-class>controller.admin.NgrokConfigController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NgrokConfigController</servlet-name>
+        <url-pattern>/admin/ngrok-config</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

@@ -1,0 +1,343 @@
+/* Product Grid Standardization CSS - Only for Block 04 and Block 06 */
+
+/* Target only Product Tabs (Block 04) and Bestseller Products (Block 06) */
+.product-tab .product-item .product-thumb,
+.advance-product-box .product-item .product-thumb {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 270px;
+}
+
+.product-tab .product-item .product-thumb .link-to-product,
+.advance-product-box .product-item .product-thumb .link-to-product {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Standardize Product Images - Only for Block 04 and Block 06 */
+.product-tab .product-item .product-thumb .product-thumnail,
+.product-tab .product-item .product-thumb img,
+.advance-product-box .product-item .product-thumb .product-thumnail,
+.advance-product-box .product-item .product-thumb img {
+    width: 100% !important;
+    height: 270px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    background-color: #fff;
+}
+
+/* Hover Effects - Only for Block 04 and Block 06 */
+.product-tab .product-item .product-thumb:hover .product-thumnail,
+.product-tab .product-item .product-thumb:hover img,
+.advance-product-box .product-item .product-thumb:hover .product-thumnail,
+.advance-product-box .product-item .product-thumb:hover img {
+    transform: scale(1.05);
+}
+
+/* Product Card Standardization - Only for Block 04 and Block 06 */
+.product-tab .product-item .contain-product,
+.advance-product-box .product-item .contain-product {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: auto;
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-tab .product-item .contain-product:hover,
+.advance-product-box .product-item .contain-product:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+}
+
+/* Product Info Section - Only for Block 04 and Block 06 */
+.product-tab .product-item .info,
+.advance-product-box .product-item .info {
+    padding: 20px 15px;
+    height: auto;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+/* Product Title - Only for Block 04 and Block 06 */
+.product-tab .product-item .product-title,
+.advance-product-box .product-item .product-title {
+    height: 48px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.product-tab .product-item .product-title a,
+.advance-product-box .product-item .product-title a {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.product-tab .product-item .product-title a:hover,
+.advance-product-box .product-item .product-title a:hover {
+    color: #7fad39;
+}
+
+/* Category Badge - Only for Block 04 and Block 06 */
+.product-tab .product-item .categories,
+.advance-product-box .product-item .categories {
+    background: #7fad39 !important;
+    color: white !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Price Styling - Only for Block 04 and Block 06 */
+.product-tab .product-item .price,
+.advance-product-box .product-item .price {
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.product-tab .product-item .price ins,
+.advance-product-box .product-item .price ins {
+    text-decoration: none;
+    color: #7fad39;
+}
+
+.product-tab .product-item .price del,
+.advance-product-box .product-item .price del {
+    color: #999;
+    margin-left: 10px;
+}
+
+/* Button Styling - Only for Block 04 and Block 06 */
+.product-tab .product-item .slide-down-box,
+.advance-product-box .product-item .slide-down-box {
+    margin-top: auto;
+}
+
+.product-tab .product-item .buttons,
+.advance-product-box .product-item .buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-tab .product-item .btn,
+.advance-product-box .product-item .btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.product-tab .product-item .add-to-cart-btn,
+.advance-product-box .product-item .add-to-cart-btn {
+    background: #7fad39;
+    color: white;
+    flex-grow: 1;
+}
+
+.product-tab .product-item .add-to-cart-btn:hover,
+.advance-product-box .product-item .add-to-cart-btn:hover {
+    background: #6a9332;
+    color: white;
+}
+
+.product-tab .product-item .wishlist-btn,
+.product-tab .product-item .compare-btn,
+.advance-product-box .product-item .wishlist-btn,
+.advance-product-box .product-item .compare-btn {
+    background: #f8f9fa;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-tab .product-item .wishlist-btn:hover,
+.product-tab .product-item .compare-btn:hover,
+.advance-product-box .product-item .wishlist-btn:hover,
+.advance-product-box .product-item .compare-btn:hover {
+    background: #7fad39;
+    color: white;
+}
+
+/* REMOVED: 3-column product layout styles - These were affecting Block 08 */
+/* Only keep styles specific to Block 06 Bestseller Products with the correct selector */
+
+/* Block 06 Bestseller Products - Large Grid Layout */
+.advance-product-box .product-thumb {
+    flex-shrink: 0;
+    width: 100%;
+    height: 270px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.advance-product-box .product-thumb img {
+    width: 100% !important;
+    height: 270px !important;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.advance-product-box .product-thumb:hover img {
+    transform: scale(1.05);
+}
+
+.advance-product-box .info {
+    flex: 1;
+    min-width: 0;
+    padding: 20px 15px;
+}
+
+.advance-product-box .product-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 12px;
+}
+
+.advance-product-box .product-title a {
+    color: #333;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.advance-product-box .product-title a:hover {
+    color: #7fad39;
+}
+
+.advance-product-box .price {
+    margin-bottom: 15px;
+}
+
+.advance-product-box .price .price-amount {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.advance-product-box .price ins {
+    color: #7fad39;
+    text-decoration: none;
+}
+
+.advance-product-box .price del {
+    color: #999;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.advance-product-box .biolife-title-box .title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: left;
+}
+
+/* Responsive Design - Only for Block 04 and Block 06 */
+@media (max-width: 991px) {
+    .product-tab .product-item .product-thumb,
+    .product-tab .product-item .product-thumb .link-to-product,
+    .advance-product-box .product-thumb,
+    .advance-product-box .product-thumb .link-to-product {
+        height: 220px;
+    }
+    
+    .product-tab .product-item .product-thumb .product-thumnail,
+    .product-tab .product-item .product-thumb img,
+    .advance-product-box .product-thumb .product-thumnail,
+    .advance-product-box .product-thumb img {
+        height: 220px !important;
+    }
+    
+    .product-tab .product-item .contain-product,
+    .advance-product-box .product-item .contain-product {
+        min-height: 380px;
+    }
+    
+    .product-tab .product-item .info,
+    .advance-product-box .info {
+        padding: 15px 10px;
+        min-height: 160px;
+    }
+    
+    .product-tab .product-item .product-title,
+    .advance-product-box .product-title {
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-tab .product-item .product-thumb,
+    .product-tab .product-item .product-thumb .link-to-product,
+    .advance-product-box .product-thumb,
+    .advance-product-box .product-thumb .link-to-product {
+        height: 200px;
+    }
+    
+    .product-tab .product-item .product-thumb .product-thumnail,
+    .product-tab .product-item .product-thumb img,
+    .advance-product-box .product-thumb .product-thumnail,
+    .advance-product-box .product-thumb img {
+        height: 200px !important;
+    }
+    
+    .product-tab .product-item .buttons,
+    .advance-product-box .product-item .buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .product-tab .product-item .add-to-cart-btn,
+    .advance-product-box .product-item .add-to-cart-btn {
+        width: 100%;
+    }
+}

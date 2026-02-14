@@ -759,7 +759,7 @@ body{
     width: 100%;
 }
 .hero-background{
-    background-image: url('../images/hero_bg.jpg');
+    background-image: url('../images/hero_bg_new.jpg');
     height: 194px;
     background-position: center;
     background-repeat: no-repeat;
@@ -901,7 +901,7 @@ body{
 .header-top .right .horizontal-menu>li{
     vertical-align: middle;
     min-width: 140px;
-    padding: 0 20px;
+    padding: 10px 20px;
     border-right: 1px solid rgba(255,255,255,0.33);
 }
 .header-top .right .horizontal-menu>li:first-child{
@@ -2605,12 +2605,7 @@ body.open-mobile-search .header-area.layout-02{
     line-height: 24px;
 }
 @media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0)
-{ @media {
-    /*
-      Define here the CSS styles applied only to Safari browsers
-      (any version and any device)
-     */
-}}
+{ }
 .newsletter-block.layout-03{
     display: block;
     font-size: 0;
@@ -6992,11 +6987,12 @@ body.open-overlay #overlay{
 }
 .slider-opt04__layout01 .media{
     z-index: 10;
-    background-image: url('../images/home-04/main_slide.jpg');
+    background-image: url('https://w0.peakpx.com/wallpaper/547/612/HD-wallpaper-beta-fish-red-vara-fish-pesti-beta-summer-dhiky-aditya-blue-black.jpg');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     height: 578px;
+    border-radius: 15px;
 }
 .slider-opt04__layout01 .text-content{
     display: inline-block;
@@ -7044,7 +7040,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     animation-delay: 0.2s;
 }
 .slider-opt04__layout01 .buttons .btn.btn-bold:not(:hover){
-    background-color: #87be00;
+    background-color: #64E2F8;
 }
 .slider-opt04__layout01.light-version .buttons .btn-thin:not(:hover){
     color: #333333;
@@ -8068,7 +8064,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 .biolife-banner__promotion4{
     display: block;
     clear: both;
-    background: url('../images/home-04/banner-promotion01.jpg');
+    background: url('https://images.unsplash.com/photo-1530053969600-caed2596d242?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
     background-position: center center;
     background-size: cover;
     height: 650px;
@@ -8136,7 +8132,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     transition: all 0.3s ease;
 }
 .biolife-banner__promotion4 .buttons .btn.green-btn:not(:hover){
-    background-color: #87be00;
+    background-color: #00CAFF;
 }
 .biolife-banner__promotion4.v2{
     height: 450px;
@@ -9097,7 +9093,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 
 
 .biolife-vertical-menu .vertical-category-block>.wrap-menu>.menu{
-    padding: 8px 0 15px;
+    padding: 8px 0 400px;
     margin: 0;
 }
 .biolife-banner__style-14,
@@ -9114,9 +9110,10 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     overflow: hidden;
     position: relative;
     height: 250px;
-    background-color: #c4a8d5;
+    background-color: #9FB3DF;
     background-position: top left;
     background-size: initial;
+    border-radius: 10px;
 }
 .biolife-banner__style-14 .media,
 .biolife-banner__style-13 .media,
@@ -9238,7 +9235,8 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
 }
 .biolife-banner__style-14,
 .biolife-banner__style-03{
-    background-color: #f6919c;
+    background-color: #9EC6F3;
+    border-radius: 10px;
 }
 .biolife-banner__style-03 .media{
     top: 25px;
@@ -9287,7 +9285,8 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     left: 4px;
 }
 .biolife-banner__style-04{
-    background-color: #f6f1de;
+    background-color: #BDDDE4;
+    border-radius: 10px;
 }
 .biolife-banner__style-10 .media,
 .biolife-banner__style-04 .media{
@@ -9520,9 +9519,56 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     overflow: hidden;
     text-align: center;
 }
-.biolife-cat-box-item .cat-thumb img{
-    width: 100%;
-    display: block;
+
+/* Category image fixed size - Phù hợp với carousel slide */
+.biolife-cat-box-item .cat-thumb {
+    width: 270px !important;
+    height: 190px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    border-radius: 8px !important;
+    margin: 0 auto !important;
+    background: #f5f5f5 !important;
+    display: block !important;
+    box-sizing: border-box !important;
+}
+
+/* Link bên trong cat-thumb */
+.biolife-cat-box-item .cat-thumb .cat-link,
+.biolife-cat-box-item .cat-thumb a {
+    display: block !important;
+    width: 270px !important;
+    height: 190px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+}
+
+/* Ảnh bên trong - cố định tuyệt đối */
+.biolife-cat-box-item .cat-thumb img,
+.biolife-cat-box-item .cat-thumb .cat-link img,
+.biolife-cat-box-item .cat-thumb a img {
+    width: 270px !important;
+    height: 190px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    border-radius: 8px !important;
+    transition: transform 0.3s ease !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 270px !important;
+    min-height: 180px !important;
+}
+
+/* Hiệu ứng hover */
+.biolife-cat-box-item .cat-thumb:hover img,
+.biolife-cat-box-item .cat-thumb .cat-link:hover img,
+.biolife-cat-box-item .cat-thumb a:hover img {
+    transform: scale(1.05) !important;
 }
 .biolife-cat-box-item .cat-info{
     display: inline-block;

@@ -68,4 +68,135 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    <!-- Custom targets for better build process -->
+    <target name="-pre-compile" description="Setup before compilation">
+        <echo message="Preparing compilation for DuAnCaCanh project..."/>
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${build.web.dir}/WEB-INF/lib"/>
+    </target>
+    
+    <target name="-post-compile" description="Post compilation tasks">
+        <echo message="Compilation completed successfully!"/>
+    </target>
+    
+    <target name="compile-modules" depends="compile" description="Compile all modules">
+        <echo message="All 4 modules compiled successfully:"/>
+        <echo message="- Module 1: com.juleswhite.module1"/>
+        <echo message="- Module 2: com.juleswhite.module2"/> 
+        <echo message="- Module 3: com.juleswhite.module3"/>
+        <echo message="- Module 4: com.juleswhite.module4"/>
+    </target>
+    
+    <target name="run-agent" depends="compile" description="Run AI Agent">
+        <echo message="Starting AI Agent..."/>
+        <java classname="com.juleswhite.module1.AgentRunner" 
+              classpath="${build.classes.dir}:${javac.classpath}"
+              fork="true">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
+    <target name="test-agent" depends="compile" description="Test AI Agent with sample request">
+        <echo message="Testing AI Agent with sample request..."/>
+        <java classname="com.juleswhite.module1.AgentRunner" 
+              classpath="${build.classes.dir}:${javac.classpath}"
+              fork="true"
+              input="List all files in current directory">
+            <jvmarg value="-Dfile.encoding=UTF-8"/>
+        </java>
+    </target>
+    
+    <!-- Override the javac macro to use release flag instead of source/target flags -->
+    <target name="init-macrodef-javac">
+        <macrodef name="javac" uri="http://www.netbeans.org/ns/web-project/2">
+            <attribute default="${src.dir}" name="srcdir"/>
+            <attribute default="${build.classes.dir}" name="destdir"/>
+            <attribute default="${javac.classpath}" name="classpath"/>
+            <attribute default="${javac.processorpath}" name="processorpath"/>
+            <attribute default="${build.generated.sources.dir}/ap-source-output" name="apgeneratedsrcdir"/>
+            <attribute default="${includes}" name="includes"/>
+            <attribute default="${excludes}" name="excludes"/>
+            <attribute default="${javac.debug}" name="debug"/>
+            <attribute default="${empty.dir}" name="gensrcdir"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <property name="javac.compilerargs" value=""/>
+                <property name="empty.dir" location="${build.dir}/empty"/>
+                <mkdir dir="${empty.dir}"/>
+                <javac debug="@{debug}" deprecation="${javac.deprecation}" 
+                        destdir="@{destdir}" encoding="${source.encoding}" 
+                        excludes="@{excludes}" includeantruntime="false" 
+                        includes="@{includes}" release="17" 
+                        srcdir="@{srcdir}">
+                    <src>
+                        <dirset dir="@{srcdir}">
+                            <include name="*"/>
+                        </dirset>
+                    </src>
+                    <classpath>
+                        <path path="@{classpath}"/>
+                    </classpath>
+                    <compilerarg line="${javac.compilerargs}"/>
+                    <customize/>
+                </javac>
+            </sequential>
+        </macrodef>
+    </target>
+    
+    <!-- Target to download Apache POI libraries -->
+    <target name="download-poi-libs" description="Downloads Apache POI libraries for Excel export">
+        <mkdir dir="lib"/>
+        <!-- Download Apache POI core -->
+        <get src="https://repo1.maven.org/maven2/org/apache/poi/poi/5.2.3/poi-5.2.3.jar" 
+             dest="lib/poi-5.2.3.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache POI OOXML -->
+        <get src="https://repo1.maven.org/maven2/org/apache/poi/poi-ooxml/5.2.3/poi-ooxml-5.2.3.jar" 
+             dest="lib/poi-ooxml-5.2.3.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache POI OOXML schemas -->
+        <get src="https://repo1.maven.org/maven2/org/apache/poi/poi-ooxml-lite/5.2.3/poi-ooxml-lite-5.2.3.jar" 
+             dest="lib/poi-ooxml-lite-5.2.3.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache XMLBeans -->
+        <get src="https://repo1.maven.org/maven2/org/apache/xmlbeans/xmlbeans/5.1.1/xmlbeans-5.1.1.jar" 
+             dest="lib/xmlbeans-5.1.1.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache Commons Compress -->
+        <get src="https://repo1.maven.org/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar" 
+             dest="lib/commons-compress-1.21.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache Commons Collections4 -->
+        <get src="https://repo1.maven.org/maven2/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar" 
+             dest="lib/commons-collections4-4.4.jar" 
+             skipexisting="true"/>
+        <!-- Download Apache Commons Math3 -->
+        <get src="https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar" 
+             dest="lib/commons-math3-3.6.1.jar" 
+             skipexisting="true"/>
+        <!-- Download SLF4J API -->
+        <get src="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" 
+             dest="lib/slf4j-api-1.7.36.jar" 
+             skipexisting="true"/>
+        <!-- Download SLF4J Simple -->
+        <get src="https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" 
+             dest="lib/slf4j-simple-1.7.36.jar" 
+             skipexisting="true"/>
+        <!-- Download Log4j API -->
+        <get src="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api/2.18.0/log4j-api-2.18.0.jar" 
+             dest="lib/log4j-api-2.18.0.jar" 
+             skipexisting="true"/>
+        <!-- Download SparseBitSet -->
+        <get src="https://repo1.maven.org/maven2/com/zaxxer/SparseBitSet/1.2/SparseBitSet-1.2.jar" 
+             dest="lib/SparseBitSet-1.2.jar" 
+             skipexisting="true"/>
+        
+        <!-- Copy libraries to WEB-INF/lib -->
+        <copy todir="web/WEB-INF/lib">
+            <fileset dir="lib">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
 </project>
